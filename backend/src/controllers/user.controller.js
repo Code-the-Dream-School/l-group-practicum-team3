@@ -1,5 +1,5 @@
 // Supabase client set-up (maybe move this later)
-const { supabase } = require("../config/db.supabase");
+const { supabase } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
 // For validation

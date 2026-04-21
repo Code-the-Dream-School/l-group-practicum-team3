@@ -1,6 +1,6 @@
 // const jwt = require("jsonwebtoken"); Using built-in Supabase auth
 const { StatusCodes } = require("http-status-codes");
-const supabase = require("../config/supabase.js");
+const { supabase } = require("../config/supabase.js");
 
 const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
