@@ -1,6 +1,6 @@
-// const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken"); Using built-in Supabase auth
 const { StatusCodes } = require("http-status-codes");
-const supabase = require("../config/supabase");
+const supabase = require("../config/supabase.js");
 
 const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -9,7 +9,7 @@ const authMiddleware = async (req, res, next) => {
     return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No token" });
   }
 
-  // Using Supabase.auth
+  // Using Supabase.auth, no JWT needed
   const { data, error } = await supabase.auth.getUser(token);
 
   if (error || !data.user) {
