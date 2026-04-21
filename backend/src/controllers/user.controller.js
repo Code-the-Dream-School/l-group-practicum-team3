@@ -23,6 +23,11 @@ const register = async (req, res) => {
   const { data, error: supabaseError } = await supabase.auth.signUp({
     email: value.email,
     password: value.password,
+    options: {
+      data: {
+        display_name: value.name,
+      },
+    },
   });
   if (supabaseError) {
     return res
