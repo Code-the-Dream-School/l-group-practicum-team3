@@ -1,39 +1,43 @@
-import { useEffect, useState } from "react";
 import "./App.css";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import LandingPage from "./pages/public/LandingPage";
+import Login from "./pages/public/Login";
+import Signup from "./pages/public/Signup";
+
+import Home from "./pages/private/Home";
+import Fridge from "./pages/private/Fridge";
+import Recipes from "./pages/private/Recipes";
+import ShoppingList from "./pages/private/ShoppingList";
+
+import ProtectedRoutes from "./utils/ProtectedRoutes";
+import PublicRoutes from "./utils/PublicRoutes";
 
 function App() {
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Call the backend API
-    fetch("http://localhost:8080/api/hello")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch from backend");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
+  const user = null
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Frontend ↔ Backend Test</h1>
+    <>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicRoutes user={user}/>}>
+            <Route path="/landing-page" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+        </Route>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {/* Prviate Routes */}
+        <Route element={<ProtectedRoutes user={user}/>}>
+            <Route path="/" element={<Home />} />
+            <Route path="/fridge" element={<Fridge />} />
+            <Route path="/recipes" element={<Recipes />} />
+            <Route path="/shopping-list" element={<ShoppingList />} />
+        </Route>
 
-      {!error && (
-        <p>
-          Message from API: <strong>{message}</strong>
-        </p>
-      )}
-    </main>
+        <Route path="*" element={<Navigate to="/" replace />} />
+
+      </Routes>
+    </>
   );
 }
 
