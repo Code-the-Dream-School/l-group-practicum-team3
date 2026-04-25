@@ -1,4 +1,4 @@
-const { express } = require("express");
+const express = require("express");
 const router = express.Router();
 
 const {
@@ -12,3 +12,5 @@ const {
 router.get("/", getGroceryItems);
 router.post("/", addGroceryItem);
 router.route("/:id").patch(updateGroceryItem).delete(deleteGroceryItem);
+
+module.exports = router;

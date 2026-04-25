@@ -15,7 +15,7 @@ const updateGroceryItem = async (req, res) => {
 };
 
 const deleteGroceryItem = async (req, res) => {
-  return res.status(200).json({ message: "returning all items" });
+  return res.status(200).json({ message: "deleting item" });
 };
 
 module.exports = {
