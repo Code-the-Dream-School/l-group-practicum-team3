@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
 const userRouter = require("./routes/auth.route.js");
+const authenticateUser = require("./middleware/auth.middleware.js");
 const groceryRoutes = require("./routes/grocery.route.js");
 
 const app = express();
@@ -23,7 +24,7 @@ app.use(limiter);
 
 // Routes
 app.use("/api/users", userRouter);
-app.use("/api/grocery", groceryRoutes);
+app.use("/api/grocery", authenticateUser, groceryRoutes);
 
 // Root route
 app.get("/", (req, res) => {
