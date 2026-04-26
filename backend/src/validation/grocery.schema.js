@@ -46,7 +46,7 @@ const grocerySchema = Joi.object({
 });
 
 const groceryUpdateSchema = Joi.object({
-  name: Joi.string().min(1).max(100).trim(),
+  name: Joi.string().min(1).max(100),
   category: Joi.string().valid(...perishable, ...nonPerisable),
   quantity: Joi.number().positive(),
   unit: Joi.string().valid(...units),
