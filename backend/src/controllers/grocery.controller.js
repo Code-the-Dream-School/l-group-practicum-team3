@@ -13,10 +13,9 @@ const getGroceryItemById = async (req, res) => {
 };
 
 const addGroceryItem = async (req, res) => {
-  // user from supabase auth
-
   // create supabase client that is authenticated with the user's token
   const client = supabaseWithToken(req.token);
+  // user from supabase auth
   const user_id = req.user.id;
 
   // clean up grocery name before validating
