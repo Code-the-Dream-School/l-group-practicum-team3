@@ -5,7 +5,22 @@ const { StatusCodes } = require("http-status-codes");
 const { grocerySchema } = require("../validation/grocery.schema.js");
 
 const getGroceryItems = async (req, res) => {
-  return res.status(200).json({ message: "get all items" });
+  const client = supabaseWithToken(req.token);
+  const user_id = req.user.id;
+
+  const { data, error: supabaseError } = await client
+    .from("groceries")
+    .select("*")
+    .eq("user_id", user_id)
+    .order("created_at", { ascending: false }); //swap to order based on expiry date
+
+  if (supabaseError) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: supabaseError });
+  }
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ data, meta: { total: data.length } });
 };
 
 const getGroceryItemById = async (req, res) => {
