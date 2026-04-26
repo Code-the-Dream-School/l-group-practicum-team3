@@ -49,7 +49,11 @@ const getGroceryItems = async (req, res) => {
   });
 };
 
+// example request {base_url}/api/grocery/:id
 const getGroceryItemById = async (req, res) => {
+  const client = supabaseWithToken(req.token);
+  const user_id = req.user.id;
+
   return res.status(200).json({ message: "get item by id" });
 };
 
@@ -104,7 +108,8 @@ const addGroceryItem = async (req, res) => {
   return res.status(StatusCodes.CREATED).json({ data });
 };
 
-// TODO: manage for nonexisiting item id
+// TODO: manage for nonexisiting item
+// example request {base_url}/api/grocery/:id
 const updateGroceryItem = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
@@ -152,8 +157,34 @@ const updateGroceryItem = async (req, res) => {
     .json({ message: "Item updated successfully", data, value });
 };
 
+// example request {base_url}/api/grocery/:id
+// TODO: manage for nonexisiting id
 const deleteGroceryItem = async (req, res) => {
-  return res.status(200).json({ message: "deleting item" });
+  const client = supabaseWithToken(req.token);
+  const user_id = req.user.id;
+  const { id: groceryId } = req.params;
+
+  if (!groceryId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Item Id is required" });
+  }
+
+  const { error: supabaseError } = await client
+    .from("groceries")
+    .delete()
+    .eq("grocery_id", groceryId)
+    .eq("user_id", user_id);
+
+  if (supabaseError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: supabaseError.message });
+  }
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Item deleted successfully" });
 };
 
 module.exports = {
