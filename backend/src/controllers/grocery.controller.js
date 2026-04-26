@@ -2,10 +2,13 @@ const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
 // For validation
-const { grocerySchema } = require("../validation/grocery.schema.js");
+const {
+  grocerySchema,
+  groceryUpdateSchema,
+} = require("../validation/grocery.schema.js");
 
 // example request {base_url}/api/grocery?page=1?limit=3
-// add filtering and sorting parameters
+// TOD0: add filtering and sorting parameters
 const getGroceryItems = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
@@ -49,7 +52,9 @@ const getGroceryItems = async (req, res) => {
 const getGroceryItemById = async (req, res) => {
   return res.status(200).json({ message: "get item by id" });
 };
+
 // example request {base_url}/api/grocery
+// TODO: add prevent duplicate item creating new rows
 const addGroceryItem = async (req, res) => {
   // create supabase client that is authenticated with the user's token
   const client = supabaseWithToken(req.token);
@@ -57,6 +62,7 @@ const addGroceryItem = async (req, res) => {
   const user_id = req.user.id;
 
   // clean up grocery name before validating
+  // move to util folder
   if (req.body.name) {
     req.body.name = req.body.name.trim().replace(/\s+/g, " ");
   }
@@ -98,8 +104,52 @@ const addGroceryItem = async (req, res) => {
   return res.status(StatusCodes.CREATED).json({ data });
 };
 
+// TODO: manage for nonexisiting item id
 const updateGroceryItem = async (req, res) => {
-  return res.status(200).json({ message: "update grocery item" });
+  const client = supabaseWithToken(req.token);
+  const user_id = req.user.id;
+  const { id: groceryId } = req.params;
+
+  if (!groceryId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Item ID is required" });
+  }
+
+  // move to util folder
+  if (req.body.name) {
+    req.body.name = req.body.name.trim().replace(/\s+/g, " ");
+  }
+
+  const { value, error: validationError } = groceryUpdateSchema.validate(
+    req.body,
+    {
+      abortEarly: false,
+    }
+  );
+
+  if (validationError) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      message: validationError.message,
+    });
+  }
+
+  const { data, error: supabaseError } = await client
+    .from("groceries")
+    .update(value)
+    .eq("grocery_id", groceryId)
+    .eq("user_id", user_id)
+    .select();
+
+  if (supabaseError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: supabaseError.message });
+  }
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Item updated successfully", data, value });
 };
 
 const deleteGroceryItem = async (req, res) => {
