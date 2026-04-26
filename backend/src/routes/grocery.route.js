@@ -9,8 +9,7 @@ const {
   deleteGroceryItem,
 } = require("../controllers/grocery.controller.js");
 
-router.get("/", getGroceryItems);
-router.post("/", addGroceryItem);
+router.route("/").get(getGroceryItems).post(addGroceryItem);
 router.route("/:id").patch(updateGroceryItem).delete(deleteGroceryItem);
 
 module.exports = router;
