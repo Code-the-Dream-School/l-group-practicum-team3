@@ -4,29 +4,52 @@ const { StatusCodes } = require("http-status-codes");
 // For validation
 const { grocerySchema } = require("../validation/grocery.schema.js");
 
+// example request {base_url}/api/grocery?page=1?limit=3
+// add filtering and sorting parameters
 const getGroceryItems = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
 
-  const { data, error: supabaseError } = await client
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const start = (page - 1) * limit;
+  const end = start + limit - 1;
+
+  const {
+    data,
+    error: supabaseError,
+    count,
+  } = await client
     .from("groceries")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("user_id", user_id)
-    .order("created_at", { ascending: false }); //swap to order based on expiry date
+    .order("created_at", { ascending: false }) //swap to order based on expiry date
+    .range(start, end);
 
   if (supabaseError) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: supabaseError });
   }
 
-  return res
-    .status(StatusCodes.OK)
-    .json({ data, meta: { total: data.length } });
+  const totalPages = Math.ceil(count / limit);
+
+  return res.status(StatusCodes.OK).json({
+    data,
+    pagination: {
+      totalRecords: count,
+      currentPage: page,
+      limit: limit,
+      recordsOnPage: data.length,
+      totalPages: totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  });
 };
 
 const getGroceryItemById = async (req, res) => {
   return res.status(200).json({ message: "get item by id" });
 };
-
+// example request {base_url}/api/grocery
 const addGroceryItem = async (req, res) => {
   // create supabase client that is authenticated with the user's token
   const client = supabaseWithToken(req.token);
