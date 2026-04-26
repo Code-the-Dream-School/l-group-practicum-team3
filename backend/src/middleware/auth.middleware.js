@@ -19,6 +19,9 @@ const authMiddleware = async (req, res, next) => {
   }
 
   req.user = data.user; // <-- Attach user
+
+  // store token on the request object to access in controllers
+  req.token = token;
   next();
 };
 
