@@ -1,3 +1,5 @@
+// TODO: removing redundancy from code
+
 const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
@@ -53,6 +55,34 @@ const getGroceryItems = async (req, res) => {
 const getGroceryItemById = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
+  const { id: groceryId } = req.params;
+
+  if (!groceryId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Item ID is required" });
+  }
+
+  const { data, error: supabaseError } = await client
+    .from("groceries")
+    .select("*")
+    .eq("grocery_id", groceryId)
+    .eq("user_id", user_id)
+    .maybeSingle();
+
+  if (supabaseError) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: supabaseError.message });
+  }
+
+  if (!data) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "Item not found" });
+  }
+
+  return res.status(StatusCodes.OK).json({ data });
 
   return res.status(200).json({ message: "get item by id" });
 };
@@ -154,7 +184,7 @@ const updateGroceryItem = async (req, res) => {
 
   return res
     .status(StatusCodes.OK)
-    .json({ message: "Item updated successfully", data, value });
+    .json({ message: "Item updated successfully", data });
 };
 
 // example request {base_url}/api/grocery/:id

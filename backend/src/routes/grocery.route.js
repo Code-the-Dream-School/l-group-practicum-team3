@@ -10,6 +10,10 @@ const {
 } = require("../controllers/grocery.controller.js");
 
 router.route("/").get(getGroceryItems).post(addGroceryItem);
-router.route("/:id").patch(updateGroceryItem).delete(deleteGroceryItem);
+router
+  .route("/:id")
+  .patch(updateGroceryItem)
+  .delete(deleteGroceryItem)
+  .get(getGroceryItemById);
 
 module.exports = router;
