@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
 
 import LandingPage from "./pages/public/LandingPage";
 import Login from "./pages/public/Login";
@@ -12,12 +13,14 @@ import ShoppingList from "./pages/private/ShoppingList";
 
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import theme from "./utils/theme";
 
 function App() {
   const user = null
 
   return (
     <>
+    <ThemeProvider theme={theme}>
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoutes user={user}/>}>
@@ -37,6 +40,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
+      </ThemeProvider>
     </>
   );
 }
