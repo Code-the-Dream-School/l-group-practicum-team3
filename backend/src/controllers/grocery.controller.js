@@ -83,8 +83,6 @@ const getGroceryItemById = async (req, res) => {
   }
 
   return res.status(StatusCodes.OK).json({ data });
-
-  return res.status(200).json({ message: "get item by id" });
 };
 
 // example request {base_url}/api/grocery
