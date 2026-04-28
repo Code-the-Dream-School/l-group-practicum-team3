@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const perishable = ["dairy", "meat", "fruit", "vegetable"];
 
-const nonPerisable = ["spice", "condiment", "anned", "other"];
+const nonPerishable = ["spice", "condiment", "canned", "other"];
 
 const units = ["kg", "g", "lb", "oz", "l", "ml", "cup", "tbsp", "tsp", "piece"];
 
