@@ -14,10 +14,10 @@ const grocerySchema = Joi.object({
     "string.max": "item name cannot exceed 100 characters",
   }),
   category: Joi.string()
-    .valid(...perishable, ...nonPerisable)
+    .valid(...perishable, ...nonPerishable)
     .required()
     .messages({
-      "any.only": `Category must be one of ${[...perishable, ...nonPerisable].join(", ")}`,
+      "any.only": `Category must be one of ${[...perishable, ...nonPerishable].join(", ")}`,
       "any.required": "Category is required",
     }),
   quantity: Joi.number().positive().required().messages({
@@ -47,7 +47,7 @@ const grocerySchema = Joi.object({
 
 const groceryUpdateSchema = Joi.object({
   name: Joi.string().min(1).max(100),
-  category: Joi.string().valid(...perishable, ...nonPerisable),
+  category: Joi.string().valid(...perishable, ...nonPerishable),
   quantity: Joi.number().positive(),
   unit: Joi.string().valid(...units),
   source: Joi.string().valid(...sources),
