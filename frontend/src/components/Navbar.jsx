@@ -105,7 +105,7 @@ export default function Navbar() {
       {/*Mobile bottom nav*/}
 
       <div className="fixed bottom-0 left-0 w-full bg-gray-100 border-t border-white/10 shadow-md flex 
-            justify-around items-center py-0.5 md:hidden">
+            justify-around items-center py-0.5 md:hidden z-50">
 
         <NavLink to="/" className={mobileLink}>
           <Home size={26} />
