@@ -18,7 +18,7 @@ import PublicRoutes from "./utils/PublicRoutes";
 
 
 function App() {
-  const user = null
+  const user = true
 
   return (
     <ThemeProvider theme={theme}>
