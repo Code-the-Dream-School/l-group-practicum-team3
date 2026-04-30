@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import Alert from "@mui/material/Alert";
 
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -17,15 +18,55 @@ import { useState } from "react";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('Logging in with:', { email, password });
-  };
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('')
+    
+    const errors = validate();
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      setLoading(true);
+
+      try {
+        console.log("Logging in with:", { email, password });
+        // placeholder for login API call - will update
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        navigate("/");
+      } catch (err) {
+        setError(err.message || "Something went wrong. Please try again");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const validate = () => {
+    const errors = {};
+
+    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+    if (!email) {
+      errors.email = "Email is Required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Invalid email format";
+    }
+
+    if (!password) {
+      errors.password = "Password is Required";
+    } else if (!passwordRegex.test(password)) {
+      errors.password =
+        "Must be 8+ characters with at least 1 number and 1 symbol";
+    }
+
+    return errors;
+  };
 
   return (
     <>
@@ -63,6 +104,11 @@ function Login() {
             Your digital culinary assistant.
           </Typography>
 
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             fullWidth
             variant="outlined"
@@ -91,6 +137,7 @@ function Login() {
           <Box
             component="form"
             onSubmit={handleSubmit}
+            noValidate
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -120,15 +167,13 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              error={!!formErrors.email}
+              helperText={formErrors.email}
               sx={{
                 mt: 0,
                 mb: 2,
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
-                   "& fieldset": { border: "none" }
-                },
-                "& .MuiOutlinedInput-input": {
-                  paddingLeft: "20px",
                 },
               }}
             ></TextField>
@@ -137,22 +182,26 @@ function Login() {
               required
               placeholder="Enter Password"
               type="password"
+              error={!!formErrors.password}
+              helperText={
+                formErrors.password
+                  ? formErrors.password
+                  : "Must be 8+ characters with at least 1 number and 1 symbol"
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{
                 mb: 2,
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
-                   "& fieldset": { border: "none" }
-                },
-                "& .MuiOutlinedInput-input": {
-                  paddingLeft: "20px",
                 },
               }}
             ></TextField>
             <Button
               variant="contained"
               color="secondary"
+              loadingPosition="end"
+              loading={loading}
               fullWidth
               sx={{ borderRadius: "50px", py: 1.5, mt: 2, fontWeight: "bold" }}
               type="submit"

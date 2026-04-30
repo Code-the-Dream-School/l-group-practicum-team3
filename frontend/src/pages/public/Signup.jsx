@@ -6,24 +6,71 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
+import Link from "@mui/material/Link";
 
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import GoogleIcon from "@mui/icons-material/Google";
 
 import { useState } from "react";
-import Stack from "@mui/material/Stack";
-import Link from "@mui/material/Link";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signing Upwith:", { email, password });
+    setError('')
+
+    const errors = validate();
+    setFormErrors(errors);
+    if (Object.keys(errors).length === 0) {
+      setLoading(true);
+
+      try {
+        console.log("Signing in with:", { name, email, password });
+        // throw new Error ('test')
+        // placeholder for sign up API call - will update
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        navigate("/");
+      } catch (err) {
+        setError(err.message || "Something went wrong. Please try again");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const validate = () => {
+    const errors = {};
+
+    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+    if (!name) {
+      errors.name = "Name is Required";
+    }
+    if (!email) {
+      errors.email = "Email is Required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Invalid email format";
+    }
+
+    if (!password) {
+      errors.password = "Password is Required";
+    } else if (!passwordRegex.test(password)) {
+      errors.password =
+        "Must be 8+ characters with at least 1 number and 1 symbol";
+    }
+
+    return errors;
   };
 
   return (
@@ -72,7 +119,11 @@ function Signup() {
           <Typography variant="body2" sx={{ mb: 4 }}>
             Start your journey to a more organized kitchen.
           </Typography>
-
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             fullWidth
             variant="outlined"
@@ -101,6 +152,7 @@ function Signup() {
           <Box
             component="form"
             onSubmit={handleSubmit}
+            noValidate
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -115,7 +167,7 @@ function Signup() {
                 variant="overline"
                 sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
               >
-                Full Name
+                Name
               </Typography>
               <TextField
                 fullWidth
@@ -123,12 +175,12 @@ function Signup() {
                 placeholder="Jamie Oliver"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                error={!!formErrors.name}
+                helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "#F5F4ED",
-                    "& fieldset": { border: "none" },
                   },
-                  "& .MuiOutlinedInput-input": { paddingLeft: "24px" },
                 }}
               />
             </Box>
@@ -139,49 +191,55 @@ function Signup() {
               >
                 Email Address
               </Typography>
-            <TextField
-              fullWidth
-              required
-              placeholder="jamie@kitchenapp.com"
-              autoFocus
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-                 sx={{
+              <TextField
+                fullWidth
+                required
+                placeholder="jamie@kitchenapp.com"
+                autoFocus
+                type="email"
+                error={!!formErrors.email}
+                helperText={formErrors.email}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "#F5F4ED",
-                    "& fieldset": { border: "none" },
                   },
-                  "& .MuiOutlinedInput-input": { paddingLeft: "24px" },
                 }}
-            ></TextField> 
+              ></TextField>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
                 sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
               >
-               Password
+                Password
               </Typography>
-            <TextField
-              fullWidth
-              required
-              placeholder="••••••••"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-               sx={{
+              <TextField
+                fullWidth
+                required
+                placeholder="••••••••"
+                type="password"
+                error={!!formErrors.password}
+                helperText={
+                  formErrors.password
+                    ? formErrors.password
+                    : "Must be 8+ characters with at least 1 number and 1 symbol"
+                }
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "#F5F4ED",
-                    "& fieldset": { border: "none" },
                   },
-                  "& .MuiOutlinedInput-input": { paddingLeft: "24px" },
                 }}
-            ></TextField>
+              ></TextField>
             </Box>
             <Button
               variant="contained"
               color="primary"
+              loadingPosition="end"
+              loading={loading}
               fullWidth
               sx={{ borderRadius: "50px", py: 1.5, mt: 2, fontWeight: "bold" }}
               type="submit"

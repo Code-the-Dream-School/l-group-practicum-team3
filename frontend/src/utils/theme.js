@@ -34,6 +34,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '50px',
+         "& fieldset": { 
+            border: "none" 
+          },
+        },
+        input: {
+          paddingLeft: "24px",
         },
       },
     },
