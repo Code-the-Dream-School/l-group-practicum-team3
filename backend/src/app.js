@@ -5,6 +5,9 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
 const userRouter = require("./routes/user.routes");
+const aiRouter = require("./routes/ai.routes.js");
+
+const authenticateUser = require("./middleware/auth.middleware.js");
 
 const app = express();
 
@@ -22,7 +25,7 @@ app.use(limiter);
 
 // Routes
 app.use("/api/users", userRouter);
-
+app.use("/api/ai", authenticateUser, aiRouter);
 // Root route
 app.get("/", (req, res) => {
   res.send("Backend API is running");
