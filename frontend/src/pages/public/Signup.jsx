@@ -36,7 +36,7 @@ function Signup() {
       setLoading(true);
 
       try {
-        console.log("Signing in with:", { name, email, password });
+        // console.log("Signing in with:", { name, email, password });
         // throw new Error ('test')
         // placeholder for sign up API call - will update
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -53,14 +53,15 @@ function Signup() {
     const errors = {};
 
     const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
+     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
     if (!name) {
       errors.name = "Name is Required";
     }
     if (!email) {
       errors.email = "Email is Required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Invalid email format";
+    } else if (!emailRegex.test(email)) {
+      errors.email = "Invalid Email Format";
     }
 
     if (!password) {
@@ -175,7 +176,7 @@ function Signup() {
                 placeholder="Jamie Oliver"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                error={!!formErrors.name}
+                error={formErrors.name? true : false}
                 helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
@@ -197,7 +198,7 @@ function Signup() {
                 placeholder="jamie@kitchenapp.com"
                 autoFocus
                 type="email"
-                error={!!formErrors.email}
+                error={formErrors.email ? true : false}
                 helperText={formErrors.email}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -220,7 +221,7 @@ function Signup() {
                 required
                 placeholder="••••••••"
                 type="password"
-                error={!!formErrors.password}
+                error={formErrors.password? true : false}
                 helperText={
                   formErrors.password
                     ? formErrors.password

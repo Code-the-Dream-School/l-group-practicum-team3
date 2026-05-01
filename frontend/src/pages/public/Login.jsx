@@ -35,7 +35,7 @@ function Login() {
       setLoading(true);
 
       try {
-        console.log("Logging in with:", { email, password });
+        // console.log("Logging in with:", { email, password });
         // placeholder for login API call - will update
         await new Promise((resolve) => setTimeout(resolve, 1500));
         navigate("/");
@@ -51,11 +51,12 @@ function Login() {
     const errors = {};
 
     const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
     if (!email) {
       errors.email = "Email is Required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Invalid email format";
+    } else if (!emailRegex.test(email)) {
+      errors.email = "Invalid Email Format";
     }
 
     if (!password) {
@@ -165,9 +166,10 @@ function Login() {
               placeholder="Enter Email Address"
               autoFocus
               type="email"
+              label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              error={!!formErrors.email}
+              error={formErrors.email ? true : false}
               helperText={formErrors.email}
               sx={{
                 mt: 0,
@@ -175,6 +177,7 @@ function Login() {
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
                 },
+                
               }}
             ></TextField>
             <TextField
@@ -182,7 +185,8 @@ function Login() {
               required
               placeholder="Enter Password"
               type="password"
-              error={!!formErrors.password}
+              label='Password'
+              error={formErrors.password ? true : false}
               helperText={
                 formErrors.password
                   ? formErrors.password
