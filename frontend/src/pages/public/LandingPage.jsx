@@ -59,8 +59,8 @@ function KitchenHeroImage() {
     <Box
       sx={{
         width: "100%",
-        height: { xs: 200, md: "100%" },
-        minHeight: { md: 360 },
+        height: "100%",
+        minHeight: { xs: 220, md: 360 },
         borderRadius: "12px",
         overflow: "hidden",
         background: `linear-gradient(145deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 55%, #52A85E 100%)`,
@@ -387,17 +387,6 @@ export default function LandingPage() {
               sx={{ mb: { xs: 3, md: 4 }, maxWidth: { md: 380 } }}
             >
               <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate("/signup")}
-                sx={{ ...primaryPillBtn }}
-              >
-                Get Started for Free
-              </Button>
-
-              <Button
                 fullWidth
                 variant="outlined"
                 startIcon={<GoogleIcon />}
@@ -405,7 +394,6 @@ export default function LandingPage() {
               >
                 Continue with Google
               </Button>
-
               <Button
                 variant="outlined"
                 fullWidth
@@ -436,7 +424,7 @@ export default function LandingPage() {
           </Box>
 
           {/* Right — hero image */}
-          <Box sx={{ height: { xs: 200, md: 420 } }}>
+          <Box sx={{ minHeight: { xs: 220, md: 420 }, width: "100% " }}>
             <KitchenHeroImage />
           </Box>
         </Box>
