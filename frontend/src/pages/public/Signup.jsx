@@ -15,6 +15,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../../context/AuthContext";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -24,11 +25,13 @@ function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { register } = UserAuth();
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
+    setError("");
 
     const errors = validate();
     setFormErrors(errors);
@@ -36,11 +39,13 @@ function Signup() {
       setLoading(true);
 
       try {
-        // console.log("Signing in with:", { name, email, password });
-        // throw new Error ('test')
-        // placeholder for sign up API call - will update
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        navigate("/");
+        const result = await register(name, email, password);
+        if (result.success) {
+          alert(result.message);
+          navigate("/login");
+        } else {
+          setError(result.message || "Registration failed");
+        }
       } catch (err) {
         setError(err.message || "Something went wrong. Please try again");
       } finally {
@@ -53,7 +58,7 @@ function Signup() {
     const errors = {};
 
     const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!name) {
       errors.name = "Name is Required";
@@ -176,7 +181,7 @@ function Signup() {
                 placeholder="Jamie Oliver"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                error={formErrors.name? true : false}
+                error={formErrors.name ? true : false}
                 helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
@@ -221,7 +226,7 @@ function Signup() {
                 required
                 placeholder="••••••••"
                 type="password"
-                error={formErrors.password? true : false}
+                error={formErrors.password ? true : false}
                 helperText={
                   formErrors.password
                     ? formErrors.password

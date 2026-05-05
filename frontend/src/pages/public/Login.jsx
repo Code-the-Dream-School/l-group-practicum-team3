@@ -14,6 +14,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { UserAuth } from "../../context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,10 +25,12 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const { login } = UserAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
-    
+    setError("");
+
     const errors = validate();
     setFormErrors(errors);
 
@@ -35,10 +38,13 @@ function Login() {
       setLoading(true);
 
       try {
-        // console.log("Logging in with:", { email, password });
-        // placeholder for login API call - will update
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        navigate("/");
+        const result = await login(email, password);
+        if (result.success) {
+          alert("success");
+          navigate("/");
+        } else {
+          setError(result.message || "Login failed");
+        }
       } catch (err) {
         setError(err.message || "Something went wrong. Please try again");
       } finally {
@@ -51,7 +57,7 @@ function Login() {
     const errors = {};
 
     const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!email) {
       errors.email = "Email is Required";
@@ -177,7 +183,6 @@ function Login() {
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
                 },
-                
               }}
             ></TextField>
             <TextField
@@ -185,7 +190,7 @@ function Login() {
               required
               placeholder="Enter Password"
               type="password"
-              label='Password'
+              label="Password"
               error={formErrors.password ? true : false}
               helperText={
                 formErrors.password
