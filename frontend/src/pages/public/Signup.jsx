@@ -25,7 +25,7 @@ function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { register } = UserAuth();
+  const { register, googleLogin } = UserAuth();
 
   const navigate = useNavigate();
 
@@ -134,6 +134,7 @@ function Signup() {
             fullWidth
             variant="outlined"
             startIcon={<GoogleIcon />}
+            onClick={()=>googleLogin()}
             sx={{
               py: 1.5,
               fontWeight: "bold",

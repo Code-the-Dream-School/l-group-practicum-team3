@@ -25,7 +25,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { login } = UserAuth();
+  const { login, googleLogin } = UserAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,8 +39,8 @@ function Login() {
 
       try {
         const result = await login(email, password);
+        console.log("Full Result from AuthContext:", result); 
         if (result.success) {
-          alert("success");
           navigate("/");
         } else {
           setError(result.message || "Login failed");
@@ -52,6 +52,7 @@ function Login() {
       }
     }
   };
+
 
   const validate = () => {
     const errors = {};
@@ -119,6 +120,7 @@ function Login() {
           <Button
             fullWidth
             variant="outlined"
+            onClick={()=>googleLogin()}
             startIcon={<GoogleIcon />}
             sx={{
               py: 1.5,
