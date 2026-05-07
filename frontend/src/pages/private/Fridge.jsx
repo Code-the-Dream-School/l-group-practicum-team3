@@ -6,6 +6,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
+import { Leaf, Egg, Beef, Wheat } from "lucide-react"
+
+const categoryIcons = {
+  produce: <Leaf size={20} color="#0D631B" />,
+  dairy: <Egg size={20} color="#0D631B" />,
+  proteins: <Beef size={20} color="#0D631B" />,
+  grains: <Wheat size={20} color="#0D631B" />
+};
 
 const data = {
     "date": "06/01/2016",
@@ -33,21 +41,21 @@ const data = {
         },
         {
             "name": "milk",
-            "category": "Dairy",
+            "category": "dairy",
             "quantity": 0.778,
             "unit": "2l",
             "price": 4.66
         },
         {
             "name": "apple",
-            "category": "Produce",
+            "category": "produce",
             "quantity": 0.500,
             "unit": "kg",
             "price": 10.25
         },
         {
             "name": "rice",
-            "category": "Grains",
+            "category": "grains",
             "quantity": 0.5,
             "unit": "kg",
             "price": 4.66
@@ -73,12 +81,20 @@ function Header() {
 
 function SearchBar({search, setSearch}) {
   return (
+    <Box sx={{mt: 1, mb: 1, maxWidth: 500}}>
     <TextField 
       fullWidth
       placeholder="Search items..."
       value={search}
       onChange={(e) => setSearch(e.target.value)}
-      sx={{mt: 3}}
+      sx={{
+        mt: 1,
+        mb: 2,
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "999px",
+          bgcolor: "#EFEDE7"
+        }
+      }}
       slotProps={{
         input: {
           startAdornment: (
@@ -88,13 +104,14 @@ function SearchBar({search, setSearch}) {
           )
         }
       }}
-    />    
+    />
+    </Box>    
   )
 }
 
 function CategoryFilter({selectedCategory, setSelectedCategory}) {
   return (
-    <Stack direction="row" spacing={1} mt={3} sx={{flexWrap: "wrap"}}>
+    <Stack direction="row" spacing={1} mt={3} sx={{overflowX: "auto", pb: 1,}}>
       {CATEGORIES.map(cat => (
         <Chip 
           key={cat}
@@ -109,58 +126,142 @@ function CategoryFilter({selectedCategory, setSelectedCategory}) {
 
 function ItemCard({item}) {
   return (
-    <Card sx={{width: "100%", height: "100%"}}>
-      <CardContent>
+    <Card 
+      sx={{
+        position: "relative",
+        borderRadius: "24px",
+        bgcolor: "#FFFFFF",
+        boxShadow: "none",
+        p: 2,
+      }}
+    >
+      <CardContent 
+        sx={{
+          p: 0,
+          "&:last-child": {
+            pb: 0,
+          }
+          }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        
+        {/*Icon circle*/}
+        <Box
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            bgcolor: "#FDD34D",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {categoryIcons[item.category]}
+        </Box>
+
+        {/* Days*/}
+        <Box
+          sx={{
+            position: "absolute",
+            right: 16,
+            bgcolor: "#E0DED7",
+            px: 1.2,
+            py: 0.3,
+            borderRadius: "999px",
+            fontSize: 10,
+            lineHeight: 1.2,
+            fontWeight: 600,
+          }}
+        >
+          5 DAYS
+        </Box>
+        </Stack>
+
+        {/*Category */}
         <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{textTransform: "uppercase"}}
+          sx={{
+            fontSize: 10,
+            fontWeight: 500,
+            letterSpacing: 1,
+            color: "#40493D",
+            textTransform: "uppercase",
+            mt: 3,
+          }}
         >
           {item.category}  
         </Typography>
 
-        <Typography variant="h6" fontWeight={700}>
+        {/* Name */}
+
+        <Typography 
+          sx={{
+            fontSize: 20,
+            fontWeight: 700,
+            color: "#0D631B",
+            mt: 0.5,
+          }}
+        >
           {item.name}
         </Typography>
 
-        <Typography>
+        {/* Quantity */}  
+        <Typography
+          sx={{
+            fontSize: 12,
+            color: "text.secondary",
+            mt: 0.5,
+          }}
+        >
           {item.quantity} {item.unit}
         </Typography>
 
+        {/* Actions */}  
         <Stack
           direction="row"  
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center" 
-          }}  
-          mt={2}        
+          alignItems= "center"  
+          spacing={1.5}
+          mt={1.5}        
         >
-          <IconButton>
-            <EditIcon />
+          <IconButton
+            sx={{
+              bgcolor: "#EAE8E2",
+              px: 0.8,
+              height: 36,
+              borderRadius: "999px"
+            }}
+          >
+            <EditIcon fontSize="small"/>
           </IconButton>
 
           <Button 
-            variant="contained"
             sx={{
-              backgroundColor: "#D1FAE5",
-              color: "#065f46",
+              bgcolor: "#CFEBDD",
+              color: "#0D631B",
               fontWeight: 700,
+              fontSize: 12,
               letterSpacing: 2,
               borderRadius: "999px",
               px: 3,
               "&:hover": {
-                backgroundColor: "#BEE9D3"
+                bgcolor: "#BEE3CF"
               },
             }}
           >
-            Restock
+            RESTOCK
           </Button>
 
-          <IconButton>
-            <CheckIcon />
+          <IconButton
+            sx={{
+              bgcolor: "#EAE8E2",
+              px: 0.8,
+              height: 36,
+              borderRadius: "999px"
+            }}
+          >
+            <CheckIcon  fontSize="small" />
           </IconButton>
 
-        </Stack>
+        </Stack>  
       </CardContent>
     </Card>
   )
@@ -194,10 +295,18 @@ export default function Fridge() {
         setSelectedCategory={setSelectedCategory}
       />
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} alignItems="strech">
         {
           filteredItems.map((item, index) => (
-            <Grid item xs={6} key={index}>
+            <Grid 
+              size={{
+                xs: 6,
+                sm: 4,
+                md: 3,
+                lg: 2,
+              }} 
+              key={index}
+            >
               <ItemCard item={item} />
             </Grid>
           ))
@@ -216,8 +325,10 @@ export default function Fridge() {
       <Fab
         sx={{
           position: "fixed",
-          bottom: 16,
-          right: 16
+          bottom: 80,
+          right: 16,
+          bgcolor: "#FDD34D",
+          color: "#000"
         }}
         color="secondary"
       >
