@@ -48,8 +48,6 @@ export function AuthContextProvider({ children }) {
       setSession(session);
       setUser(user);
 
-      console.log(session)
-
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", session.access_token);
 

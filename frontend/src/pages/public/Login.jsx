@@ -39,7 +39,6 @@ function Login() {
 
       try {
         const result = await login(email, password);
-        console.log("Full Result from AuthContext:", result); 
         if (result.success) {
           navigate("/");
         } else {
