@@ -4,7 +4,7 @@ import api from "../utils/axios";
 const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
-  const [session, setSession] = useState(undefined);
+  const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
