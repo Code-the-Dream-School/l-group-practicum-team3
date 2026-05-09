@@ -15,6 +15,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
+import { validate } from "../../utils/validate";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -30,8 +31,9 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    const values = {email, password}
 
-    const errors = validate();
+    const errors = validate(values);
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
@@ -53,34 +55,12 @@ function Login() {
   };
 
 
-  const validate = () => {
-    const errors = {};
-
-    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    if (!email) {
-      errors.email = "Email is Required";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "Invalid Email Format";
-    }
-
-    if (!password) {
-      errors.password = "Password is Required";
-    } else if (!passwordRegex.test(password)) {
-      errors.password =
-        "Must be 8+ characters with at least 1 number and 1 symbol";
-    }
-
-    return errors;
-  };
-
   return (
     <>
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "2rem", padding: 4, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "1rem", padding: 2, bgcolor: "#FBF9F2" }}
         >
           <Avatar
             sx={{
@@ -107,7 +87,7 @@ function Login() {
           >
             Smart Kitchen App
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: "center", mb: 4 }}>
+          <Typography variant="body2" sx={{ textAlign: "center", mb: 2 }}>
             Your digital culinary assistant.
           </Typography>
 
@@ -201,7 +181,6 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{
-                mb: 2,
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
                 },
@@ -213,7 +192,7 @@ function Login() {
               loadingPosition="end"
               loading={loading}
               fullWidth
-              sx={{ borderRadius: "50px", py: 1.5, mt: 2, fontWeight: "bold" }}
+              sx={{ borderRadius: "50px", py: 1.5, mt: 1, fontWeight: "bold" }}
               type="submit"
               endIcon={<ArrowForwardIcon />}
             >

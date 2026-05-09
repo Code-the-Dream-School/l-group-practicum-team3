@@ -1,5 +1,7 @@
 import { createContext, useEffect, useState, useContext } from "react";
 import api from "../utils/axios";
+import { useMemo } from "react";
+import { useCallback } from "react";
 
 const AuthContext = createContext();
 
@@ -39,7 +41,8 @@ export function AuthContextProvider({ children }) {
   }, []);
 
   // login
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
+    console.log('login test')
     try {
       const response = await api.post("/api/users/login", { email, password });
 
@@ -51,17 +54,18 @@ export function AuthContextProvider({ children }) {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("token", session.access_token);
 
-      return { success: true};
+      return { success: true };
     } catch (error) {
       return {
         success: false,
         message: error.response?.data?.message || "Login failed",
       };
     }
-  };
+  }, []);
 
   //   signup
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
+    console.log('sign up test')
     try {
       const response = await api.post("/api/users/register", {
         name,
@@ -91,18 +95,18 @@ export function AuthContextProvider({ children }) {
         message: error.response?.data?.message || "SignUp failed",
       };
     }
-  };
+  }, []);
 
   // logout
-  const logout = async () => {
+  const logout = useCallback(async () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setSession(null);
     setUser(null);
-  };
+  }, []);
 
   // google login
-  const googleLogin = async () => {
+  const googleLogin = useCallback(async () => {
     try {
       const response = await api.get("/api/users/loginGoogle");
 
@@ -117,17 +121,20 @@ export function AuthContextProvider({ children }) {
         message: error.response?.data?.message || "Google Login Failed",
       };
     }
-  };
+  }, []);
 
-  const value = {
-    user,
-    session,
-    isLoading,
-    login,
-    register,
-    logout,
-    googleLogin,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      isLoading,
+      login,
+      register,
+      logout,
+      googleLogin,
+    }),
+    [user, session, isLoading, login, register, logout, googleLogin],
+  );
 
   return (
     <AuthContext.Provider value={value}>
