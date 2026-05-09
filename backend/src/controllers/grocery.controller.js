@@ -20,35 +20,43 @@ const getGroceryItems = async (req, res) => {
   const start = (page - 1) * limit;
   const end = start + limit - 1;
 
-  const {
-    data,
-    error: supabaseError,
-    count,
-  } = await client
-    .from("groceries")
-    .select("*", { count: "exact" })
-    .eq("user_id", user_id)
-    .order("created_at", { ascending: false }) //swap to order based on expiry date
-    .range(start, end);
+  try {
+    const {
+      data,
+      error: supabaseError,
+      count,
+    } = await client
+      .from("groceries")
+      .select("*", { count: "exact" })
+      .eq("user_id", user_id)
+      .order("created_at", { ascending: false }) //swap to order based on expiry date
+      .range(start, end);
 
-  if (supabaseError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: supabaseError });
+    if (supabaseError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: supabaseError });
+    }
+
+    const totalPages = Math.ceil(count / limit);
+
+    return res.status(StatusCodes.OK).json({
+      data,
+      pagination: {
+        totalRecords: count,
+        currentPage: page,
+        limit: limit,
+        recordsOnPage: data.length,
+        totalPages: totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: err.message,
+    });
   }
-
-  const totalPages = Math.ceil(count / limit);
-
-  return res.status(StatusCodes.OK).json({
-    data,
-    pagination: {
-      totalRecords: count,
-      currentPage: page,
-      limit: limit,
-      recordsOnPage: data.length,
-      totalPages: totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-    },
-  });
 };
 
 // example request {base_url}/api/grocery/:id
@@ -63,26 +71,32 @@ const getGroceryItemById = async (req, res) => {
       .json({ message: "Item ID is required" });
   }
 
-  const { data, error: supabaseError } = await client
-    .from("groceries")
-    .select("*")
-    .eq("grocery_id", groceryId)
-    .eq("user_id", user_id)
-    .maybeSingle();
+  try {
+    const { data, error: supabaseError } = await client
+      .from("groceries")
+      .select("*")
+      .eq("grocery_id", groceryId)
+      .eq("user_id", user_id)
+      .maybeSingle();
 
-  if (supabaseError) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: supabaseError.message });
+    if (supabaseError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: supabaseError.message });
+    }
+
+    if (!data) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Item not found" });
+    }
+
+    return res.status(StatusCodes.OK).json({ data });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: err.message,
+    });
   }
-
-  if (!data) {
-    return res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "Item not found" });
-  }
-
-  return res.status(StatusCodes.OK).json({ data });
 };
 
 // example request {base_url}/api/grocery
@@ -123,17 +137,25 @@ const addGroceryItem = async (req, res) => {
 
   // insert item if new item
   // using supabasewithtoke to prevent new row violates row-level security policy
-  const { data, error: supabaseError } = await client
-    .from("groceries")
-    .insert({ ...value, user_id })
-    .select();
+  try {
+    const { data, error: supabaseError } = await client
+      .from("groceries")
+      .insert({ ...value, user_id })
+      .select();
 
-  // checking for rl error
-  if (supabaseError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: supabaseError });
+    // checking for rl error
+    if (supabaseError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: supabaseError });
+    }
+
+    return res.status(StatusCodes.CREATED).json({ data });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: err.message,
+    });
   }
-
-  return res.status(StatusCodes.CREATED).json({ data });
 };
 
 // TODO: manage for nonexisiting item
@@ -167,22 +189,28 @@ const updateGroceryItem = async (req, res) => {
     });
   }
 
-  const { data, error: supabaseError } = await client
-    .from("groceries")
-    .update(value)
-    .eq("grocery_id", groceryId)
-    .eq("user_id", user_id)
-    .select();
+  try {
+    const { data, error: supabaseError } = await client
+      .from("groceries")
+      .update(value)
+      .eq("grocery_id", groceryId)
+      .eq("user_id", user_id)
+      .select();
 
-  if (supabaseError) {
+    if (supabaseError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: supabaseError.message });
+    }
+
     return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: supabaseError.message });
+      .status(StatusCodes.OK)
+      .json({ message: "Item updated successfully", data });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: err.message,
+    });
   }
-
-  return res
-    .status(StatusCodes.OK)
-    .json({ message: "Item updated successfully", data });
 };
 
 // example request {base_url}/api/grocery/:id
@@ -198,21 +226,27 @@ const deleteGroceryItem = async (req, res) => {
       .json({ message: "Item Id is required" });
   }
 
-  const { error: supabaseError } = await client
-    .from("groceries")
-    .delete()
-    .eq("grocery_id", groceryId)
-    .eq("user_id", user_id);
+  try {
+    const { error: supabaseError } = await client
+      .from("groceries")
+      .delete()
+      .eq("grocery_id", groceryId)
+      .eq("user_id", user_id);
 
-  if (supabaseError) {
+    if (supabaseError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: supabaseError.message });
+    }
+
     return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: supabaseError.message });
+      .status(StatusCodes.OK)
+      .json({ message: "Item deleted successfully" });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: err.message,
+    });
   }
-
-  return res
-    .status(StatusCodes.OK)
-    .json({ message: "Item deleted successfully" });
 };
 
 module.exports = {
