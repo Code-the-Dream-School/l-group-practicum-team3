@@ -1,19 +1,10 @@
 import { useState } from "react";
-import { Box, Typography, TextField, InputAdornment, Chip,
-  Stack, Grid, Card, CardContent, IconButton, Button, Fab } from "@mui/material";
-
-import SearchIcon from "@mui/icons-material/Search";
-import EditIcon from "@mui/icons-material/Edit";
-import CheckIcon from "@mui/icons-material/Check";
+import { Box, Typography, Grid, Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { Leaf, Egg, Beef, Wheat } from "lucide-react"
 
-const categoryIcons = {
-  produce: <Leaf size={20} color="#0D631B" />,
-  dairy: <Egg size={20} color="#0D631B" />,
-  proteins: <Beef size={20} color="#0D631B" />,
-  grains: <Wheat size={20} color="#0D631B" />
-};
+import SearchBar from "../../components/fridge/SearchBar";
+import CategoryFilter from "../../components/fridge/CategoryFilter";
+import ItemCard from "../../components/fridge/ItemCard";
 
 const data = {
     "date": "06/01/2016",
@@ -68,202 +59,12 @@ const data = {
 
 const items = data.items;
 
-const CATEGORIES = ["All Items", "Produce", "Dairy", "Grains", "Proteins"]
-
 function Header() {
   return (
     <Box>
       <Typography variant="h3" fontWeight={800}>Inventory</Typography>
       <Typography color="text.secondary" mt={1}>Keep track of your fresh ingredients and pantry staples.</Typography>
     </Box>
-  )
-}
-
-function SearchBar({search, setSearch}) {
-  return (
-    <Box sx={{mt: 1, mb: 1, maxWidth: 500}}>
-    <TextField 
-      fullWidth
-      placeholder="Search items..."
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      sx={{
-        mt: 1,
-        mb: 2,
-        "& .MuiOutlinedInput-root": {
-          borderRadius: "999px",
-          bgcolor: "#EFEDE7"
-        }
-      }}
-      slotProps={{
-        input: {
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          )
-        }
-      }}
-    />
-    </Box>    
-  )
-}
-
-function CategoryFilter({selectedCategory, setSelectedCategory}) {
-  return (
-    <Stack direction="row" spacing={1} mt={3} sx={{overflowX: "auto", pb: 1,}}>
-      {CATEGORIES.map(cat => (
-        <Chip 
-          key={cat}
-          label={cat}
-          onClick={() => setSelectedCategory(cat)}
-          color={selectedCategory === cat? "success" : "default"}
-        />
-      ))}
-    </Stack>
-  )
-}
-
-function ItemCard({item}) {
-  return (
-    <Card 
-      sx={{
-        position: "relative",
-        borderRadius: "24px",
-        bgcolor: "#FFFFFF",
-        boxShadow: "none",
-        p: 2,
-      }}
-    >
-      <CardContent 
-        sx={{
-          p: 0,
-          "&:last-child": {
-            pb: 0,
-          }
-          }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-        
-        {/*Icon circle*/}
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-            bgcolor: "#FDD34D",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {categoryIcons[item.category]}
-        </Box>
-
-        {/* Days*/}
-        <Box
-          sx={{
-            position: "absolute",
-            right: 16,
-            bgcolor: "#E0DED7",
-            px: 1.2,
-            py: 0.3,
-            borderRadius: "999px",
-            fontSize: 10,
-            lineHeight: 1.2,
-            fontWeight: 600,
-          }}
-        >
-          5 DAYS
-        </Box>
-        </Stack>
-
-        {/*Category */}
-        <Typography
-          sx={{
-            fontSize: 10,
-            fontWeight: 500,
-            letterSpacing: 1,
-            color: "#40493D",
-            textTransform: "uppercase",
-            mt: 3,
-          }}
-        >
-          {item.category}  
-        </Typography>
-
-        {/* Name */}
-
-        <Typography 
-          sx={{
-            fontSize: 20,
-            fontWeight: 700,
-            color: "#0D631B",
-            mt: 0.5,
-          }}
-        >
-          {item.name}
-        </Typography>
-
-        {/* Quantity */}  
-        <Typography
-          sx={{
-            fontSize: 12,
-            color: "text.secondary",
-            mt: 0.5,
-          }}
-        >
-          {item.quantity} {item.unit}
-        </Typography>
-
-        {/* Actions */}  
-        <Stack
-          direction="row"  
-          alignItems= "center"  
-          spacing={1.5}
-          mt={1.5}        
-        >
-          <IconButton
-            sx={{
-              bgcolor: "#EAE8E2",
-              px: 0.8,
-              height: 36,
-              borderRadius: "999px"
-            }}
-          >
-            <EditIcon fontSize="small"/>
-          </IconButton>
-
-          <Button 
-            sx={{
-              bgcolor: "#CFEBDD",
-              color: "#0D631B",
-              fontWeight: 700,
-              fontSize: 12,
-              letterSpacing: 2,
-              borderRadius: "999px",
-              px: 3,
-              "&:hover": {
-                bgcolor: "#BEE3CF"
-              },
-            }}
-          >
-            RESTOCK
-          </Button>
-
-          <IconButton
-            sx={{
-              bgcolor: "#EAE8E2",
-              px: 0.8,
-              height: 36,
-              borderRadius: "999px"
-            }}
-          >
-            <CheckIcon  fontSize="small" />
-          </IconButton>
-
-        </Stack>  
-      </CardContent>
-    </Card>
   )
 }
 
@@ -285,7 +86,7 @@ export default function Fridge() {
   });
 
   return (
-    <Box sx={{p: 2, pb: 10, width: "100%"}}>
+    <Box sx={{p: 2, pb: 10, width: "100%", bgcolor: "background.default", minHeight: "100vh",}}>
       <Header />
 
       <SearchBar search={search} setSearch={setSearch} />
@@ -327,7 +128,7 @@ export default function Fridge() {
           position: "fixed",
           bottom: 80,
           right: 16,
-          bgcolor: "#FDD34D",
+          bgcolor: "seconday.main",
           color: "#000"
         }}
         color="secondary"
