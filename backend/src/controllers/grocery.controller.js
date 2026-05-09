@@ -1,5 +1,3 @@
-// TODO: removing redundancy from code
-
 const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
@@ -10,7 +8,6 @@ const {
 } = require("../validation/grocery.schema.js");
 
 // example request {base_url}/api/grocery?page=1?limit=3
-// TOD0: add filtering and sorting parameters
 const getGroceryItems = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
@@ -100,7 +97,6 @@ const getGroceryItemById = async (req, res) => {
 };
 
 // example request {base_url}/api/grocery
-// TODO: add prevent duplicate item creating new rows
 const addGroceryItem = async (req, res) => {
   // create supabase client that is authenticated with the user's token
   const client = supabaseWithToken(req.token);
@@ -158,7 +154,6 @@ const addGroceryItem = async (req, res) => {
   }
 };
 
-// TODO: manage for nonexisiting item
 // example request {base_url}/api/grocery/:id
 const updateGroceryItem = async (req, res) => {
   const client = supabaseWithToken(req.token);
@@ -214,7 +209,6 @@ const updateGroceryItem = async (req, res) => {
 };
 
 // example request {base_url}/api/grocery/:id
-// TODO: manage for nonexisiting id
 const deleteGroceryItem = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
