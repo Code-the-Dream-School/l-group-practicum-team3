@@ -10,4 +10,13 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
-module.exports = { supabase, supabaseAdmin };
+const supabaseWithToken = (token) =>
+  createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  });
+
+module.exports = { supabase, supabaseAdmin, supabaseWithToken };
