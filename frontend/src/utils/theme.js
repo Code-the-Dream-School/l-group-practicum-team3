@@ -20,8 +20,28 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Epilogue", "Roboto", sans-serif',
-    button: {
-      textTransform: "none",
+  },
+  components: {
+    MuiButton: {
+    styleOverrides: {
+      root: {
+        borderRadius: 50,
+        textTransform: 'none',
+      },
+    },
+  },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: '50px',
+         "& fieldset": { 
+            border: "none" 
+          },
+        },
+        input: {
+          paddingLeft: "24px",
+        },
+      },
     },
   },
 });
