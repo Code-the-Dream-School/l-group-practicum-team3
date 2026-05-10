@@ -4,9 +4,11 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
-const userRouter = require("./routes/auth.route.js");
-const authenticateUser = require("./middleware/auth.middleware.js");
+const userRouter = require("./routes/user.routes");
+const aiRouter = require("./routes/ai.routes.js");
 const groceryRoutes = require("./routes/grocery.route.js");
+
+const authenticateUser = require("./middleware/auth.middleware.js");
 
 const app = express();
 
@@ -25,6 +27,7 @@ app.use(limiter);
 // Routes
 app.use("/api/users", userRouter);
 app.use("/api/grocery", authenticateUser, groceryRoutes);
+app.use("/api/ai", authenticateUser, aiRouter);
 
 // Root route
 app.get("/", (req, res) => {
