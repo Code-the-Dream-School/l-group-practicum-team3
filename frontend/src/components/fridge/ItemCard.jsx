@@ -126,7 +126,10 @@ export default function ItemCard({item}) {
               bgcolor: "#CFEBDD",
               color: "#0D631B",
               fontWeight: 700,
-              fontSize: 12,
+              fontSize: {
+                xs: 10,
+                sm: 12,
+              },
               letterSpacing: 2,
               borderRadius: "999px",
               px: 3,

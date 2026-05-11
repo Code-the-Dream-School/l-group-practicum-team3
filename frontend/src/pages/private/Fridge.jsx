@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Box, Typography, Grid, Fab } from "@mui/material";
+import { Box, Typography, Grid, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
+import AppLogo from "../../components/AppLogo";
 import SearchBar from "../../components/fridge/SearchBar";
 import CategoryFilter from "../../components/fridge/CategoryFilter";
 import ItemCard from "../../components/fridge/ItemCard";
@@ -62,7 +63,7 @@ const items = data.items;
 function Header() {
   return (
     <Box>
-      <Typography variant="h3" fontWeight={800}>Inventory</Typography>
+      <Typography sx={{color: "primary.dark"}} variant="h4" fontWeight={800}>Inventory</Typography>
       <Typography color="text.secondary" mt={1}>Keep track of your fresh ingredients and pantry staples.</Typography>
     </Box>
   )
@@ -87,6 +88,7 @@ export default function Fridge() {
 
   return (
     <Box sx={{p: 2, pb: 10, width: "100%", bgcolor: "background.default", minHeight: "100vh",}}>
+      <AppLogo />
       <Header />
 
       <SearchBar search={search} setSearch={setSearch} />
@@ -123,18 +125,20 @@ export default function Fridge() {
         }
       </Grid>
 
+      <Tooltip title="Add Item" arrow>
       <Fab
         sx={{
           position: "fixed",
           bottom: 80,
           right: 16,
-          bgcolor: "seconday.main",
+          bgcolor: "secondary.main",
           color: "#000"
         }}
         color="secondary"
       >
         <AddIcon />
       </Fab>
+      </Tooltip>
 
     </Box>
   )
