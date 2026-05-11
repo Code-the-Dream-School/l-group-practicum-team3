@@ -15,6 +15,8 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../../context/AuthContext";
+import { validate } from "../../utils/validate";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -24,23 +26,27 @@ function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { register, googleLogin } = UserAuth();
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
-
-    const errors = validate();
+    setError("");
+    const values = { name, email, password };
+    const errors = validate(values, true);
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
       setLoading(true);
 
       try {
-        // console.log("Signing in with:", { name, email, password });
-        // throw new Error ('test')
-        // placeholder for sign up API call - will update
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        navigate("/");
+        const result = await register(name, email, password);
+        if (result.success) {
+          alert(result.message);
+          navigate("/login");
+        } else {
+          setError(result.message || "Registration failed");
+        }
       } catch (err) {
         setError(err.message || "Something went wrong. Please try again");
       } finally {
@@ -49,37 +55,12 @@ function Signup() {
     }
   };
 
-  const validate = () => {
-    const errors = {};
-
-    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-    if (!name) {
-      errors.name = "Name is Required";
-    }
-    if (!email) {
-      errors.email = "Email is Required";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "Invalid Email Format";
-    }
-
-    if (!password) {
-      errors.password = "Password is Required";
-    } else if (!passwordRegex.test(password)) {
-      errors.password =
-        "Must be 8+ characters with at least 1 number and 1 symbol";
-    }
-
-    return errors;
-  };
-
   return (
     <>
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "2rem", padding: 4, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "2rem", padding: 2, bgcolor: "#FBF9F2" }}
         >
           <Stack
             direction="row"
@@ -117,7 +98,7 @@ function Signup() {
           >
             Sign Up
           </Typography>
-          <Typography variant="body2" sx={{ mb: 4 }}>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             Start your journey to a more organized kitchen.
           </Typography>
           {error && (
@@ -129,6 +110,7 @@ function Signup() {
             fullWidth
             variant="outlined"
             startIcon={<GoogleIcon />}
+            onClick={() => googleLogin()}
             sx={{
               py: 1.5,
               fontWeight: "bold",
@@ -158,9 +140,9 @@ function Signup() {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              padding: 0,
+              padding: 1,
               borderRadius: "12px",
-              mb: 8,
+              mb: 6,
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
@@ -176,7 +158,7 @@ function Signup() {
                 placeholder="Jamie Oliver"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                error={formErrors.name? true : false}
+                error={formErrors.name ? true : false}
                 helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
@@ -221,7 +203,7 @@ function Signup() {
                 required
                 placeholder="••••••••"
                 type="password"
-                error={formErrors.password? true : false}
+                error={formErrors.password ? true : false}
                 helperText={
                   formErrors.password
                     ? formErrors.password
