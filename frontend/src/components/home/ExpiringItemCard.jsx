@@ -6,8 +6,15 @@ import EnergySavingsLeafOutlinedIcon from "@mui/icons-material/EnergySavingsLeaf
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
+import { categoryIcons, getExpiryStyle } from "../../utils/inventoryUtil";
 
-export default function ItemCard() {
+export default function ExpiringItemCard({name, category, daysLeft}) {
+  const style = getExpiryStyle(daysLeft);
+  const IconComponent  = categoryIcons[category.toLowerCase()] || categoryIcons.default;
+
+  const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+
+
   return (
     <Paper
       elevation={0}
@@ -20,6 +27,7 @@ export default function ItemCard() {
         height: "90px",
         borderRadius: 4,
         alignItems: "center",
+        width:'350px'
       }}
     >
       <Stack
@@ -32,18 +40,18 @@ export default function ItemCard() {
         }}
       >
         <Avatar
-          sx={{ width: 56, height: 56, bgcolor: "#FDEEEE", color: "#AF1D1D" }}
+          sx={{ width: 56, height: 56, bgcolor: style.bg, color: style.text }}
         >
-          <EnergySavingsLeafOutlinedIcon />
+        <IconComponent />
         </Avatar>
-        <Typography sx={{ fontWeight: 800 }}>Greek Yogurt</Typography>
+        <Typography sx={{ fontWeight: 800 }}>{capitalizedName}</Typography>
       </Stack>
 
       <Chip
-        label="5 DAYS LEFT"
+        label={`${daysLeft} ${daysLeft === 1 ? 'DAY' : 'DAYS'} LEFT`}
         sx={{
-          backgroundColor: "#FDEEEE",
-          color: "#AF1D1D",
+          backgroundColor:style.bg,
+          color: style.text,
           fontWeight: 600,
           fontSize: "10px",
           borderRadius: "12px",

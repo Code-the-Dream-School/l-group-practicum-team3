@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { alpha, createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
@@ -12,6 +12,7 @@ const theme = createTheme({
     },
     secondary: {
       main: "#FDD34D",
+      light: alpha("#FDD34D", 0.5),
       contrastText: "#725B00",
     },
     background: { 
