@@ -3,168 +3,81 @@ const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 const { StatusCodes } = require("http-status-codes");
 
 // GET search recipes by main ingredient /recipes/search?ingredient=chicken
+// Also uses pg_trgm extension in rpc function in supabase for fuzzy search
 //  "lazy" loading --> MEAL DB doesn't return full ingredient/instructions yet
+// GET search recipes by ingredients
+// e.g. /recipes/search?ingredients=tomato,chicken,salmon&number=10&ranking=1
 const getSearchByIngredient = async (req, res) => {
-  const client = supabaseWithToken(req.token);
-  const { ingredient } = req.query;
+  const { ingredients, number = 10, ranking = 1 } = req.query;
+
+  if (!ingredients || ingredients.trim() === "") {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: "Ingredients are required" });
+  }
 
   try {
-    // validation
-    if (!ingredient || ingredient.trim() === "") {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        error: "Ingredient is required",
-      });
-    }
-
-    const normalized = ingredient.trim().toLowerCase();
-
-    // local search in supabase
-    // uses an rpc function defined by us within supabase that uses pg_trgm (trigrams) for fuzzy search
-    const { data: localRecipes, error: searchError } = await client.rpc(
-      "search_recipes_by_ingredient",
-      {
-        search_term: normalized,
-      }
+    const url = new URL(
+      "https://api.spoonacular.com/recipes/findByIngredients"
     );
+    url.searchParams.set("ingredients", ingredients.trim());
+    url.searchParams.set("number", number);
+    url.searchParams.set("ranking", ranking);
+    url.searchParams.set("ignorePantry", true);
+    url.searchParams.set("apiKey", process.env.SPOONACULAR_API_KEY);
 
-    if (searchError) throw searchError;
+    const response = await fetch(url);
+    const data = await response.json();
 
-    // return if found in local db
-    if (localRecipes?.length > 0) {
-      return res.status(StatusCodes.OK).json({
-        source: "database",
-        recipes: localRecipes,
-      });
+    if (!response.ok) {
+      return res
+        .status(response.status)
+        .json({ error: data.message || "Spoonacular error" });
     }
 
-    // fetch from MEALDB
-    const mealRes = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(
-        normalized
-      )}`
-    );
-    const mealData = await mealRes.json();
-    if (!mealData.meals) {
-      return res.status(StatusCodes.OK).json({
-        source: "mealdb",
-        recipes: [],
-      });
-    }
+    // shape the response to only what the client needs
+    const recipes = data.map((recipe) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      usedIngredientCount: recipe.usedIngredientCount,
+      missedIngredientCount: recipe.missedIngredientCount,
+      missedIngredients: recipe.missedIngredients.map((i) => i.name),
+      usedIngredients: recipe.usedIngredients.map((i) => i.name),
+    }));
 
-    // format MEAL DB results
-    const meals = mealData.meals;
-
-    // insert meals into our DB for next time
-    const { data: inserted, error: insertError } = await client
-      .from("recipes")
-      .upsert(
-        meals.map((meal) => ({
-          mealapi_id: meal.idMeal,
-          title: meal.strMeal,
-          image_url: meal.strMealThumb,
-        })),
-        {
-          onConflict: "mealapi_id",
-        }
-      )
-      .select();
-    if (insertError) throw insertError;
-
-    // return results
-    return res.status(StatusCodes.OK).json({
-      source: "mealdb",
-      recipes: inserted,
-    });
+    return res.status(StatusCodes.OK).json({ recipes });
   } catch (err) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: err.message,
-    });
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: err.message });
   }
 };
 
-// GET recipe info by ID
-// Here we get all instructions/measurements for a recipe
+// Proxy endpoint for Spoonacular get Recipe Info by ID
 const getRecipeById = async (req, res) => {
-  const client = supabaseWithToken(req.token);
-  const { recipeId } = req.params;
+  const { id } = req.params;
 
   try {
-    // check DB first
-    const { data: recipe } = await client
-      .from("recipes")
-      .select("*")
-      .eq("recipe_id", recipeId)
-      .single();
-
-    if (!recipe) {
-      return res.status(404).json({ error: "Not found" });
-    }
-
-    // check if ingredients exist already
-    const { data: existingIngredients } = await client
-      .from("recipe_ingredient")
-      .select("*")
-      .eq("recipe_id", recipeId);
-
-    // if any ingredients exist, return immediately
-    if (existingIngredients?.length > 0) {
-      return res.json({
-        ...recipe,
-        ingredients: existingIngredients,
-      });
-    }
-
-    // otherwise fetch from MealDB
-    const mealRes = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipe.mealapi_id}`
+    const url = new URL(
+      `https://api.spoonacular.com/recipes/${id}/information`
     );
+    url.searchParams.set("apiKey", process.env.SPOONACULAR_API_KEY);
 
-    const mealData = await mealRes.json();
-    const meal = mealData.meals?.[0];
+    const response = await fetch(url);
+    const data = await response.json();
 
-    if (!meal) {
-      return res.json(recipe);
+    if (!response.ok) {
+      return res
+        .status(response.status)
+        .json({ error: data.message || "Spoonacular error" });
     }
 
-    // extract ingredients from json
-    const ingredients = [];
-
-    for (let i = 1; i <= 20; i++) {
-      // <-- MEALDB API has fixed-length (arbitrary) 20 ingredients/measure list
-      const ingredient = meal[`strIngredient${i}`];
-      const measure = meal[`strMeasure${i}`];
-
-      if (ingredient?.trim()) {
-        ingredients.push({
-          recipe_id: recipeId,
-          ingredient_name: ingredient.trim().toLowerCase(),
-          measure: measure?.trim() || null,
-        });
-      }
-    }
-
-    // store ingredients in DB
-    await client.from("recipe_ingredient").insert(ingredients);
-    // store instructions in DB
-    // store instructions in DB
-    const { data: updatedRecipe, error: updateError } = await client
-      .from("recipes")
-      .update({
-        instructions: meal.strInstructions,
-        category: meal.strCategory,
-      })
-      .eq("recipe_id", recipeId)
-      .select();
-
-    console.log("UPDATE RESULT:", updatedRecipe, updateError);
-    // return full recipe
-    return res.json({
-      ...recipe,
-      ingredients,
-      instructions: meal.strInstructions,
-    });
+    return res.status(StatusCodes.OK).json(data);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: err.message });
   }
 };
 
@@ -172,19 +85,36 @@ const getRecipeById = async (req, res) => {
 const favoriteRecipe = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
-  const { id: recipeId } = req.params;
+  const { id: spoonacularId } = req.params;
+  const { title, image } = req.body;
 
-  if (!recipeId) {
+  if (!spoonacularId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Item ID is required" });
+      .json({ message: "Recipe ID is required" });
   }
 
   try {
+    const { data, error } = await client
+      .from("favorite_recipes")
+      .insert({ user_id, spoonacular_id: spoonacularId, title, image })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") {
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: "Already favorited this recipe" });
+      }
+      throw error;
+    }
+
+    return res.status(StatusCodes.CREATED).json(data);
   } catch (err) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: err.message,
-    });
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: err.message });
   }
 };
 
@@ -192,19 +122,30 @@ const favoriteRecipe = async (req, res) => {
 const removeFavorite = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
-  const { id: recipeId } = req.params;
+  const { id: spoonacularId } = req.params;
 
-  if (!recipeId) {
+  if (!spoonacularId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Item ID is required" });
+      .json({ message: "Recipe ID is required" });
   }
 
   try {
+    const { error } = await client
+      .from("favorite_recipes")
+      .delete()
+      .eq("user_id", user_id)
+      .eq("spoonacular_id", spoonacularId);
+
+    if (error) throw error;
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "Removed from favorites" });
   } catch (err) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: err.message,
-    });
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: err.message });
   }
 };
 
@@ -214,11 +155,26 @@ const getUserFavorites = async (req, res) => {
   const user_id = req.user.id;
 
   try {
+    const { data, error } = await client
+      .from("favorite_recipes")
+      .select("id, spoonacular_id, title, image, created_at")
+      .eq("user_id", user_id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return res.status(StatusCodes.OK).json(data);
   } catch (err) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: err.message,
-    });
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: err.message });
   }
 };
 
-module.exports = { getSearchByIngredient, getRecipeById };
+module.exports = {
+  getSearchByIngredient,
+  getRecipeById,
+  favoriteRecipe,
+  removeFavorite,
+  getUserFavorites,
+};
