@@ -2,11 +2,7 @@ const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
 
-// GET search recipes by main ingredient /recipes/search?ingredient=chicken
-// Also uses pg_trgm extension in rpc function in supabase for fuzzy search
-//  "lazy" loading --> MEAL DB doesn't return full ingredient/instructions yet
 // GET search recipes by ingredients
-// e.g. /recipes/search?ingredients=tomato,chicken,salmon&number=10&ranking=1
 const getSearchByIngredient = async (req, res) => {
   const { ingredients, number = 10, ranking = 1 } = req.query;
 
