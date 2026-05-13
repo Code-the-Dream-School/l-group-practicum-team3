@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Typography, Grid, Fab, Tooltip } from "@mui/material";
+import { Box, Typography, Grid, Fab, Tooltip, Card, CardContent } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 import AppLogo from "../../components/AppLogo";
@@ -114,6 +114,46 @@ export default function Fridge() {
             </Grid>
           ))
         }
+
+        {/* Add Item Card */}
+
+        <Grid
+          size={{
+            xs: 6,
+            sm: 4,
+            md: 3,
+            lg: 2,
+          }}
+        >
+          <Card
+            sx={{
+              height: "100%",
+              minHeight: 160,
+              bgcolor: "background.default",
+              borderRadius: "24px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              border: "1px dashed",
+              borderColor: "#40493D",
+              transition: "0.2s",
+              "&:hover": {
+                transform: "scale(1.02)",
+                
+              }
+            }}
+          >
+            <Box sx={{textAlign: "center"}}>
+              <AddIcon sx={{fontSize: 40, color: "primary.main",}} />
+              <Typography sx={{mt: 1, color: "primary.main", fontSize: 20, fontWeight: "bold"}}>
+                Add Item
+              </Typography>
+            </Box>
+
+          </Card>
+        </Grid>
+
         {
           filteredItems.length === 0 && (
             <Box mt={4} width="100%" sx={{textAlign: "center"}}>

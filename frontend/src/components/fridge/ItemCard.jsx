@@ -113,6 +113,7 @@ export default function ItemCard({item}) {
           <IconButton
             sx={{
               bgcolor: "#EAE8E2",
+              color: "primary.main",
               px: 0.8,
               height: 36,
               borderRadius: "999px"
@@ -124,7 +125,7 @@ export default function ItemCard({item}) {
           <Button 
             sx={{
               bgcolor: "#CFEBDD",
-              color: "#0D631B",
+              color: "primary.main",
               fontWeight: 700,
               fontSize: {
                 xs: 10,
@@ -144,6 +145,7 @@ export default function ItemCard({item}) {
           <IconButton
             sx={{
               bgcolor: "#EAE8E2",
+              color: "primary.main",
               px: 0.8,
               height: 36,
               borderRadius: "999px"
