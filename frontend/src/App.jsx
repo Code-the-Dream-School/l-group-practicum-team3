@@ -15,6 +15,7 @@ import ShoppingList from "./pages/private/ShoppingList";
 
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import ScanningPage from "./pages/private/ScanningPage";
 
 
 function App() {
@@ -30,12 +31,13 @@ function App() {
             <Route path="/signup" element={<Signup />} />
         </Route>
 
-        {/* Prviate Routes */}
+        {/* Private Routes */}
         <Route element={<ProtectedRoutes/>}>
             <Route path="/" element={<Home />} />
             <Route path="/fridge" element={<Fridge />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/shopping-list" element={<ShoppingList />} />
+            <Route path="/add-items" element={<ScanningPage />}/>
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
