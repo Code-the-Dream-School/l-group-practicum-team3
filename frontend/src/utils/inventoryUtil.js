@@ -1,3 +1,4 @@
+import { alpha } from "@mui/material/styles";
 import { Leaf, Egg, Beef, Wheat, Coffee, Utensils } from "lucide-react"
 
 export const categoryIcons = {
@@ -13,12 +14,12 @@ export const categoryIcons = {
 export const getExpiryStyle = (days) => {
   if (days <= 2) {
     return {
-      bg: "#FFDAD6",   
+      bg: alpha("#BA1A1A", 0.1),  
       text: "#BA1A1A", 
     };
   } else if (days <= 5) {
     return {
-      bg: "secondary.main",  
+      bg: alpha("#FDD34D", 0.5),
       text: "secondary.contrastText", 
     };
   }

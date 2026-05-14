@@ -11,9 +11,11 @@ import ExpiringItemCard from "../../components/home/ExpiringItemCard";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../../context/AuthContext";
 
 function Home() {
-  const name = "Tina";
+  const {user} = UserAuth()
+  const name = user?.user_metadata?.display_name || 'Chef'
 
   const data = {
     date: "06/01/2016",
@@ -90,7 +92,14 @@ function Home() {
   const recipeData = [
     {
       name: "Salmon Avocado salad",
-      imgLink:"https://www.themealdb.com/images/media/meals/1549542994.jpg"
+      imgLink: "https://www.themealdb.com/images/media/meals/1549542994.jpg",
+      category: "Seafood",
+    },
+    {
+      name: "Steak Diane",
+      imgLink:
+        "https://www.themealdb.com/images/media/meals/vussxq1511882648.jpg",
+      category: "Beef",
     },
   ];
 
@@ -119,10 +128,11 @@ function Home() {
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-          {/*  need to update BE data here */}
-          {data.items.map((item) => (
+          {/*  need to UPDATE backend data here */}
+          {/* data will be sort based on the expiration date */}
+          {data.items.map((item, index) => (
             <ExpiringItemCard
-              key={item.name}
+              key={index}
               name={item.name}
               category={item.category}
               daysLeft={item.expiryDays}
@@ -165,9 +175,16 @@ function Home() {
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
+        {/*  need to UPDATE backend data here */}
         <Stack spacing={2} direction="row">
-          <RecipeCard />
-          <RecipeCard />
+          {recipeData.map((recipe, index) => (
+            <RecipeCard
+             key={index}
+              name={recipe.name}
+              imgLink={recipe.imgLink}
+              category={recipe.category}
+            />
+          ))}
         </Stack>
       </Box>
     </Container>
