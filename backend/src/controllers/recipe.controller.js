@@ -52,9 +52,22 @@ const getSearchByIngredient = async (req, res) => {
 
 // Proxy endpoint for Spoonacular get Recipe Info by ID
 const getRecipeById = async (req, res) => {
+  const client = supabaseWithToken(req.token);
   const { id } = req.params;
 
   try {
+    // check cache
+    const { data: cached } = await client
+      .from("recipe")
+      .select("data")
+      .eq("spoonacular_id", id)
+      .single();
+
+    if (cached) {
+      return res.status(StatusCodes.OK).json(cached.data);
+    }
+
+    // miss --> hit Spoonacular
     const url = new URL(
       `https://api.spoonacular.com/recipes/${id}/information`
     );
@@ -68,6 +81,13 @@ const getRecipeById = async (req, res) => {
         .status(response.status)
         .json({ error: data.message || "Spoonacular error" });
     }
+
+    // cache it
+    console.log("caching all this:\n" + data);
+    await client.from("recipe").insert({
+      spoonacular_id: data.id,
+      data: data,
+    });
 
     return res.status(StatusCodes.OK).json(data);
   } catch (err) {
