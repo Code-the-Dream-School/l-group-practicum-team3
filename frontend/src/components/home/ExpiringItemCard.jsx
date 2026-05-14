@@ -7,26 +7,27 @@ import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { categoryIcons, getExpiryStyle } from "../../utils/inventoryUtil";
 
-export default function ExpiringItemCard({name, category, daysLeft}) {
+export default function ExpiringItemCard({ name, category, daysLeft }) {
   const style = getExpiryStyle(daysLeft);
-  const IconComponent  = categoryIcons[category.toLowerCase()] || categoryIcons.default;
+  const IconComponent =
+    categoryIcons[category.toLowerCase()] || categoryIcons.default;
 
   const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-
 
   return (
     <Paper
       elevation={0}
       sx={{
-        display:'flex',
-        flexDirection: 'row', 
+        display: "flex",
+        flexDirection: "row",
         justifyContent: "space-between",
         backgroundColor: "background.paper",
-        p:2,
+        p: 2,
         height: "90px",
         borderRadius: 4,
         alignItems: "center",
-        width:'350px'
+        maxWidth: { xs: "360px", md: "100%" },
+        flexShrink: 0,
       }}
     >
       <Stack
@@ -41,15 +42,15 @@ export default function ExpiringItemCard({name, category, daysLeft}) {
         <Avatar
           sx={{ width: 56, height: 56, bgcolor: style.bg, color: style.text }}
         >
-        <IconComponent />
+          <IconComponent />
         </Avatar>
         <Typography sx={{ fontWeight: 800 }}>{capitalizedName}</Typography>
       </Stack>
 
       <Chip
-        label={`${daysLeft} ${daysLeft === 1 ? 'DAY' : 'DAYS'} LEFT`}
+        label={`${daysLeft} ${daysLeft === 1 ? "DAY" : "DAYS"} LEFT`}
         sx={{
-          backgroundColor:style.bg,
+          backgroundColor: style.bg,
           color: style.text,
           fontWeight: 600,
           fontSize: "10px",

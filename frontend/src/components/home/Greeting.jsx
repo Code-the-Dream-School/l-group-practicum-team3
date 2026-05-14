@@ -11,7 +11,7 @@ export default function Greeting({ name }) {
           "linear-gradient(90deg, rgba(0, 73, 14, 0.1) 0%, #FBF9F2 50%, rgba(253, 211, 77, 0.2) 100%)",
         padding: 3,
         borderRadius: 4,
-        mt: "50px",
+        mt: { xs: '50px', md: 0},
         position: "relative",
         overflow: "hidden",
         minHeight: "140px",

@@ -10,7 +10,7 @@ export default function RecipeCard({ name, imgLink, category }) {
   return (
     <Card
       sx={{
-        width: 200,
+        width:{ xs: "200px", md: "300px" },
         borderRadius: 5,
         backgroundColor: "transparent",
         flexShrink: 0,

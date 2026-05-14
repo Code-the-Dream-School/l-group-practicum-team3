@@ -14,8 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../../context/AuthContext";
 
 function Home() {
-  const {user} = UserAuth()
-  const name = user?.user_metadata?.display_name || 'Chef'
+  const { user } = UserAuth();
+  const name = user?.user_metadata?.display_name || "Chef";
 
   const data = {
     date: "06/01/2016",
@@ -101,13 +101,24 @@ function Home() {
         "https://www.themealdb.com/images/media/meals/vussxq1511882648.jpg",
       category: "Beef",
     },
+    {
+      name: "Chicken Handi",
+      imgLink:
+        "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg",
+      category: "Chicken",
+    },
   ];
 
   const navigate = useNavigate();
 
   return (
-    <Container maxWidth="xs" sx={{ px: 3, py: 2 }}>
+    <Container
+      maxWidth={{ xs: "xs", md: "lg" }}
+      sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 } }}
+    >
+      
       <Greeting name={name} />
+      
 
       {/* Expiring Soon section */}
       <Box sx={{ mt: 2 }}>
@@ -123,12 +134,13 @@ function Home() {
             gridTemplateRows: "repeat(3, 1fr)",
             gap: 2,
             overflowX: "auto",
+            width: "100%",
             pb: 2,
             px: 1,
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-          {/*  need to UPDATE backend data here */}
+{/* --------------- need to UPDATE backend data here ---------------------*/}
           {/* data will be sort based on the expiration date */}
           {data.items.map((item, index) => (
             <ExpiringItemCard
@@ -144,10 +156,12 @@ function Home() {
       {/* Button Group */}
       <Box
         sx={{
-          display: "flex",
-          gap: 5,
+          display: { xs: "flex", md: "none" },
+          
           mt: 3,
-          width: "100%",
+         width: "100%",
+          gap: { xs: 2, md: 4 },
+          justifyContent: { xs: "center", md: "flex-start" }
         }}
       >
         <ActionButton
@@ -175,11 +189,11 @@ function Home() {
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
-        {/*  need to UPDATE backend data here */}
+ {/* --------------- need to UPDATE backend data here ---------------------*/}
         <Stack spacing={2} direction="row">
           {recipeData.map((recipe, index) => (
             <RecipeCard
-             key={index}
+              key={index}
               name={recipe.name}
               imgLink={recipe.imgLink}
               category={recipe.category}
