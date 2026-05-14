@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import React from "react";
 import EnergySavingsLeafOutlinedIcon from "@mui/icons-material/EnergySavingsLeafOutlined";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
