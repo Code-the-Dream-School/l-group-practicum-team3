@@ -14,7 +14,7 @@ export default function SearchBar({search, setSearch}) {
         mb: 2,
         "& .MuiOutlinedInput-root": {
           borderRadius: "999px",
-          bgcolor: "#EFEDE7"
+          bgcolor: "neutral.light"
         }
       }}
       slotProps={{

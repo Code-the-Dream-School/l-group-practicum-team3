@@ -52,7 +52,7 @@ export default function ItemCard({item}) {
           sx={{
             position: "absolute",
             right: 16,
-            bgcolor: "#E0DED7",
+            bgcolor: "neutral.main",
             px: 1.2,
             py: 0.3,
             borderRadius: "999px",
@@ -71,7 +71,7 @@ export default function ItemCard({item}) {
             fontSize: 10,
             fontWeight: 500,
             letterSpacing: 1,
-            color: "#40493D",
+            color: "neutral.dark",
             textTransform: "uppercase",
             mt: 3,
           }}
@@ -112,7 +112,7 @@ export default function ItemCard({item}) {
         >
           <IconButton
             sx={{
-              bgcolor: "#EAE8E2",
+              bgcolor: "neutral.light",
               color: "primary.main",
               px: 0.8,
               height: 36,
@@ -124,7 +124,7 @@ export default function ItemCard({item}) {
 
           <Button 
             sx={{
-              bgcolor: "#CFEBDD",
+              bgcolor: "action.restock",
               color: "primary.main",
               fontWeight: 700,
               fontSize: {
@@ -135,7 +135,7 @@ export default function ItemCard({item}) {
               borderRadius: "999px",
               px: 3,
               "&:hover": {
-                bgcolor: "#BEE3CF"
+                bgcolor: "action.restockHover",
               },
             }}
           >
@@ -144,7 +144,7 @@ export default function ItemCard({item}) {
 
           <IconButton
             sx={{
-              bgcolor: "#EAE8E2",
+              bgcolor: "neutral.light",
               color: "primary.main",
               px: 0.8,
               height: 36,

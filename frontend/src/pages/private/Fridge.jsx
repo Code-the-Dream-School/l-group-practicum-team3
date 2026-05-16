@@ -98,7 +98,7 @@ export default function Fridge() {
         setSelectedCategory={setSelectedCategory}
       />
 
-      <Grid container spacing={2} alignItems="strech">
+      <Grid container spacing={2} alignItems="stretch">
         {
           filteredItems.map((item, index) => (
             <Grid 
@@ -136,7 +136,7 @@ export default function Fridge() {
               justifyContent: "center",
               cursor: "pointer",
               border: "1px dashed",
-              borderColor: "#40493D",
+              borderColor: "neutral.main",
               transition: "0.2s",
               "&:hover": {
                 transform: "scale(1.02)",
@@ -145,8 +145,8 @@ export default function Fridge() {
             }}
           >
             <Box sx={{textAlign: "center"}}>
-              <AddIcon sx={{fontSize: 40, color: "primary.main",}} />
-              <Typography sx={{mt: 1, color: "primary.main", fontSize: 20, fontWeight: "bold"}}>
+              <AddIcon sx={{fontSize: 40, color: "primary.dark",}} />
+              <Typography sx={{mt: 1, color: "primary.dark", fontSize: 20, fontWeight: "bold"}}>
                 Add Item
               </Typography>
             </Box>
@@ -172,7 +172,6 @@ export default function Fridge() {
           bottom: 80,
           right: 16,
           bgcolor: "secondary.main",
-          color: "#000"
         }}
         color="secondary"
       >
