@@ -98,7 +98,7 @@ export default function Fridge() {
         setSelectedCategory={setSelectedCategory}
       />
 
-      <Grid container spacing={2} alignItems="stretch">
+      <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
         {
           filteredItems.map((item, index) => (
             <Grid 

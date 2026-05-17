@@ -29,7 +29,7 @@ export default function ItemCard({item}) {
             pb: 0,
           }
           }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
         
         {/*Icon circle*/}
         <Box
@@ -106,7 +106,7 @@ export default function ItemCard({item}) {
         {/* Actions */}  
         <Stack
           direction="row"  
-          alignItems= "center"  
+          sx={{ alignItems: "center" }}  
           spacing={1.5}
           mt={1.5}        
         >
