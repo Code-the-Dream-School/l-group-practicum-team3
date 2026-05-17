@@ -1,7 +1,7 @@
 const { supabase, supabaseWithToken } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
-
+const { favoriteRecipeSchema } = require("../validation/recipe.schema.js");
 // GET search recipes by ingredients
 const getSearchByIngredient = async (req, res) => {
   const { ingredients, number = 10, ranking = 1 } = req.query;
@@ -102,7 +102,17 @@ const favoriteRecipe = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
   const { id: spoonacularId } = req.params;
-  const { title, image } = req.body;
+
+  const { value, error: validationError } = favoriteRecipeSchema.validate(
+    req.body
+  );
+  if (validationError) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      message: validationError.message,
+    });
+  }
+
+  const { title, image } = value;
 
   if (!spoonacularId) {
     return res

@@ -32,7 +32,7 @@ app.use("/api/ai", authenticateUser, aiRouter);
 app.use("/api/recipes", authenticateUser, recipeRouter);
 
 // Root route
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.send("Backend API is running");
 });
 
