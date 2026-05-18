@@ -1,9 +1,208 @@
-import React from 'react'
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+
+import RecipeCard from "../../components/home/RecipeCard";
+import SectionHeading from "../../components/home/SectionHeading";
+import ActionButton from "../../components/home/ActionButton";
+import Greeting from "../../components/home/Greeting";
+import ExpiringItemCard from "../../components/home/ExpiringItemCard";
+
+import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../../context/AuthContext";
 
 function Home() {
+  const { user } = UserAuth();
+  const name = user?.user_metadata?.display_name || "Chef";
+
+  const data = {
+    date: "06/01/2016",
+    items: [
+      {
+        name: "Zucchini",
+        category: "produce",
+        quantity: 0.778,
+        unit: "kg",
+        price: 4.66,
+        expiryDays: 6,
+      },
+      {
+        name: "Chicken",
+        category: "proteins",
+        quantity: 0.5,
+        unit: "kg",
+        price: 10.25,
+        expiryDays: 3,
+      },
+      {
+        name: "Cheese",
+        category: "dairy",
+        quantity: 0.5,
+        unit: "kg",
+        price: 4.66,
+        expiryDays: 0,
+      },
+      {
+        name: "milk",
+        category: "dairy",
+        quantity: 0.778,
+        unit: "2l",
+        price: 4.66,
+        expiryDays: 4,
+      },
+      {
+        name: "apple",
+        category: "produce",
+        quantity: 0.5,
+        unit: "kg",
+        price: 10.25,
+        expiryDays: 3,
+      },
+      {
+        name: "rice",
+        category: "grains",
+        quantity: 0.5,
+        unit: "kg",
+        price: 4.66,
+        expiryDays: 1,
+      },
+      {
+        name: "apple",
+        category: "produce",
+        quantity: 0.5,
+        unit: "kg",
+        price: 10.25,
+        expiryDays: 3,
+      },
+      {
+        name: "rice",
+        category: "grains",
+        quantity: 0.5,
+        unit: "kg",
+        price: 4.66,
+        expiryDays: 1,
+      },
+    ],
+    subtotal: 24.2,
+    total: 24.2,
+  };
+
+  const recipeData = [
+    {
+      name: "Salmon Avocado salad",
+      imgLink: "https://www.themealdb.com/images/media/meals/1549542994.jpg",
+      category: "Seafood",
+    },
+    {
+      name: "Steak Diane",
+      imgLink:
+        "https://www.themealdb.com/images/media/meals/vussxq1511882648.jpg",
+      category: "Beef",
+    },
+    {
+      name: "Chicken Handi",
+      imgLink:
+        "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg",
+      category: "Chicken",
+    },
+  ];
+
+  const navigate = useNavigate();
+
   return (
-    <div>Home</div>
-  )
+    <Container
+      maxWidth={{ xs: "xs", md: "lg" }}
+      sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 } }}
+    >
+      
+      <Greeting name={name} />
+      
+
+      {/* Expiring Soon section */}
+      <Box sx={{ mt: 2 }}>
+        <SectionHeading
+          title="Expiring Soon"
+          actionText="View All"
+          onClick={() => navigate("/fridge")}
+        />
+        <Box
+          sx={{
+            display: "grid",
+            gridAutoFlow: "column",
+            gridTemplateRows: "repeat(3, 1fr)",
+            gap: 2,
+            overflowX: "auto",
+            width: "100%",
+            pb: 2,
+            px: 1,
+            "&::-webkit-scrollbar": { display: "none" },
+          }}
+        >
+{/* --------------- need to UPDATE backend data here ---------------------*/}
+          {/* data will be sort based on the expiration date */}
+          {data.items.map((item, index) => (
+            <ExpiringItemCard
+              key={index}
+              name={item.name}
+              category={item.category}
+              daysLeft={item.expiryDays}
+            />
+          ))}
+        </Box>
+      </Box>
+
+      {/* Button Group */}
+      <Box
+        sx={{
+          display: { xs: "flex", md: "none" },
+          
+          mt: 3,
+         width: "100%",
+          gap: { xs: 2, md: 4 },
+          justifyContent: { xs: "center", md: "flex-start" }
+        }}
+      >
+        <ActionButton
+          onClick={() => navigate("/add-items")}
+          bgColor="primary.dark"
+          textColor="primary.contrastText"
+          startIcon={<DocumentScannerIcon />}
+        >
+          Scan Receipt
+        </ActionButton>
+        <ActionButton
+          onClick={() => navigate("/add-items")}
+          bgColor="secondary.main"
+          textColor="secondary.contrastText"
+          startIcon={<AddCircleOutlineOutlinedIcon />}
+        >
+          Add Item
+        </ActionButton>
+      </Box>
+
+      {/* Recipes section */}
+      <Box sx={{ mt: 2, mb: 2, pb: "100px", overflowY: "auto" }}>
+        <SectionHeading
+          title="Recommended Recipes"
+          actionText="Explore"
+          onClick={() => navigate("/recipes")}
+        />
+ {/* --------------- need to UPDATE backend data here ---------------------*/}
+        <Stack spacing={2} direction="row">
+          {recipeData.map((recipe, index) => (
+            <RecipeCard
+              key={index}
+              name={recipe.name}
+              imgLink={recipe.imgLink}
+              category={recipe.category}
+            />
+          ))}
+        </Stack>
+      </Box>
+    </Container>
+  );
 }
 
-export default Home
+export default Home;
