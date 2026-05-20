@@ -1,6 +1,6 @@
 // const jwt = require("jsonwebtoken"); Using built-in Supabase auth
 const { StatusCodes } = require("http-status-codes");
-const { supabase } = require("../config/supabase.js");
+const { supabase } = require("../config/db.supabase.js");
 
 const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -19,6 +19,9 @@ const authMiddleware = async (req, res, next) => {
   }
 
   req.user = data.user; // <-- Attach user
+
+  // store token on the request object to access in controllers
+  req.token = token;
   next();
 };
 

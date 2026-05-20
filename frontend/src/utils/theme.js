@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { alpha, createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
@@ -12,7 +12,17 @@ const theme = createTheme({
     },
     secondary: {
       main: "#FDD34D",
+      light: alpha("#FDD34D", 0.2),
       contrastText: "#725B00",
+    },
+    neutral: {
+      light: "#EFEDE7", // For search bar and light backgrounds
+      main: "#E0DED7", // For badges and icon backgrounds
+      dark: "#40493D", // For secondary text and borders
+    },
+    action: {
+      restock: "#CFEBDD", // Custom color for the Restock button
+      restockHover: "#BEE3CF", // Custom hover state
     },
     background: { 
         default: "#FBF9F2", paper: "#FFFFFF" 

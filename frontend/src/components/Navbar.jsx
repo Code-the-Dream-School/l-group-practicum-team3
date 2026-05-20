@@ -7,11 +7,14 @@ import {
   ShoppingCart,
   UserCircle,
 } from "lucide-react";
+import { UserAuth } from '../context/AuthContext';
 
 //User menu
 function UserMenu({className = "", dropdownClass = ""}) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef();
+
+  const {logout} = UserAuth()
 
   //close dropdown when user click outside
   useEffect(() => {  
@@ -48,7 +51,7 @@ function UserMenu({className = "", dropdownClass = ""}) {
 
             <button 
               className="w-full text-left px-4 py-2 hover:bg-[#FDD34D] hover:text-[#0D631B] active:bg-[#FDD34D] active:text-[#0D631B] transition-colors" 
-              onClick={() => setOpen(false)}
+              onClick={() => logout()}
             > 
               Logout
             </button> 

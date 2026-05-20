@@ -3,7 +3,7 @@ const { supabase } = require("../config/db.supabase.js");
 // Status Codes
 const { StatusCodes } = require("http-status-codes");
 // For validation
-const { registerSchema } = require("../validation/user.schema");
+const { registerSchema } = require("../validation/user.schema.js");
 
 // ********************************************************************
 // ENDPOINTS

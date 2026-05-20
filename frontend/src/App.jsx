@@ -15,28 +15,29 @@ import ShoppingList from "./pages/private/ShoppingList";
 
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import ScanningPage from "./pages/private/ScanningPage";
 
 
 function App() {
-  const user = null
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Routes>
         {/* Public Routes */}
-        <Route element={<PublicRoutes user={user}/>}>
+        <Route element={<PublicRoutes/>}>
             <Route path="/landing-page" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
         </Route>
 
-        {/* Prviate Routes */}
-        <Route element={<ProtectedRoutes user={user}/>}>
+        {/* Private Routes */}
+        <Route element={<ProtectedRoutes/>}>
             <Route path="/" element={<Home />} />
             <Route path="/fridge" element={<Fridge />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/shopping-list" element={<ShoppingList />} />
+            <Route path="/add-items" element={<ScanningPage />}/>
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
