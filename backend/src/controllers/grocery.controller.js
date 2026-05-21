@@ -32,7 +32,7 @@ const getGroceryItems = async (req, res) => {
     if (supabaseError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: supabaseError });
+        .json({ message: supabaseError.message });
     }
 
     const totalPages = Math.ceil(count / limit);
@@ -143,7 +143,7 @@ const addGroceryItem = async (req, res) => {
     if (supabaseError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: supabaseError });
+        .json({ message: supabaseError.message });
     }
 
     return res.status(StatusCodes.CREATED).json({ data });
