@@ -4,7 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
-const userRouter = require("./routes/user.routes");
+const userRouter = require("./routes/auth.route.js");
 const aiRouter = require("./routes/ai.routes.js");
 const groceryRoutes = require("./routes/grocery.route.js");
 
