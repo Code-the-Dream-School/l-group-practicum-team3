@@ -103,21 +103,16 @@ const addGroceryItem = async (req, res) => {
   // user from supabase auth
   const user_id = req.user.id;
 
+  const items = Array.isArray(req.body) ? req.body : [req.body];
+
   // clean up grocery name before validating
-  // move to util folder
-  if (req.body.name) {
-    req.body.name = req.body.name.trim().replace(/\s+/g, " ");
-  }
+  items.forEach((item) => {
+    if (item.name) {
+      item.name = item.name.trim().replace(/\s+/g, " ");
+    }
+  });
 
-  // joi validation
-  const { value, error: validationError } = grocerySchema.validate(req.body);
-  if (validationError) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message: validationError.message,
-    });
-  }
-
-  // set default expiry date if not provided
+  const validatedItems = [];
   const defaultExpiryDays = {
     dairy: 7,
     meat: 3,
@@ -125,18 +120,29 @@ const addGroceryItem = async (req, res) => {
     vegetable: 7,
   };
 
-  if (!value.expiry_date && defaultExpiryDays[value.category]) {
-    const date = new Date();
-    date.setDate(date.getDate() + defaultExpiryDays[value.category]);
-    value.expiry_date = date;
+  // joi validation
+  for (const item of items) {
+    const { value, error: validationError } = grocerySchema.validate(item);
+    if (validationError) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: validationError.message,
+      });
+    }
+
+    if (!value.expiry_date && defaultExpiryDays[value.category]) {
+      const date = new Date();
+      date.setDate(date.getDate() + defaultExpiryDays[value.category]);
+      value.expiry_date = date;
+    }
+
+    validatedItems.push({ ...value, user_id });
   }
 
-  // insert item if new item
   // using supabasewithtoke to prevent new row violates row-level security policy
   try {
     const { data, error: supabaseError } = await client
       .from("groceries")
-      .insert({ ...value, user_id })
+      .insert(validatedItems)
       .select();
 
     // checking for rl error
