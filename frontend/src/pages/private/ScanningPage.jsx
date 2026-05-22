@@ -7,82 +7,15 @@ import SectionHeader from "../../components/scanning-page/SectionHeader";
 import Nav from "../../components/scanning-page/Nav";
 
 import { useRef, useState } from "react";
-
-const data = {
-  date: "06/01/2016",
-  items: [
-    {
-      name: "Zucchini",
-      category: "produce",
-
-      price: 4.66,
-      expiryDays: 6,
-    },
-    {
-      name: "Chicken",
-      category: "proteins",
-      quantity: 1,
-      unit: "kg",
-      price: 10.25,
-      expiryDays: 3,
-    },
-    {
-      name: "Cheese",
-      category: "dairy",
-      quantity: 0.5,
-      unit: "kg",
-      price: 4.66,
-      expiryDays: 0,
-    },
-    {
-      name: "milk",
-      category: "dairy",
-      quantity: 0.778,
-      unit: "ml",
-      price: 4.66,
-      expiryDays: 4,
-    },
-    {
-      name: "apple",
-      category: "produce",
-      quantity: 0.5,
-      unit: "kg",
-      price: 10.25,
-      expiryDays: 3,
-    },
-    {
-      name: "rice",
-      category: "grains",
-      quantity: 0.5,
-      unit: "kg",
-      price: 4.66,
-      expiryDays: 1,
-    },
-    {
-      name: "apple",
-      category: "produce",
-      quantity: 0.5,
-      unit: "kg",
-      price: 10.25,
-      expiryDays: 3,
-    },
-    {
-      name: "rice",
-      category: "grains",
-      quantity: 0.5,
-      unit: "kg",
-      price: 4.66,
-      expiryDays: 1,
-    },
-  ],
-  subtotal: 24.2,
-  total: 24.2,
-};
+import api from "../../utils/axios";
+import Button from "@mui/material/Button";
 
 export default function ScanningPage() {
-  const [scannedItems, setScannedItems] = useState(data.items);
+  const [scannedItems, setScannedItems] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
+
+  const token = localStorage.getItem("token");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -123,7 +56,39 @@ export default function ScanningPage() {
     );
   };
 
-  
+  const handleScanReceipt = async () => {
+    if (!previewImage) {
+      alert("Please select or take a photo of a receipt first");
+      return;
+    }
+
+
+    try {
+      console.log('start')
+      const formData = new FormData();
+
+      const response = await fetch(previewImage);
+      const blob = await response.blob();
+
+      formData.append("file", blob, "receipt.jpg");
+
+      const res = await api.post("/api/ai/scan", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      
+        const items = res.data.items;
+        console.log(items);
+        setScannedItems(items);
+      
+        console.log('end')
+    } catch (error) {
+      console.error("Error scanning receipt:", error);
+      alert("Failed to read receipt. Is the backend server running?");
+    }
+  };
 
   return (
     <Container>
@@ -135,6 +100,7 @@ export default function ScanningPage() {
         previewImage={previewImage}
       />
       <SectionHeader />
+      <Button onClick={handleScanReceipt}>Scan</Button>
 
       <Grid container spacing={2} sx={{ mt: 2, pb: 4 }}>
         {scannedItems.map((item, index) => (
