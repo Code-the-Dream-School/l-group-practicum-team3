@@ -20,6 +20,12 @@ const receiptItemSchema = z.object({
   quantity: z.number().optional(),
   unit: z.string().optional(),
   price: z.number().optional(),
+  //daysUntilExpired: z.number().int().positive().optional(),
+  //expirationDate: z.string().optional(), // <- "2025-06-15"
+  expirationDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
 });
 
 const receiptSchema = z.object({
@@ -54,6 +60,11 @@ const geminiSchema = {
             description:
               "Categorize the item into: produce, dairy, proteins, grains, beverages, pantry, or other",
           },
+          expirationDate: {
+            type: "STRING",
+            description:
+              "Estimated expiration date in YYYY-MM-DD format, calculated by adding the item's typical shelf life to the receipt date",
+          },
         },
         required: ["name"],
       },
@@ -77,6 +88,11 @@ Rules:
 - Preserve quantities, units, and prices if visible.
 - If a value is not present, omit the field completely.
 - Ensure all monetary values are numbers only.
+- Estimate expirationDate for each item: using the receipt date as the purchase date,
+  calculate an estimated expiration date in YYYY-MM-DD format by adding the item's
+  typical shelf life (e.g., milk ≈ 7 days, bananas ≈ 5 days, canned beans ≈ 730 days).
+  Base estimates on the item name and category. If the receipt date is missing or the
+  item is completely ambiguous, omit the field.
 `;
 
 const BUCKET = "Receipts"; // supabase Storage bucket name
@@ -162,7 +178,7 @@ const scan = async (req, res) => {
         .json({ message: "Failed to fetch uploaded image for processing" });
     }
     const base64Image = Buffer.from(await imageRes.arrayBuffer()).toString(
-      "base64",
+      "base64"
     );
 
     // make the call
