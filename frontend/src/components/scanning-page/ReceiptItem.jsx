@@ -9,6 +9,8 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 
 export default function ReceiptItem({
   name,
@@ -21,117 +23,123 @@ export default function ReceiptItem({
   handleDeleteItem,
 }) {
   return (
-    <Paper
-      elevation={0}
+    <Card
+      variant="outlined"
       sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        gap: 1,
         backgroundColor: "background.paper",
-        p: 2,
         borderRadius: 4,
+        width: "100%",
+        height: "100%",
       }}
     >
-      <Chip
-        label={category}
-        sx={{
-          backgroundColor: "secondary.main",
-          textTransform: "uppercase",
-          fontWeight: 600,
-          fontSize: "10px",
-          borderRadius: "12px",
-          width: "max-content",
-          height: "20px",
-        }}
-      />
-      <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>{name}</Typography>
-
-      {/* expiration date */}
-      <Stack
-        direction="row"
-        sx={{
-          backgroundColor: "#F5F4ED",
-          borderRadius: "50px",
-          alignItems: "center",
-          gap: 1,
-          width: "max-content",
-          textTransform: "uppercase",
-          px: 1.5,
-          height: "26px",
-        }}
+      <CardContent
+        sx={{ display: "flex", flexDirection: "column", gap: 1, flexGrow: 1 }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", color: "#735C00" }}>
-          <Typography sx={{ fontWeight: 600, fontSize: "10px" }}>
-            <CalendarMonthIcon sx={{ fontSize: 14, mr: 0.5 }} /> Expires In
-          </Typography>
-        </Box>
-        <Typography
-          sx={{ color: "primary.main", fontWeight: 600, fontSize: "10px" }}
-        >
-          {expiryDays}
+        <Chip
+          label={category}
+          sx={{
+            backgroundColor: "secondary.main",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            fontSize: "10px",
+            borderRadius: "12px",
+            width: "max-content",
+            height: "20px",
+          }}
+        />
+        <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>
+          {name}
         </Typography>
-        <Typography
-          sx={{ color: "#735C00", fontWeight: 600, fontSize: "10px" }}
-        >
-          Days
-        </Typography>
-      </Stack>
 
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ alignItems: "center", justifyContent: "space-between" }}
-      >
+        {/* expiration date */}
         <Stack
           direction="row"
-          spacing={0.5}
           sx={{
-            alignItems: "center",
             backgroundColor: "#F5F4ED",
             borderRadius: "50px",
+            alignItems: "center",
+            gap: 1,
             width: "max-content",
-            px: 1,
-            height: "24px",
+            textTransform: "uppercase",
+            px: 1.5,
+            height: "26px",
           }}
         >
-          <IconButton
-            sx={{ color: "primary.main", padding: "0" }}
-            onClick={() => handleUpdateQuantity(index, "decrement")}
-          >
-            <RemoveIcon sx={{ fontSize: 14 }} />
-          </IconButton>
+          <Box sx={{ display: "flex", alignItems: "center", color: "#735C00" }}>
+            <Typography sx={{ fontWeight: 600, fontSize: "10px" }}>
+              <CalendarMonthIcon sx={{ fontSize: 14, mr: 0.5 }} /> Expires In
+            </Typography>
+          </Box>
           <Typography
+            sx={{ color: "primary.main", fontWeight: 600, fontSize: "10px" }}
+          >
+            {expiryDays}
+          </Typography>
+          <Typography
+            sx={{ color: "#735C00", fontWeight: 600, fontSize: "10px" }}
+          >
+            Days
+          </Typography>
+        </Stack>
+
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ alignItems: "center", justifyContent: "space-between" }}
+        >
+          <Stack
+            direction="row"
+            spacing={0.5}
             sx={{
-              fontSize: 13,
+              alignItems: "center",
+              backgroundColor: "#F5F4ED",
+              borderRadius: "50px",
+              width: "max-content",
               px: 1,
-              minWidth: "45px",
-              textAlign: "center",
-              whiteSpace: "nowrap",
+              height: "24px",
             }}
           >
-            {quantity !== undefined
-              ? quantity % 1 === 0
-                ? quantity
-                : quantity.toFixed(2)
-              : 1}{" "}
-            {unit ? unit : ""}
-          </Typography>
+            <IconButton
+              sx={{ color: "primary.main", padding: "0" }}
+              onClick={() => handleUpdateQuantity(index, "decrement")}
+            >
+              <RemoveIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+            <Typography
+              sx={{
+                fontSize: 13,
+                px: 1,
+                minWidth: "45px",
+                textAlign: "center",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {quantity !== undefined
+                ? quantity % 1 === 0
+                  ? quantity
+                  : quantity.toFixed(2)
+                : 1}{" "}
+              {unit ? unit : ""}
+            </Typography>
+            <IconButton
+              sx={{ color: "primary.main", padding: "0" }}
+              onClick={() => handleUpdateQuantity(index, "increment")}
+            >
+              <AddIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Stack>
           <IconButton
-            sx={{ color: "primary.main", padding: "0" }}
-            onClick={() => handleUpdateQuantity(index, "increment")}
+            color="primary.main"
+            sx={{ color: "#A0A0A0", p: 0.5 }}
+            onClick={() => handleDeleteItem(index)}
           >
-            <AddIcon sx={{ fontSize: 14 }} />
+            <DeleteIcon />
           </IconButton>
         </Stack>
-        <IconButton
-          color="primary.main"
-          sx={{ color: "#A0A0A0", p: 0.5 }}
-          onClick={() => handleDeleteItem(index)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    </Paper>
+      </CardContent>
+    </Card>
   );
 }

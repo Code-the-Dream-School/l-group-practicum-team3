@@ -9,11 +9,21 @@ import Nav from "../../components/scanning-page/Nav";
 import { useRef, useState } from "react";
 import api from "../../utils/axios";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -58,15 +68,16 @@ export default function ScanningPage() {
 
   const handleScanReceipt = async () => {
     if (!previewImage) {
-      alert("Please select or take a photo of a receipt first");
+      setError("Please select or take a photo of a receipt first");
       return;
     }
 
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      console.log('start')
       const formData = new FormData();
-
       const response = await fetch(previewImage);
       const blob = await response.blob();
 
@@ -75,50 +86,92 @@ export default function ScanningPage() {
       const res = await api.post("/api/ai/scan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      
-        const items = res.data.items;
-        console.log(items);
-        setScannedItems(items);
-      
-        console.log('end')
+
+      const items = res.data?.items;
+      setScannedItems(items || []);
     } catch (error) {
-      console.error("Error scanning receipt:", error);
-      alert("Failed to read receipt. Is the backend server running?");
+      setError(
+        error.response?.data?.message ||
+          "Failed to read receipt. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Container>
+    <Container maxWidth={{ xs: "xs", md: "lg" }}>
       <Nav />
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+          {success}
+        </Alert>
+      )}
 
       <Camera
         fileInputRef={fileInputRef}
         handleFileChange={handleFileChange}
         previewImage={previewImage}
+        loading={loading}
       />
-      <SectionHeader />
-      <Button onClick={handleScanReceipt}>Scan</Button>
 
-      <Grid container spacing={2} sx={{ mt: 2, pb: 4 }}>
-        {scannedItems.map((item, index) => (
-          <Grid size={6} key={index}>
-            <ReceiptItem
-              key={index}
-              name={item.name}
-              category={item.category}
-              expiryDays={item.expiryDays}
-              quantity={item.quantity}
-              unit={item.unit}
-              index={index}
-              handleUpdateQuantity={handleUpdateQuantity}
-              handleDeleteItem={handleDeleteItem}
-            />
+      {scannedItems.length === 0 && (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            variant="outlined"
+            onClick={handleScanReceipt}
+            disabled={loading}
+            startIcon={
+              loading ? <CircularProgress size={20} color="inherit" /> : null
+            }
+            sx={{ py: 2, width:'80%'}}
+          >
+            {loading ? "Process Receipt with AI..." : "Scan Receipt"}
+          </Button>
+        </Box>
+      )}
+
+      {scannedItems.length > 0 && (
+        <Box
+          sx={{ mt: 4, mb: 9, display: "flex", justifyContent: "center", flexDirection:'column'}}
+        >
+          <SectionHeader />
+          <Grid container spacing={{ xs: 1, md: 3 }} sx={{ mt: 2, pb: 4 }}>
+            {scannedItems.map((item, index) => (
+              <Grid item size={6} sx={{ display: 'flex' }} key={index}>
+                <ReceiptItem
+                  key={index}
+                  name={item.name}
+                  category={item.category}
+                  expiryDays={item.expiryDays}
+                  quantity={item.quantity}
+                  unit={item.unit}
+                  index={index}
+                  handleUpdateQuantity={handleUpdateQuantity}
+                  handleDeleteItem={handleDeleteItem}
+                />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+
+          <Button
+            variant="contained"
+            startIcon={<CheckCircleOutlineOutlinedIcon />}
+             sx={{ py: 2 }}
+            // onClick={}
+          >
+            Confirm All Items
+          </Button>
+        </Box>
+      )}
     </Container>
   );
 }

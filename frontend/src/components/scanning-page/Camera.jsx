@@ -11,6 +11,7 @@ export default function Camera({
   fileInputRef,
   handleFileChange,
   previewImage,
+  loading,
 }) {
   return (
     <>
@@ -34,10 +35,17 @@ export default function Camera({
           justifyContent: "center",
           alignItems: "center",
           mt: 2,
-          mb: 4,
-          cursor:'pointer'
+          mb: 2,
+
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: loading ? 0.8 : 1,
+          transition: "opacity 0.3s ease",
+          pointerEvents: loading ? "none" : "auto",
         }}
-        onClick={() => fileInputRef.current.click()}
+        onClick={() =>{
+          if (loading) return;
+          fileInputRef.current.click()
+        } }
       >
         {previewImage ? (
           <Box
