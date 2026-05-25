@@ -14,17 +14,25 @@ const wishlistItemsSchema = Joi.alternatives().try(
 
 const wishlistUpdateSchema = Joi.object({
   name: Joi.string().min(1).max(100),
-  quantity: Joi.string().max(50).allow(null, ""),
-  unit: Joi.string().max(50).allow(null, ""),
+  quantity: Joi.number().positive(),
+  unit: Joi.string()
+    .valid("kg", "g", "lb", "oz", "l", "ml", "cup", "tbsp", "tsp", "piece")
+    .allow(null, ""),
+  category: Joi.string().valid(
+    "dairy",
+    "meat",
+    "fruit",
+    "vegetable",
+    "spice",
+    "condiment",
+    "canned",
+    "other"
+  ),
+  completed: Joi.boolean(),
 }).min(1);
-
-const wishlistClearSchema = Joi.object({
-  confirm: Joi.boolean().valid(true).required(),
-});
 
 module.exports = {
   wishlistItemSchema,
   wishlistItemsSchema,
   wishlistUpdateSchema,
-  wishlistClearSchema,
 };

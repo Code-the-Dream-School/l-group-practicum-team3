@@ -4,7 +4,6 @@ const { StatusCodes } = require("http-status-codes");
 const {
   wishlistItemsSchema,
   wishlistUpdateSchema,
-  wishlistClearSchema,
 } = require("../validation/wishlist.schema.js");
 
 // GET /api/wishlist?page=1&limit=10
@@ -102,12 +101,6 @@ const updateWishlistItem = async (req, res) => {
   const user_id = req.user.id;
   const { id } = req.params;
 
-  if (!id) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Item ID is required" });
-  }
-
   // validate
   const { value: updatedFields, error: validationError } =
     wishlistUpdateSchema.validate(req.body, { abortEarly: false });
@@ -154,23 +147,23 @@ const deleteWishlistItem = async (req, res) => {
   const user_id = req.user.id;
   const { id } = req.params;
 
-  if (!id) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Item ID is required" });
-  }
-
   try {
-    const { error: supabaseError } = await client
+    const { data, error: supabaseError } = await client
       .from("shopping_list_grocery")
       .delete()
       .eq("id", id)
-      .eq("user_id", user_id);
+      .eq("user_id", user_id)
+      .select();
 
     if (supabaseError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: supabaseError.message });
+    }
+    if (!data.length) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Item not found" });
     }
 
     return res
@@ -187,14 +180,6 @@ const deleteWishlistItem = async (req, res) => {
 const clearWishlist = async (req, res) => {
   const client = supabaseWithToken(req.token);
   const user_id = req.user.id;
-
-  const { error: validationError } = wishlistClearSchema.validate(req.body);
-
-  if (validationError) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: validationError.message });
-  }
 
   try {
     const { error: supabaseError } = await client
