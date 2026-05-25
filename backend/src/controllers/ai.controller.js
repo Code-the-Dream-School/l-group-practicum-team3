@@ -8,20 +8,23 @@ const receiptItemSchema = z.object({
   name: z.string(),
   category: z
     .enum([
-      "produce",
+      // perishable
       "dairy",
-      "proteins",
-      "grains",
-      "beverages",
-      "pantry",
+      "meat",
+      "fruit",
+      "vegetable",
+      // nonPerishable
+      "spice",
+      "condiment",
+      "canned",
       "other",
     ])
     .optional(),
   quantity: z.number().optional(),
-  unit: z.string().optional(),
+  unit: z
+    .enum(["kg", "g", "lb", "oz", "l", "ml", "cup", "tbsp", "tsp", "piece"])
+    .optional(),
   price: z.number().optional(),
-  //daysUntilExpired: z.number().int().positive().optional(),
-  //expirationDate: z.string().optional(), // <- "2025-06-15"
   expirationDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -53,12 +56,16 @@ const geminiSchema = {
         properties: {
           name: { type: "STRING" },
           quantity: { type: "NUMBER" },
-          unit: { type: "STRING" },
           price: { type: "NUMBER" },
           category: {
             type: "STRING",
             description:
-              "Categorize the item into: produce, dairy, proteins, grains, beverages, pantry, or other",
+              "Categorize the item into one of: dairy, meat, fruit, vegetable, spice, condiment, canned, or other",
+          },
+          unit: {
+            type: "STRING",
+            description:
+              "Unit of measurement. Must be one of: kg, g, lb, oz, l, ml, cup, tbsp, tsp, piece. Omit if not applicable.",
           },
           expirationDate: {
             type: "STRING",
@@ -84,7 +91,13 @@ Extract structured data from the receipt image.
 
 Rules:
 - Clean item names: remove adjectives, branding words, and unnecessary descriptors.
-- Categorize each item: Assign a category from the following list: [produce, dairy, proteins, grains, beverages, pantry, other].
+- Categorize each item: Assign a category from the following list:
+  [dairy, meat, fruit, vegetable, spice, condiment, canned, other].
+  Use "fruit" or "vegetable" instead of the generic "produce".
+  Use "canned" for tinned/preserved goods instead of "pantry".
+  Use "meat" for proteins including fish and poultry.
+- Normalize units: if a unit is present, convert it to the closest match from
+  [kg, g, lb, oz, l, ml, cup, tbsp, tsp, piece]. Omit if no unit applies.
 - Preserve quantities, units, and prices if visible.
 - If a value is not present, omit the field completely.
 - Ensure all monetary values are numbers only.
@@ -111,7 +124,7 @@ const BUCKET = "Receipts"; // supabase Storage bucket name
 */
 const scan = async (req, res) => {
   let receiptId = null;
-
+  let storagePath = null;
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
@@ -120,7 +133,7 @@ const scan = async (req, res) => {
     // UPLOAD TO SUPABASE STORAGE BUCKET
     const mimeType = req.file.mimetype;
     const userId = req.user?.id ?? "anonymous";
-    const storagePath = `${userId}/${Date.now()}-${req.file.originalname}`;
+    storagePath = `${userId}/${Date.now()}-${req.file.originalname}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from(BUCKET)
