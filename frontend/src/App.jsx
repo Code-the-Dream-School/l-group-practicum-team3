@@ -37,7 +37,8 @@ function App() {
             <Route path="/fridge" element={<Fridge />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/shopping-list" element={<ShoppingList />} />
-            <Route path="/add-items" element={<ScanningPage />}/>
+            {/* <Route path="/add-items" element={<ScanningPage />}/> */}
+            <Route path="/scan" element={<ScanningPage />}/>
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

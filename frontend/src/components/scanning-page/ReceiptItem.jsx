@@ -11,17 +11,34 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import TextField from "@mui/material/TextField";
+import { useRef } from "react";
 
 export default function ReceiptItem({
   name,
   category,
   expiryDays,
+  expirationDate,
   quantity,
   handleUpdateQuantity,
   unit,
   index,
   handleDeleteItem,
+  handleNameChange,
+  handleDateChange,
 }) {
+  const hiddenCalendarRef = useRef(null);
+
+  const handleDateClick = () => {
+    if (hiddenCalendarRef.current) {
+      if (typeof hiddenCalendarRef.current.showPicker === "function") {
+        hiddenCalendarRef.current.showPicker();
+      } else {
+        hiddenCalendarRef.current.click();
+      }
+    }
+  };
+  
   return (
     <Card
       variant="outlined"
@@ -50,41 +67,73 @@ export default function ReceiptItem({
             height: "20px",
           }}
         />
-        <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>
+        {/* <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>
           {name}
-        </Typography>
+        </Typography> */}
+        <TextField
+          variant="standard"
+          value={name || ""}
+          onChange={(e) => handleNameChange(index, e.target.value)}
+          placeholder="Item Name"
+          sx={{
+            fontWeight: 600,
+            fontSize: "20px",
+          }}
+        />
 
         {/* expiration date */}
-        <Stack
-          direction="row"
-          sx={{
-            backgroundColor: "#F5F4ED",
-            borderRadius: "50px",
-            alignItems: "center",
-            gap: 1,
-            width: "max-content",
-            textTransform: "uppercase",
-            px: 1.5,
-            height: "26px",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", color: "#735C00" }}>
-            <Typography sx={{ fontWeight: 600, fontSize: "10px" }}>
-              <CalendarMonthIcon sx={{ fontSize: 14, mr: 0.5 }} /> Expires In
+        <Box sx={{ position: "relative", width: "max-content" }}>
+          <Stack
+            direction="row"
+            sx={{
+              backgroundColor: "#F5F4ED",
+              borderRadius: "50px",
+              alignItems: "center",
+              gap: 1,
+              width: "max-content",
+              textTransform: "uppercase",
+              px: 1.5,
+              height: "26px",
+            }}
+          >
+            <Box
+              sx={{ display: "flex", alignItems: "center", color: "#735C00" }}
+            >
+              <Typography sx={{ fontWeight: 600, fontSize: "10px" }}>
+                <CalendarMonthIcon sx={{ fontSize: 14, mr: 0.5 }} /> Expires In
+              </Typography>
+            </Box>
+            <Typography
+              sx={{ color: "primary.main", fontWeight: 600, fontSize: "10px" }}
+              onClick={handleDateClick}
+            >
+              {expiryDays}
             </Typography>
-          </Box>
-          <Typography
-            sx={{ color: "primary.main", fontWeight: 600, fontSize: "10px" }}
-          >
-            {expiryDays}
-          </Typography>
-          <Typography
-            sx={{ color: "#735C00", fontWeight: 600, fontSize: "10px" }}
-          >
-            Days
-          </Typography>
-        </Stack>
 
+            <Typography
+              sx={{ color: "#735C00", fontWeight: 600, fontSize: "10px" }}
+            >
+              Days
+            </Typography>
+          </Stack>
+          <input
+            type="date"
+            ref={hiddenCalendarRef}
+            value={expirationDate ? expirationDate.split("T")[0] : ""}
+            onChange={(e) => handleDateChange(index, e.target.value)}
+            style={{
+              position: "absolute",
+              opacity: 0,
+              width: "100%",
+              height: "100%",
+              padding: 0,
+              border: "none",
+              pointerEvents: "none",
+            }}
+          />
+        </Box>
+
+        {/* buttons */}
         <Stack
           direction="row"
           spacing={1}

@@ -14,7 +14,38 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import { calculateExpiryDays } from "../../utils/dateHelper";
+import { useNavigate } from "react-router-dom";
+
+const testData = [
+  {
+    name: "rice",
+    category: "grains",
+    quantity: 0.5,
+    unit: "kg",
+    price: 4.66,
+    expirationDate: "2026-07-13",
+    expiryDays: calculateExpiryDays("2026-07-13"),
+  },
+  {
+    name: "apple",
+    category: "produce",
+    quantity: 0.5,
+    unit: "kg",
+    price: 10.25,
+    expirationDate: "2026-07-13",
+    expiryDays: calculateExpiryDays("2026-07-13"),
+  },
+  {
+    name: "rice",
+    category: "grains",
+    quantity: 0.5,
+    unit: "kg",
+    price: 4.66,
+    expirationDate: "2026-07-13",
+  },
+];
 
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
@@ -24,6 +55,8 @@ export default function ScanningPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  const navigate = useNavigate()
 
   const token = localStorage.getItem("token");
 
@@ -60,6 +93,22 @@ export default function ScanningPage() {
     );
   };
 
+  const handleNameChange = (indexToUpdate, newName) => {
+    const updatedItems = [...scannedItems];
+    updatedItems[indexToUpdate].name = newName;
+    setScannedItems(updatedItems);
+  };
+
+  const handleDateChange = (indexToUpdate, newDate) => {
+    const updatedItems = [...scannedItems];
+    updatedItems[indexToUpdate] = {
+      ...updatedItems[indexToUpdate],
+      expirationDate: newDate,
+      expiryDays: calculateExpiryDays(newDate),
+    };
+
+    setScannedItems(updatedItems);
+  };
   const handleDeleteItem = (indexToDelete) => {
     setScannedItems((prevItems) =>
       prevItems.filter((item, index) => index !== indexToDelete),
@@ -91,7 +140,14 @@ export default function ScanningPage() {
       });
 
       const items = res.data?.items;
-      setScannedItems(items || []);
+      // calculate the expiry days from expiration date
+      if (items) {
+        const finalizedItems = items.map((item) => ({
+          ...item,
+          expiryDays: calculateExpiryDays(item.expirationDate),
+        }));
+        setScannedItems(finalizedItems);
+      }
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -102,16 +158,55 @@ export default function ScanningPage() {
     }
   };
 
+  const handleSubmit = async () => {
+    if (!scannedItems || scannedItems.length === 0) {
+      setError("No Items in the Scanning List. Please add items");
+    }
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const body = scannedItems.map((item) => ({
+        name: item.name,
+        category: item.category,
+        quantity: Number(item.quantity),
+        unit: item.unit,
+        expirationDate: item.expirationDate,
+      }));
+
+      console.log("body",body)
+
+      // waiting for the actual api
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setSuccess("Items successfully added");
+
+      setScannedItems([]);
+
+      navigate('/fridge')
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+          "Something Went wrong. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container maxWidth={{ xs: "xs", md: "lg" }}>
-      <Nav />
+      <Nav handleClickBack={()=>navigate(-1)}/>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+        <Alert
+          severity="success"
+          sx={{ mb: 2 }}
+          onClose={() => setSuccess(null)}
+        >
           {success}
         </Alert>
       )}
@@ -132,7 +227,7 @@ export default function ScanningPage() {
             startIcon={
               loading ? <CircularProgress size={20} color="inherit" /> : null
             }
-            sx={{ py: 2, width:'80%'}}
+            sx={{ py: 2, width: "80%" }}
           >
             {loading ? "Process Receipt with AI..." : "Scan Receipt"}
           </Button>
@@ -141,22 +236,30 @@ export default function ScanningPage() {
 
       {scannedItems.length > 0 && (
         <Box
-          sx={{ mt: 4, mb: 9, display: "flex", justifyContent: "center", flexDirection:'column'}}
+          sx={{
+            mt: 4,
+            mb: 9,
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
         >
           <SectionHeader />
           <Grid container spacing={{ xs: 1, md: 3 }} sx={{ mt: 2, pb: 4 }}>
             {scannedItems.map((item, index) => (
-              <Grid item size={6} sx={{ display: 'flex' }} key={index}>
+              <Grid size={6} sx={{ display: "flex" }} key={index}>
                 <ReceiptItem
-                  key={index}
                   name={item.name}
                   category={item.category}
                   expiryDays={item.expiryDays}
                   quantity={item.quantity}
                   unit={item.unit}
                   index={index}
+                  expirationDate={item.expirationDate}
                   handleUpdateQuantity={handleUpdateQuantity}
                   handleDeleteItem={handleDeleteItem}
+                  handleNameChange={handleNameChange}
+                  handleDateChange={handleDateChange}
                 />
               </Grid>
             ))}
@@ -164,9 +267,16 @@ export default function ScanningPage() {
 
           <Button
             variant="contained"
-            startIcon={<CheckCircleOutlineOutlinedIcon />}
-             sx={{ py: 2 }}
-            // onClick={}
+            startIcon={
+              loading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <CheckCircleOutlineOutlinedIcon />
+              )
+            }
+            sx={{ py: 2 }}
+            onClick={handleSubmit}
+            disabled={loading || scannedItems.length === 0}
           >
             Confirm All Items
           </Button>
