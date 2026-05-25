@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -81,6 +82,7 @@ function Header() {
 }
 
 export default function Fridge() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Items");
   const [search, setSearch] = useState("");
 
@@ -160,6 +162,8 @@ export default function Fridge() {
                 transform: "scale(1.02)",
               },
             }}
+            // foward to add-ingredient page
+            onClick={() => navigate("/frigde-add")}
           >
             <Box sx={{ textAlign: "center" }}>
               <AddIcon sx={{ fontSize: 40, color: "primary.dark" }} />
@@ -184,7 +188,7 @@ export default function Fridge() {
         )}
       </Grid>
 
-      <Tooltip title="Add Item" arrow>
+      <Tooltip title="Add Item" arrow onClick={() => navigate("/frigde-add")}>
         <Fab
           sx={{
             position: "fixed",
