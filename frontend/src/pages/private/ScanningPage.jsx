@@ -45,7 +45,6 @@ const testData = [
   },
 ];
 
-
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
@@ -55,7 +54,7 @@ export default function ScanningPage() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
 
@@ -173,7 +172,7 @@ export default function ScanningPage() {
         expirationDate: item.expirationDate,
       }));
 
-      console.log("body",body)
+      console.log("body", body);
 
       // ---------------waiting for the actual api ----------------------------
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -181,7 +180,7 @@ export default function ScanningPage() {
 
       setScannedItems([]);
 
-      navigate('/fridge')
+      navigate("/fridge");
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -194,7 +193,7 @@ export default function ScanningPage() {
 
   return (
     <Container maxWidth={{ xs: "xs", md: "lg" }}>
-      <Nav handleClickBack={()=>navigate(-1)}/>
+      <Nav handleClickBack={() => navigate(-1)} />
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
@@ -226,7 +225,10 @@ export default function ScanningPage() {
             startIcon={
               loading ? <CircularProgress size={20} color="inherit" /> : null
             }
-            sx={{ py: 2, width: "80%" }}
+            sx={{
+              py: 2,
+              width: { xs: "80%", md: "30%" },
+            }}
           >
             {loading ? "Process Receipt with AI..." : "Scan Receipt"}
           </Button>
