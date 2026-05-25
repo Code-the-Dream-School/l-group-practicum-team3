@@ -175,8 +175,13 @@ export default function ScanningPage() {
       console.log("body", body);
 
       // ---------------waiting for the actual api ----------------------------
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await api.post("/api/grocery/", body, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setSuccess("Items successfully added");
+      
 
       setScannedItems([]);
 
