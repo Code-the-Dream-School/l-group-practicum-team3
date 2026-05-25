@@ -1,64 +1,12 @@
-import { useState } from "react";
-import { Box, Typography, Grid, Fab, Tooltip, Card, CardContent } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Typography, Grid, Fab, Tooltip, Card } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 import AppLogo from "../../components/AppLogo";
 import SearchBar from "../../components/fridge/SearchBar";
 import CategoryFilter from "../../components/fridge/CategoryFilter";
 import ItemCard from "../../components/fridge/ItemCard";
-
-const data = {
-    "date": "06/01/2016",
-    "items": [
-        {
-            "name": "Zucchini",
-            "category": "produce",
-            "quantity": 0.778,
-            "unit": "kg",
-            "price": 4.66
-        },
-        {
-            "name": "Chicken",
-            "category": "proteins",
-            "quantity": 0.500,
-            "unit": "kg",
-            "price": 10.25
-        },
-        {
-            "name": "Cheese",
-            "category": "dairy",
-            "quantity": 0.5,
-            "unit": "kg",
-            "price": 4.66
-        },
-        {
-            "name": "milk",
-            "category": "dairy",
-            "quantity": 0.778,
-            "unit": "2l",
-            "price": 4.66
-        },
-        {
-            "name": "apple",
-            "category": "produce",
-            "quantity": 0.500,
-            "unit": "kg",
-            "price": 10.25
-        },
-        {
-            "name": "rice",
-            "category": "grains",
-            "quantity": 0.5,
-            "unit": "kg",
-            "price": 4.66
-        },
-        
-    ],
-    "subtotal": 24.2,
-    "total": 24.2
-}
-
-const items = data.items;
+import api from "../../utils/axios";
 
 function Header() {
   return (
@@ -73,18 +21,112 @@ export default function Fridge() {
   const [selectedCategory, setSelectedCategory] = useState("All Items");
   const [search, setSearch] = useState("");
 
-  const items = data?.items || [];
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const normalizeCategory = (category) => {
+    switch (category.toLowerCase()) {
+      case "fruit":
+        return "Produce";
+      case "vegetable":
+        return "Produce";
+      case "dairy":
+        return "Dairy";
+      case "grain":
+        return "Grains";
+      case "protein":
+        return "Proteins";
+      case "meat":
+        return "Proteins";
+      default:
+        return category;
+    }
+  };
+
   const searchTerm = search.trim().toLowerCase();
 
-  const filteredItems = items.filter(item => {
-    if (searchTerm) {
-      return item.name.toLowerCase().includes(searchTerm);
-    };
+  useEffect(() => {
+    const fetchGroceries = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
 
+        const result = await api.get("/api/grocery?page=1&limit=20", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setItems(
+          (result.data.data || []).map(item => ({
+            ...item,
+            category: normalizeCategory(item.category),
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load inventory");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+
+    fetchGroceries();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete(`/api/grocery/${id}`, {
+        headers: {
+          Authorization:`Bearer ${token}`,
+        }
+      });
+
+      //update UI
+      setItems(prev =>
+        prev.filter(item => item.grocery_id !== id)
+      )
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setError("Failed to delete item");
+    }
+  };
+
+  if (loading) {
     return (
-      selectedCategory === "All Items" || item.category.toLowerCase() === selectedCategory.toLowerCase()
+      <Box p={2}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+  if (error) {
+    return (
+      <Box p={2}>
+        <Typography color="error">{error}</Typography>
+      </Box>
     )
+  } 
+
+  //Filter based on search text and selected category
+    const filteredItems = items.filter(item => {
+    const matchesSearch = !searchTerm || item.name.toLowerCase().includes(searchTerm);
+    const matchesCategory = selectedCategory === "All Items" || item.category.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCategory;
   });
+
+  //Expiry calculation
+  const getRemainingDays = (expiryDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const expiry = new Date(expiryDate);
+    expiry.setHours(0,0,0,0);
+
+    const diff = expiry - today;
+
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
 
   return (
     <Box sx={{p: 2, pb: 10, width: "100%", bgcolor: "background.default", minHeight: "100vh",}}>
@@ -100,7 +142,7 @@ export default function Fridge() {
 
       <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
         {
-          filteredItems.map((item, index) => (
+          filteredItems.map((item) => (
             <Grid 
               size={{
                 xs: 6,
@@ -108,9 +150,15 @@ export default function Fridge() {
                 md: 3,
                 lg: 2,
               }} 
-              key={index}
+              key={item.grocery_id}
             >
-              <ItemCard item={item} />
+              <ItemCard 
+                item={{
+                  ...item,
+                  remainingDays: getRemainingDays(item.expiry_date),
+                }} 
+              onDelete={handleDelete} 
+            />
             </Grid>
           ))
         }
@@ -137,7 +185,7 @@ export default function Fridge() {
               cursor: "pointer",
               border: "1px dashed",
               borderColor: "neutral.main",
-              transition: "0.2s",
+              transition: "transform 0.2s ease",
               "&:hover": {
                 transform: "scale(1.02)",
                 
@@ -178,7 +226,6 @@ export default function Fridge() {
         <AddIcon />
       </Fab>
       </Tooltip>
-
     </Box>
   )
 }
