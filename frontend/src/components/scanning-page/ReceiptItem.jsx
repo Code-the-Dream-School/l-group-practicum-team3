@@ -1,17 +1,17 @@
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import TextField from "@mui/material/TextField";
 
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
+
 import { useRef } from "react";
 
 export default function ReceiptItem({
@@ -20,9 +20,9 @@ export default function ReceiptItem({
   expiryDays,
   expirationDate,
   quantity,
-  handleUpdateQuantity,
   unit,
   index,
+  handleUpdateQuantity, 
   handleDeleteItem,
   handleNameChange,
   handleDateChange,
@@ -38,7 +38,7 @@ export default function ReceiptItem({
       }
     }
   };
-  
+
   return (
     <Card
       variant="outlined"
@@ -67,9 +67,6 @@ export default function ReceiptItem({
             height: "20px",
           }}
         />
-        {/* <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>
-          {name}
-        </Typography> */}
         <TextField
           variant="standard"
           value={name || ""}
