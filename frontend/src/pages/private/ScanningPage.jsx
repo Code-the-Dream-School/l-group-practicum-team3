@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 const testData = [
   {
     name: "rice",
-    category: "grains",
+    category: "condiment",
     quantity: 0.5,
     unit: "kg",
     price: 4.66,
@@ -28,7 +28,7 @@ const testData = [
   },
   {
     name: "apple",
-    category: "produce",
+    category: "fruit",
     quantity: 0.5,
     unit: "kg",
     price: 10.25,
@@ -36,8 +36,8 @@ const testData = [
     expiryDays: calculateExpiryDays("2026-07-13"),
   },
   {
-    name: "rice",
-    category: "grains",
+    name: "beef",
+    category: "meat",
     quantity: 0.5,
     unit: "kg",
     price: 4.66,
@@ -46,7 +46,7 @@ const testData = [
 ];
 
 export default function ScanningPage() {
-  const [scannedItems, setScannedItems] = useState([]);
+  const [scannedItems, setScannedItems] = useState(testData);
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -170,7 +170,7 @@ export default function ScanningPage() {
         category: item.category,
         quantity: Number(item.quantity),
         unit: item.unit,
-        expirationDate: item.expirationDate,
+        expiry_date: item.expirationDate,
       }));
 
       console.log("body", body);
