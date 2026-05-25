@@ -159,6 +159,7 @@ export default function ScanningPage() {
   const handleSubmit = async () => {
     if (!scannedItems || scannedItems.length === 0) {
       setError("No Items in the Scanning List. Please add items");
+      return
     }
     setLoading(true);
     setError(null);
@@ -174,14 +175,13 @@ export default function ScanningPage() {
 
       console.log("body", body);
 
-      // ---------------waiting for the actual api ----------------------------
+      // ---------------waiting for the ai scan api to fix category naming mismatch and then test submitting to grocery list----------------------------
       await api.post("/api/grocery/", body, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setSuccess("Items successfully added");
-      
 
       setScannedItems([]);
 
