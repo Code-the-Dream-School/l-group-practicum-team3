@@ -8,6 +8,7 @@ const userRouter = require("./routes/auth.route.js");
 const aiRouter = require("./routes/ai.routes.js");
 const groceryRoutes = require("./routes/grocery.route.js");
 const wishlistRouter = require("./routes/wishlist.routes.js");
+const recipeRouter = require("./routes/recipe.routes.js");
 
 const authenticateUser = require("./middleware/auth.middleware.js");
 
@@ -30,9 +31,10 @@ app.use("/api/users", userRouter);
 app.use("/api/grocery", authenticateUser, groceryRoutes);
 app.use("/api/ai", authenticateUser, aiRouter);
 app.use("/api/wishlist", authenticateUser, wishlistRouter);
+app.use("/api/recipes", authenticateUser, recipeRouter);
 
 // Root route
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.send("Backend API is running");
 });
 
