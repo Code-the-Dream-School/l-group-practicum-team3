@@ -59,23 +59,15 @@ const NumberField = ({ value, onChange }) => {
     </Box>
   );
 };
-export default function AddIngredientForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    quantity: 0,
-    unit: "",
-    expiry_date: null,
-  });
-
+export default function AddIngredientForm({ formData, onChange }) {
   console.log(formData);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    onChange({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleDateChange = (newValue) => {
-    setFormData({
+    onChange({
       ...formData,
       expiry_date: newValue,
     });

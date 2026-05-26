@@ -42,7 +42,6 @@ export function AuthContextProvider({ children }) {
 
   // login
   const login = useCallback(async (email, password) => {
-    
     try {
       const response = await api.post("/api/users/login", { email, password });
 
@@ -65,7 +64,6 @@ export function AuthContextProvider({ children }) {
 
   //   signup
   const register = useCallback(async (name, email, password) => {
-   
     try {
       const response = await api.post("/api/users/register", {
         name,
