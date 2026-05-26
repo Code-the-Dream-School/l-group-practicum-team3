@@ -102,7 +102,7 @@ export default function AddIngredientForm({ formData, onChange }) {
           <MenuItem value={"ml"}>ml</MenuItem>
           <MenuItem value={"cup"}>cup</MenuItem>
           <MenuItem value={"tbsp"}>tbsp</MenuItem>
-          <MenuItem value={"tsp"}>lb</MenuItem>
+          <MenuItem value={"tsp"}>tsp</MenuItem>
           <MenuItem value={"piece"}>piece</MenuItem>
         </Select>
       </FormControl>
