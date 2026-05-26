@@ -11,7 +11,7 @@ const categoryIcons = {
   grains: <Wheat size={20} color="currentColor" />
 };
  
-export default function ItemCard({item, onDelete}) {
+export default function ItemCard({item, onDelete, onRestock}) {
   const style = getExpiryStyle(item.remainingDays);
   return (
     <Card 
@@ -138,6 +138,7 @@ export default function ItemCard({item, onDelete}) {
           </IconButton>
 
           <Button 
+            onClick={() => onRestock(item)}
             sx={{
               bgcolor: "action.restock",
               color: "primary.main",
@@ -168,6 +169,7 @@ export default function ItemCard({item, onDelete}) {
           </Button>
 
           <IconButton
+            onClick={() => onDelete(item.grocery_id)}
             sx={{
               bgcolor: "neutral.light",
               color: "primary.main",
@@ -177,7 +179,7 @@ export default function ItemCard({item, onDelete}) {
               height: { xs: 26, sm: 32, md: 36 },
             }}
           >
-            <CheckIcon  fontSize="small" onClick={() => onDelete(item.grocery_id)} />
+            <CheckIcon  fontSize="small" />
           </IconButton>
 
         </Stack>  

@@ -75,6 +75,29 @@ export default function Fridge() {
     fetchGroceries();
   }, []);
 
+  const handleRestock = async (item) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/api/wishlist",
+        {
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Added to wishlist");
+    } catch (err) {
+      console.error("Restock failed:", err);
+      setError("Failed to add item to shopping list");
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -157,7 +180,8 @@ export default function Fridge() {
                   ...item,
                   remainingDays: getRemainingDays(item.expiry_date),
                 }} 
-              onDelete={handleDelete} 
+              onDelete={handleDelete}
+              onRestock={handleRestock} 
             />
             </Grid>
           ))
