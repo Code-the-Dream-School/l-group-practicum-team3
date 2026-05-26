@@ -17,6 +17,7 @@ export function AuthContextProvider({ children }) {
       const hash = window.location.hash;
       const params = new URLSearchParams(hash.replace("#", "?"));
       const tokenFromUrl = params.get("access_token");
+      console.log(tokenFromUrl)
 
       if (tokenFromUrl) {
         localStorage.setItem("token", tokenFromUrl);
@@ -108,13 +109,9 @@ export function AuthContextProvider({ children }) {
   // google login
   const googleLogin = useCallback(async () => {
     try {
-      const response = await api.get("/api/users/loginGoogle");
-
-      const googleRedictURL = response.data.url;
-
-      if (googleRedictURL) {
-        window.location.href = googleRedictURL;
-      }
+      const baseURL= import.meta.env.VITE_API_URL
+        window.location.href = `${baseURL}/api/users/auth/google`;
+      
     } catch (error) {
       return {
         success: false,

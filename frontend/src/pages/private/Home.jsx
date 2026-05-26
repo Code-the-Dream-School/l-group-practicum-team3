@@ -7,87 +7,29 @@ import SectionHeading from "../../components/home/SectionHeading";
 import ActionButton from "../../components/home/ActionButton";
 import Greeting from "../../components/home/Greeting";
 import ExpiringItemCard from "../../components/home/ExpiringItemCard";
+import AppLogo from "../../components/AppLogo";
 
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
+import api from "../../utils/axios";
+import Alert from "@mui/material/Alert";
+import {
+  calculateExpiryDays,
+  getExpiringItemsForReceipes,
+} from "../../utils/inventoryUtil";
 
 function Home() {
   const { user } = UserAuth();
   const name = user?.user_metadata?.display_name || "Chef";
 
-  const data = {
-    date: "06/01/2016",
-    items: [
-      {
-        name: "Zucchini",
-        category: "produce",
-        quantity: 0.778,
-        unit: "kg",
-        price: 4.66,
-        expiryDays: 6,
-      },
-      {
-        name: "Chicken",
-        category: "proteins",
-        quantity: 0.5,
-        unit: "kg",
-        price: 10.25,
-        expiryDays: 3,
-      },
-      {
-        name: "Cheese",
-        category: "dairy",
-        quantity: 0.5,
-        unit: "kg",
-        price: 4.66,
-        expiryDays: 0,
-      },
-      {
-        name: "milk",
-        category: "dairy",
-        quantity: 0.778,
-        unit: "2l",
-        price: 4.66,
-        expiryDays: 4,
-      },
-      {
-        name: "apple",
-        category: "produce",
-        quantity: 0.5,
-        unit: "kg",
-        price: 10.25,
-        expiryDays: 3,
-      },
-      {
-        name: "rice",
-        category: "grains",
-        quantity: 0.5,
-        unit: "kg",
-        price: 4.66,
-        expiryDays: 1,
-      },
-      {
-        name: "apple",
-        category: "produce",
-        quantity: 0.5,
-        unit: "kg",
-        price: 10.25,
-        expiryDays: 3,
-      },
-      {
-        name: "rice",
-        category: "grains",
-        quantity: 0.5,
-        unit: "kg",
-        price: 4.66,
-        expiryDays: 1,
-      },
-    ],
-    subtotal: 24.2,
-    total: 24.2,
-  };
+  const [itemlist, setItemList] = useState([]);
+  const [recipes, setRecipes] = useState([]);
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const recipeData = [
     {
@@ -111,14 +53,79 @@ function Home() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchHomepageData = async () => {
+      setError("");
+      setLoading(true);
+
+      try {
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const expiringItemsResult = await api.get("/api/grocery?limit=9", {
+          headers,
+        });
+
+        // expiring items
+        const items = expiringItemsResult.data.data;
+        if (items) {
+          const finalizedItems = items.map((item) => ({
+            ...item,
+            expiryDays: calculateExpiryDays(item.expiry_date),
+          }));
+
+          finalizedItems.sort((a, b) => a.expiryDays - b.expiryDays);
+
+          setItemList(finalizedItems);
+
+          // receipe fetching based on expiring items
+          // const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
+
+          // if (searchQuery) {
+          //   const recipesResult = await api.get(
+          //     `/api/recipes/search?ingredients=salmon&number=5`,
+          //     {
+          //       headers,
+          //     },
+          //   );
+
+          //   console.log(recipesResult);
+          //   const receipesList = recipesResult.data;
+          //   setRecipes(receipesList);
+          // }
+        }
+      } catch (error) {
+        setError(
+          error.response?.data?.message ||
+            "Failed To Load Data. Please Try again",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomepageData();
+  }, [user]);
+
+  if (loading) {
+    return <p>Loading</p>;
+  }
+
   return (
     <Container
       maxWidth={{ xs: "xs", md: "lg" }}
       sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 } }}
     >
-      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
+      <AppLogo />
       <Greeting name={name} />
-      
 
       {/* Expiring Soon section */}
       <Box sx={{ mt: 2 }}>
@@ -140,9 +147,9 @@ function Home() {
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-{/* --------------- need to UPDATE backend data here ---------------------*/}
+          {/* --------------- need to UPDATE backend data here ---------------------*/}
           {/* data will be sort based on the expiration date */}
-          {data.items.map((item, index) => (
+          {itemlist.map((item, index) => (
             <ExpiringItemCard
               key={index}
               name={item.name}
@@ -157,11 +164,11 @@ function Home() {
       <Box
         sx={{
           display: { xs: "flex", md: "none" },
-          
+
           mt: 3,
-         width: "100%",
+          width: "100%",
           gap: { xs: 2, md: 4 },
-          justifyContent: { xs: "center", md: "flex-start" }
+          justifyContent: { xs: "center", md: "flex-start" },
         }}
       >
         <ActionButton
@@ -189,7 +196,7 @@ function Home() {
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
- {/* --------------- need to UPDATE backend data here ---------------------*/}
+        {/* --------------- need to UPDATE backend data here ---------------------*/}
         <Stack spacing={2} direction="row">
           {recipeData.map((recipe, index) => (
             <RecipeCard
