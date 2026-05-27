@@ -6,7 +6,7 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
-export default function RecipeCard({ name, imgLink, category }) {
+export default function RecipeCard({ name, imgLink, ingredient }) {
   return (
     <Card
       sx={{
@@ -20,7 +20,7 @@ export default function RecipeCard({ name, imgLink, category }) {
         <CardMedia
           component="img"
           image={imgLink}
-          alt="Salmon Avocado salad"
+          alt={name}
           sx={{
             height: "130px",
             width: "100%",
@@ -43,7 +43,7 @@ export default function RecipeCard({ name, imgLink, category }) {
             sx={{ justifyContent: "space-between" }}
           >
             <Chip
-              label={category}
+              label={ingredient}
               variant="outlined"
               sx={{
                 backgroundColor: "#FFFAEB",

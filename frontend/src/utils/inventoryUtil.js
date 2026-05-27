@@ -54,7 +54,7 @@ export const getExpiringItemsForReceipes = (items, daysLeft = 3) => {
     .map((item) => item.name.toLowerCase().trim())
     .join(",");
 
-    console.log(searchedItems)
+    console.log("searchedItems", searchedItems)
 
   return searchedItems;
 };

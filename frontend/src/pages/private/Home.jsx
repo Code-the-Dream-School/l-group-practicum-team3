@@ -20,6 +20,7 @@ import {
   calculateExpiryDays,
   getExpiringItemsForReceipes,
 } from "../../utils/inventoryUtil";
+import OpenSpeedDial from "../../components/home/OpenSpeedDial";
 
 function Home() {
   const { user } = UserAuth();
@@ -30,26 +31,6 @@ function Home() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const recipeData = [
-    {
-      name: "Salmon Avocado salad",
-      imgLink: "https://www.themealdb.com/images/media/meals/1549542994.jpg",
-      category: "Seafood",
-    },
-    {
-      name: "Steak Diane",
-      imgLink:
-        "https://www.themealdb.com/images/media/meals/vussxq1511882648.jpg",
-      category: "Beef",
-    },
-    {
-      name: "Chicken Handi",
-      imgLink:
-        "https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg",
-      category: "Chicken",
-    },
-  ];
 
   const navigate = useNavigate();
 
@@ -81,22 +62,25 @@ function Home() {
           setItemList(finalizedItems);
 
           // receipe fetching based on expiring items
-          // const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
+          const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
 
-          // if (searchQuery) {
-          //   const recipesResult = await api.get(
-          //     `/api/recipes/search?ingredients=salmon&number=5`,
-          //     {
-          //       headers,
-          //     },
-          //   );
+          if (searchQuery) {
+            const recipesResult = await api.get(
+              `/api/recipes/search?ingredients=${searchQuery}&number=5`,
+              {
+                headers,
+              },
+            );
 
-          //   console.log(recipesResult);
-          //   const receipesList = recipesResult.data;
-          //   setRecipes(receipesList);
-          // }
+            console.log("recipesResult", recipesResult);
+
+            const receipesList = recipesResult.data?.recipes;
+            console.log("recipesList", receipesList);
+            setRecipes(receipesList);
+          }
         }
       } catch (error) {
+        console.log(error);
         setError(
           error.response?.data?.message ||
             "Failed To Load Data. Please Try again",
@@ -116,7 +100,7 @@ function Home() {
   return (
     <Container
       maxWidth={{ xs: "xs", md: "lg" }}
-      sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 } }}
+      sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 }, position: "relative" }}
     >
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -198,15 +182,19 @@ function Home() {
         />
         {/* --------------- need to UPDATE backend data here ---------------------*/}
         <Stack spacing={2} direction="row">
-          {recipeData.map((recipe, index) => (
+          {recipes.map((recipe) => (
             <RecipeCard
-              key={index}
-              name={recipe.name}
-              imgLink={recipe.imgLink}
-              category={recipe.category}
+              key={recipe.id}
+              name={recipe.title}
+              imgLink={recipe.image}
+              ingredient={recipe.usedIngredients[0]}
             />
           ))}
         </Stack>
+      </Box>
+
+      <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        <OpenSpeedDial />
       </Box>
     </Container>
   );
