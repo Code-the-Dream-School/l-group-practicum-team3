@@ -13,8 +13,10 @@ export default function AddItemForm({ onClose, onSave }) {
     const [category, setCategory] = useState("Produce");
 
     const handleSave = () => {
+        if (!itemName.trim()) return;
+
         onSave({
-            name: itemName,
+            name: itemName.trim(),
             quantity: quantity,
             unit: unit,
             category: category,
@@ -37,7 +39,7 @@ export default function AddItemForm({ onClose, onSave }) {
     const step = STEP[unit] || 1;
 
     const updateQuantity = (changeAmount) => {
-        setQuantity(prev => Math.max(0, prev + changeAmount));
+        setQuantity(prev => Math.max(1, prev + changeAmount));
     }
     return (
         <Paper
@@ -142,7 +144,10 @@ export default function AddItemForm({ onClose, onSave }) {
                                 px: 5,
                             }}
                         >
-                            <IconButton onClick={() => updateQuantity(-step)}>
+                            <IconButton 
+                                onClick={() => updateQuantity(-step)}
+                                disabled={quantity <= 1}
+                            >
                                 <RemoveIcon />
                             </IconButton>
 
@@ -205,8 +210,7 @@ export default function AddItemForm({ onClose, onSave }) {
                 <Stack direction="row" spacing={2} > 
                     <Box sx={{flex: 1, minWidth: 0,}}>
                         <Typography
-                            sx={{
-                                alignItems: "flex-end",
+                            sx={{                                
                                 mb: 1,
                                 color: "primary.main",
                                 fontWeight: 700,
@@ -242,6 +246,7 @@ export default function AddItemForm({ onClose, onSave }) {
 
                     <Fab
                         onClick={handleSave}
+                        disabled={!itemName.trim()}
                         sx={{
                             width: 55,
                             height: 55,
