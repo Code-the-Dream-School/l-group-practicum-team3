@@ -6,9 +6,14 @@ const {
   addWishlistItems,
   updateWishlistItem,
   deleteWishlistItem,
+  clearWishlist,
 } = require("../controllers/wishlist.controller.js");
 
-router.route("/").get(getWishlistItems).post(addWishlistItems).delete();
+router
+  .route("/")
+  .get(getWishlistItems)
+  .post(addWishlistItems)
+  .delete(clearWishlist);
 
 router.route("/:id").patch(updateWishlistItem).delete(deleteWishlistItem);
 
