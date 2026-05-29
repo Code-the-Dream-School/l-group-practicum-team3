@@ -21,6 +21,7 @@ import {
   getExpiringItemsForReceipes,
 } from "../../utils/inventoryUtil";
 import OpenSpeedDial from "../../components/home/OpenSpeedDial";
+import Loading from "../../components/Loading";
 
 function Home() {
   const { user } = UserAuth();
@@ -66,7 +67,7 @@ function Home() {
 
           if (searchQuery) {
             const recipesResult = await api.get(
-              `/api/recipes/search?ingredients=${searchQuery}&number=5`,
+              `/api/recipes/search?ingredients=${searchQuery}&number=10`,
               {
                 headers,
               },
@@ -94,7 +95,7 @@ function Home() {
   }, [user]);
 
   if (loading) {
-    return <p>Loading</p>;
+    return <Loading />;
   }
 
   return (
@@ -107,7 +108,6 @@ function Home() {
           {error}
         </Alert>
       )}
-
       <AppLogo />
       <Greeting name={name} />
 
@@ -131,8 +131,6 @@ function Home() {
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-          {/* --------------- need to UPDATE backend data here ---------------------*/}
-          {/* data will be sort based on the expiration date */}
           {itemlist.map((item, index) => (
             <ExpiringItemCard
               key={index}
@@ -180,7 +178,6 @@ function Home() {
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
-        {/* --------------- need to UPDATE backend data here ---------------------*/}
         <Stack spacing={2} direction="row">
           {recipes.map((recipe) => (
             <RecipeCard
