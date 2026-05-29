@@ -31,7 +31,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const values = {email, password}
+    const values = { email, password };
 
     const errors = validate(values);
     setFormErrors(errors);
@@ -53,7 +53,6 @@ function Login() {
       }
     }
   };
-
 
   return (
     <>
@@ -99,7 +98,7 @@ function Login() {
           <Button
             fullWidth
             variant="outlined"
-            onClick={()=>googleLogin()}
+            onClick={() => googleLogin()}
             startIcon={<GoogleIcon />}
             sx={{
               py: 1.5,
@@ -130,7 +129,7 @@ function Login() {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              bgcolor: "#F5F4ED",
+              backgroundColor: "textField.bgColor",
               padding: 3,
               borderRadius: "12px",
             }}

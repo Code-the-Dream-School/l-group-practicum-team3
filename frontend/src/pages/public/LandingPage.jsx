@@ -21,12 +21,14 @@ import { useNavigate } from "react-router-dom";
 function OverlineLabel({ icon, text }) {
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mb: 1.5 }}>
-      <Box sx={{ color: "#8C7A39", display: "flex", fontSize: 15 }}>{icon}</Box>
+      <Box sx={{ color: "typography.color", display: "flex", fontSize: 15 }}>
+        {icon}
+      </Box>
       <Typography
         variant="overline"
         sx={{
           fontWeight: 800,
-          color: "#8C7A39",
+          color: "typography.color",
           letterSpacing: "0.1em",
           lineHeight: 1,
         }}
@@ -507,7 +509,7 @@ export default function LandingPage() {
           <Paper
             elevation={0}
             sx={{
-              bgcolor: "#F5F4ED",
+              backgroundColor: "textField.bgColor",
               borderRadius: "12px",
               p: { xs: 3, md: 4 },
             }}
@@ -577,7 +579,7 @@ export default function LandingPage() {
           <Paper
             elevation={0}
             sx={{
-              bgcolor: "#F5F4ED",
+              backgroundColor: "textField.bgColor",
               borderRadius: "12px",
               p: { xs: 3, md: 4 },
             }}

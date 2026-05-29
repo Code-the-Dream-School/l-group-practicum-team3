@@ -34,7 +34,9 @@ export default function FavoriteRow({ recipe, onRemove }) {
       <Avatar
         variant="rounded"
         src={!imgError ? recipe.image : undefined}
-        imgProps={{ onError: () => setImgError(true) }}
+        slotProps={{
+          img: { onError: () => setImgError(true) },
+        }}
         sx={{
           width: 64,
           height: 64,

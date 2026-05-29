@@ -28,7 +28,7 @@ export default function QuickPickChips({ activeChip, onChipClick }) {
               borderRadius: "50px",
               height: 36,
               cursor: "pointer",
-              bgcolor:
+              backgroundColor:
                 activeChip === chip
                   ? "secondary.main"
                   : alpha(theme.palette.primary.main, 0.06),
@@ -39,9 +39,9 @@ export default function QuickPickChips({ activeChip, onChipClick }) {
                   ? "none"
                   : `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
               "&:hover": {
-                bgcolor:
+                backgroundColor:
                   activeChip === chip
-                    ? "#f0c420"
+                    ? "background.hover"
                     : alpha(theme.palette.primary.main, 0.12),
               },
             }}

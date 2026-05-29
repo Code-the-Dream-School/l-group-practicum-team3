@@ -148,7 +148,7 @@ function Signup() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Name
               </Typography>
@@ -162,7 +162,7 @@ function Signup() {
                 helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               />
@@ -170,7 +170,7 @@ function Signup() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Email Address
               </Typography>
@@ -186,7 +186,7 @@ function Signup() {
                 onChange={(e) => setEmail(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               ></TextField>
@@ -194,7 +194,7 @@ function Signup() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Password
               </Typography>
@@ -213,7 +213,7 @@ function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               ></TextField>

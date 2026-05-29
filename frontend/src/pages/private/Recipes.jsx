@@ -175,7 +175,7 @@ export default function Recipes() {
               sx={{
                 p: 4,
                 borderRadius: "16px",
-                bgcolor: "#F5F4ED",
+                backgroundColor: "textField.bgColor",
                 textAlign: "center",
               }}
             >

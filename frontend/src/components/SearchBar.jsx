@@ -23,7 +23,7 @@ export default function SearchBar({ value, onChange, onKeyDown }) {
       sx={{
         mb: 2,
         "& .MuiOutlinedInput-root": {
-          bgcolor: "#F5F4ED",
+          backgroundColor: "textField.bgColor",
           borderRadius: "50px",
           "& fieldset": { borderColor: "transparent" },
           "&:hover fieldset": {

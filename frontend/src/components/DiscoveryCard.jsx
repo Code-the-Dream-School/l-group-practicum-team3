@@ -32,7 +32,6 @@ export default function DiscoveryCard({
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        bgcolor: theme.palette.background.paper,
         transition: "transform .18s, box-shadow .18s",
         "&:hover": {
           transform: "translateY(-3px)",
@@ -77,7 +76,7 @@ export default function DiscoveryCard({
             position: "absolute",
             top: 8,
             right: 8,
-            bgcolor: "white",
+            bgcolor: "background.paper",
             width: 32,
             height: 32,
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
@@ -112,7 +111,7 @@ export default function DiscoveryCard({
             sx={{
               fontWeight: 800,
               fontSize: 9,
-              color: "#8C7A39",
+              color: "typography.color",
               letterSpacing: "0.08em",
               lineHeight: 1,
             }}
