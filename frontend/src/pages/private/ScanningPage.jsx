@@ -16,37 +16,8 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const testData = [
-  {
-    name: "rice",
-    category: "condiment",
-    quantity: 0.5,
-    unit: "kg",
-    price: 4.66,
-    expirationDate: "2026-07-13",
-    expiryDays: calculateExpiryDays("2026-07-13"),
-  },
-  {
-    name: "apple",
-    category: "fruit",
-    quantity: 0.5,
-    unit: "kg",
-    price: 10.25,
-    expirationDate: "2026-07-13",
-    expiryDays: calculateExpiryDays("2026-07-13"),
-  },
-  {
-    name: "beef",
-    category: "meat",
-    quantity: 0.5,
-    unit: "kg",
-    price: 4.66,
-    expirationDate: "2026-07-13",
-  },
-];
-
 export default function ScanningPage() {
-  const [scannedItems, setScannedItems] = useState(testData);
+  const [scannedItems, setScannedItems] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -144,6 +115,7 @@ export default function ScanningPage() {
           ...item,
           expiryDays: calculateExpiryDays(item.expirationDate),
         }));
+        console.log(finalizedItems)
         setScannedItems(finalizedItems);
       }
     } catch (error) {
@@ -168,14 +140,13 @@ export default function ScanningPage() {
       const body = scannedItems.map((item) => ({
         name: item.name,
         category: item.category,
-        quantity: Number(item.quantity),
-        unit: item.unit,
+        quantity: Number(item.quantity) || 1,
+        unit: item.unit && item.unit.trim() !== "" ? item.unit : "piece",
         expiry_date: item.expirationDate,
+        source:'receipt'
       }));
 
-      console.log("body", body);
 
-      // ---------------waiting for the ai scan api to fix category naming mismatch and then test submitting to grocery list----------------------------
       await api.post("/api/grocery/", body, {
         headers: {
           Authorization: `Bearer ${token}`,
