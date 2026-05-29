@@ -13,12 +13,12 @@ export default function SearchBar({ value, onChange, onKeyDown }) {
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
+      slotProps={{
+        input: {
+          startAdornment: (
             <SearchIcon sx={{ color: "primary.main", fontSize: 20 }} />
-          </InputAdornment>
-        ),
+          ),
+        },
       }}
       sx={{
         mb: 2,
