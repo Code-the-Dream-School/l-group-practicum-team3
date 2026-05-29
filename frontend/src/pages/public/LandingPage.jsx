@@ -304,7 +304,7 @@ export default function LandingPage() {
   };
 
   return (
-    <Box sx={{ bgcolor: "#FBF9F2", minHeight: "100vh" }}>
+    <Box sx={{ backgroundColor: "background.default", minHeight: "100vh" }}>
       {/* HERO */}
       <Container
         maxWidth="lg"

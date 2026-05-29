@@ -35,7 +35,13 @@ export default function Recipes() {
   } = useRecipes();
 
   return (
-    <Box sx={{ bgcolor: "#FBF9F2", minHeight: "100vh", pb: { xs: 12, md: 6 } }}>
+    <Box
+      sx={{
+        backgroundColor: "background.default",
+        minHeight: "100vh",
+        pb: { xs: 12, md: 6 },
+      }}
+    >
       <Box
         sx={{
           maxWidth: { md: 860, lg: 1000 },

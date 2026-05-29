@@ -59,12 +59,12 @@ function Login() {
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "1rem", padding: 2, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "1rem", padding: 2, backgroundColor: "background.default" }}
         >
           <Avatar
             sx={{
               mx: "auto",
-              bgcolor: "primary.dark",
+              backgroundColor: "primary.dark",
               textAlign: "center",
               mb: 2,
               width: 56,

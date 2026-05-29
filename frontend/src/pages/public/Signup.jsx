@@ -60,7 +60,7 @@ function Signup() {
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "2rem", padding: 2, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "2rem", padding: 2, backgroundColor: "background.default" }}
         >
           <Stack
             direction="row"
@@ -69,7 +69,7 @@ function Signup() {
           >
             <Avatar
               sx={{
-                bgcolor: "primary.dark",
+                backgroundColor: "primary.dark",
                 width: 40,
                 height: 40,
               }}
