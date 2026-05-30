@@ -1,9 +1,9 @@
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { alpha } from "@mui/material/styles";
-import { useTheme } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
+import { alpha, useTheme } from "@mui/material/styles";
 
-export default function SearchBar({ value, onChange, onKeyDown }) {
+export default function SearchBar({ value, onChange, onKeyDown, onClear }) {
   const theme = useTheme();
 
   return (
@@ -13,12 +13,20 @@ export default function SearchBar({ value, onChange, onKeyDown }) {
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
-      slotProps={{
-        input: {
-          startAdornment: (
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
             <SearchIcon sx={{ color: "primary.main", fontSize: 20 }} />
-          ),
-        },
+          </InputAdornment>
+        ),
+        // Clear (✕) button — only shows when there's a value, matches Figma
+        endAdornment: value ? (
+          <InputAdornment position="end">
+            <IconButton size="small" onClick={onClear} edge="end">
+              <CloseIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+            </IconButton>
+          </InputAdornment>
+        ) : null,
       }}
       sx={{
         mb: 2,

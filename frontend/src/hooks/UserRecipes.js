@@ -5,18 +5,18 @@ import {
   addFavorite,
   removeFavorite,
 } from "../pages/private/RecipesApi";
-import { MOCK_DISCOVERY, MOCK_FAVORITES } from "../constants/RecipeConstant";
+import { MOCK_FAVORITES } from "../constants/RecipeConstant";
 
 export function useRecipes() {
   const [query, setQuery] = useState("");
-  const [activeChip, setActiveChip] = useState("Avocado");
-  const [discovery, setDiscovery] = useState(MOCK_DISCOVERY);
+  const [activeChip, setActiveChip] = useState("");
+  const [discovery, setDiscovery] = useState([]); // empty on mount — no mock data
+  const [noMatchFound, setNoMatchFound] = useState(false); // true only when API returns 0 results
   const [favorites, setFavorites] = useState(MOCK_FAVORITES);
-  const [favoritedIds, setFavoritedIds] = useState(new Set([101, 102]));
+  const [favoritedIds, setFavoritedIds] = useState(new Set());
   const [loadingSearch, setLoadingSearch] = useState(false);
-  const [searchError, setSearchError] = useState("");
 
-  // Load favorites on mount
+  // Load real favorites on mount
   useEffect(() => {
     fetchFavorites()
       .then((data) => {
@@ -24,7 +24,7 @@ export function useRecipes() {
         setFavoritedIds(new Set(data.map((f) => f.spoonacular_id)));
       })
       .catch(() => {
-        // keep mock data if API not connected yet
+        // keep mock favorites if API not connected yet
       });
   }, []);
 
@@ -32,14 +32,25 @@ export function useRecipes() {
     async (ingredient) => {
       const term = ingredient || query;
       if (!term.trim()) return;
+
       setLoadingSearch(true);
-      setSearchError("");
+      setNoMatchFound(false);
+
       try {
         const results = await searchByIngredient(term.trim());
-        setDiscovery(results);
+
+        if (!results || results.length === 0) {
+          // reviewer's request: show "No Match Found" state instead of error message
+          setDiscovery([]);
+          setNoMatchFound(true);
+        } else {
+          setDiscovery(results);
+          setNoMatchFound(false);
+        }
       } catch {
-        setSearchError("Couldn't load recipes. Showing sample results.");
-        setDiscovery(MOCK_DISCOVERY);
+        // network / server error — still show no-match UI, not a confusing error string
+        setDiscovery([]);
+        setNoMatchFound(true);
       } finally {
         setLoadingSearch(false);
       }
@@ -55,6 +66,13 @@ export function useRecipes() {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") doSearch();
+  };
+
+  const handleClearSearch = () => {
+    setQuery("");
+    setActiveChip("");
+    setDiscovery([]);
+    setNoMatchFound(false);
   };
 
   const handleToggleFavorite = async (recipe) => {
@@ -74,7 +92,7 @@ export function useRecipes() {
       try {
         await removeFavorite(recipe.id);
       } catch {
-        /* silent revert */
+        /* silent */
       }
     } else {
       const optimistic = {
@@ -89,7 +107,7 @@ export function useRecipes() {
       try {
         await addFavorite(recipe);
       } catch {
-        /* silent revert */
+        /* silent */
       }
     }
   };
@@ -109,18 +127,17 @@ export function useRecipes() {
   };
 
   return {
-    // state
     query,
     activeChip,
     discovery,
+    noMatchFound, // <-- replaces searchError string
     favorites,
     favoritedIds,
     loadingSearch,
-    searchError,
-    // actions
     setQuery,
     handleChipClick,
     handleKeyDown,
+    handleClearSearch,
     handleToggleFavorite,
     handleRemoveFavorite,
   };
