@@ -154,7 +154,7 @@ function Home() {
         }}
       >
         <ActionButton
-          onClick={() => navigate("/add-items")}
+          onClick={() => navigate("/scan")}
           bgColor="primary.dark"
           textColor="primary.contrastText"
           startIcon={<DocumentScannerIcon />}
