@@ -26,14 +26,14 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoutes/>}>
-            <Route path="/landing-page" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
         </Route>
 
         {/* Private Routes */}
         <Route element={<ProtectedRoutes/>}>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/fridge" element={<Fridge />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/shopping-list" element={<ShoppingList />} />
@@ -41,7 +41,7 @@ function App() {
             <Route path="/scan" element={<ScanningPage />}/>
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
 
       </Routes>
       </ThemeProvider>

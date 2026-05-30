@@ -87,7 +87,7 @@ export default function Navbar() {
       <nav className="hidden md:flex sticky top-0 z-50 items-center justify-between px-6 py-2 bg-[#0D631B] shadow-md text-white">
         {/*leftside navlinks*/}
         <div className="hidden md:flex gap-8">
-          <NavLink to="/" className={desktopLink}>Home</NavLink>
+          <NavLink to="/home" className={desktopLink}>Home</NavLink>
           <NavLink to="/fridge" className={desktopLink}>Fridge</NavLink>
           <NavLink to="/recipes" className={desktopLink}>Recipes</NavLink>
           <NavLink to="/shopping-list" className={desktopLink}>Shopping</NavLink>
@@ -110,7 +110,7 @@ export default function Navbar() {
       <div className="fixed bottom-0 left-0 w-full bg-gray-100 border-t border-white/10 shadow-md flex 
             justify-around items-center py-0.5 md:hidden z-50">
 
-        <NavLink to="/" className={mobileLink}>
+        <NavLink to="/home" className={mobileLink}>
           <Home size={26} />
         </NavLink>
         <NavLink to="/fridge" className={mobileLink}>

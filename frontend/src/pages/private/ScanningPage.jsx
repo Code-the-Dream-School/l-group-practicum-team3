@@ -119,9 +119,12 @@ export default function ScanningPage() {
         setScannedItems(finalizedItems);
       }
     } catch (error) {
+     const backendMessage = error.response?.data?.message;
+      
       setError(
-        error.response?.data?.message ||
-          "Failed to read receipt. Please try again.",
+        backendMessage 
+          ? `${backendMessage}. Please try again.` 
+          : "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -159,7 +162,7 @@ export default function ScanningPage() {
       navigate("/fridge");
     } catch (error) {
       setError(
-        error.response?.data?.message ||
+        error.response?.data?.message + "Please try again" ||
           "Something Went wrong. Please try again.",
       );
     } finally {
