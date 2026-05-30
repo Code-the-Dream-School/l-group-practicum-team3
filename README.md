@@ -128,7 +128,8 @@ npm run dev
 Create a `.env` file inside the `frontend` folder:
 
 ```env
-...
+# backend Url - Local Host Port 
+VITE_API_URL=
 ```
 
 Frontend runs on:  
