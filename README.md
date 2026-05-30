@@ -19,7 +19,7 @@ A full-stack web application that helps users manage their kitchen inventory. It
 
 ## 📸 Screenshots
 
-Add screenshots or GIFs of key features here.
+![Landing Page](https://raw.githubusercontent.com/Code-the-Dream-School/l-group-practicum-team3/refs/heads/SKA-74-Update-Readme/frontend/screenshots/Screenshot_29-5-2026_214844_localhost.jpeg)
 
 ## 🛠 Tech Stack
 
