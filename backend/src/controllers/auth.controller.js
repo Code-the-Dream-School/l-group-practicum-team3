@@ -121,13 +121,15 @@ const authCallback = async (req, res) => {
       .json({ error: "No code provided" });
   }
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 
-  return res.redirect(process.env.FRONTEND_URL); // where to redirect to after google login
+  return res.redirect(
+    `${process.env.FRONTEND_URL}?access_token=${data.session.access_token}`
+  );
 };
 
 module.exports = { register, login, loginGoogle, authCallback };

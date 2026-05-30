@@ -1,17 +1,19 @@
 import { Box, Typography, Stack, Grid, Card, CardContent, IconButton, Button, } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
-
-import { Leaf, Egg, Beef, Wheat } from "lucide-react"
+import { Leaf, Milk, Beef, CirclePile, Package, } from "lucide-react";
+import { getExpiryStyle } from "../../utils/inventoryUtil.js"
 
 const categoryIcons = {
   produce: <Leaf size={20} color="currentColor" />,
-  dairy: <Egg size={20} color="currentColor" />,
-  proteins: <Beef size={20} color="currentColor" />,
-  grains: <Wheat size={20} color="currentColor" />
+  dairy: <Milk size={20} color="currentColor" />,
+  meat: <Beef size={20} color="currentColor" />,
+  pantry: <CirclePile size={20} color="currentColor" />,
+  other: <Package size={20} color="currentColor" />,
 };
-
-export default function ItemCard({item}) {
+ 
+export default function ItemCard({item, onDelete, onRestock}) {
+  const style = getExpiryStyle(item.remainingDays);
   return (
     <Card 
       sx={{
@@ -20,15 +22,23 @@ export default function ItemCard({item}) {
         bgcolor: "background.paper",
         boxShadow: "none",
         p: 2,
+        height: "100%",
+        minHeight: 200,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <CardContent 
         sx={{
           p: 0,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
           "&:last-child": {
             pb: 0,
           }
-          }}>
+        }}>
+        <Box sx={{ flexGrow: 1 }}>
         <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
         
         {/*Icon circle*/}
@@ -44,7 +54,7 @@ export default function ItemCard({item}) {
             justifyContent: "center",
           }}
         >
-          {categoryIcons[item.category]}
+          {categoryIcons[item.category?.toLowerCase()] || <CirclePile size={20} color="currentColor" />} 
         </Box>
 
         {/* Days*/}
@@ -52,16 +62,17 @@ export default function ItemCard({item}) {
           sx={{
             position: "absolute",
             right: 16,
-            bgcolor: "neutral.main",
+            bgcolor: style.bg,
+            color: style.text,
             px: 1.2,
-            py: 0.3,
+            py: 0.6,
             borderRadius: "999px",
             fontSize: 10,
-            lineHeight: 1.2,
+            lineHeight: 1.4,
             fontWeight: 600,
           }}
         >
-          5 DAYS
+          {item.remainingDays} DAYS
         </Box>
         </Stack>
 
@@ -83,7 +94,11 @@ export default function ItemCard({item}) {
 
         <Typography 
           sx={{
-            fontSize: 20,
+            fontSize: {
+              xs: 16,
+              sm: 18,
+              md: 20,
+            },
             fontWeight: 700,
             color: "primary.main",
             mt: 0.5,
@@ -102,38 +117,50 @@ export default function ItemCard({item}) {
         >
           {item.quantity} {item.unit}
         </Typography>
+        </Box>
 
-        {/* Actions */}  
+        {/* Action Buttons */}  
         <Stack
           direction="row"  
-          sx={{ alignItems: "center" }}  
-          spacing={1.5}
-          mt={1.5}        
+          sx={{ alignItems: "center", width: "100%", mt: "auto", }}  
+          spacing={{ xs: 0.5, sm: 0.8 }}                  
         >
           <IconButton
             sx={{
               bgcolor: "neutral.light",
               color: "primary.main",
-              px: 0.8,
-              height: 36,
-              borderRadius: "999px"
+              borderRadius: "999px",
+              flexShrink: 0,
+              width: { xs: 26, sm: 32, md: 36 },
+              height: { xs: 26, sm: 32, md: 36 },
             }}
           >
-            <EditIcon fontSize="small"/>
+            <EditIcon sx={{ fontSize: 16 }} />
           </IconButton>
 
           <Button 
+            onClick={() => onRestock(item)}
             sx={{
               bgcolor: "action.restock",
               color: "primary.main",
               fontWeight: 700,
-              fontSize: {
-                xs: 10,
-                sm: 12,
-              },
-              letterSpacing: 2,
               borderRadius: "999px",
-              px: 3,
+              flexGrow: 1,
+              minWidth: 0,
+              fontSize: { xs: 8, sm: 10, md: 11 },
+              letterSpacing: { xs: 0, sm: 0.5, md: 1 },
+              py: { xs: 0.4, sm: 0.7, md: 1, },
+              px: { xs: 0.6, sm: 1.2, md: 1.5, },
+              mx: { xs: 0, sm: 0.8, md: 1.8, },
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+
+              "& .MuiButton-label, & span": {
+                width: "100%",
+                display: "block",
+              },
+              
               "&:hover": {
                 bgcolor: "action.restockHover",
               },
@@ -143,12 +170,14 @@ export default function ItemCard({item}) {
           </Button>
 
           <IconButton
+            onClick={() => onDelete(item.grocery_id)}
             sx={{
               bgcolor: "neutral.light",
               color: "primary.main",
-              px: 0.8,
-              height: 36,
-              borderRadius: "999px"
+              flexShrink: 0,
+              borderRadius: "999px",
+              width: { xs: 26, sm: 32, md: 36 },
+              height: { xs: 26, sm: 32, md: 36 },
             }}
           >
             <CheckIcon  fontSize="small" />
