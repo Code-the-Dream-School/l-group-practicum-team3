@@ -1,6 +1,6 @@
 import { Stack, Chip } from "@mui/material";
 
-const CATEGORIES = ["All Items", "Produce", "Dairy", "Grains", "Proteins"];
+const CATEGORIES = ["All Items", "Produce", "Dairy", "Meat", "Pantry", "Other",];
 
 export default function CategoryFilter({selectedCategory, setSelectedCategory}) {
   return (

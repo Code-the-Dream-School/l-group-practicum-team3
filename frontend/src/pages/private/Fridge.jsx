@@ -27,18 +27,22 @@ export default function Fridge() {
 
   const normalizeCategory = (category) => {
     switch (category.toLowerCase()) {
-      case "fruit":
-        return "Produce";
+      case "fruit":        
       case "vegetable":
         return "Produce";
+
       case "dairy":
         return "Dairy";
-      case "grain":
-        return "Grains";
-      case "protein":
-        return "Proteins";
       case "meat":
-        return "Proteins";
+        return "Meat";
+
+      case "spice":
+      case "condiment":
+      case "canned":
+        return "Pantry";
+      
+      case "other":
+        return "Other";        
       default:
         return category;
     }

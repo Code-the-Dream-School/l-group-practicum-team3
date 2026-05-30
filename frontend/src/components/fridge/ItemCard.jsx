@@ -1,14 +1,15 @@
 import { Box, Typography, Stack, Grid, Card, CardContent, IconButton, Button, } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
-import { Leaf, Milk, Beef, Wheat, CirclePile } from "lucide-react";
+import { Leaf, Milk, Beef, CirclePile, Package, } from "lucide-react";
 import { getExpiryStyle } from "../../utils/inventoryUtil.js"
 
 const categoryIcons = {
   produce: <Leaf size={20} color="currentColor" />,
   dairy: <Milk size={20} color="currentColor" />,
-  proteins: <Beef size={20} color="currentColor" />,
-  grains: <Wheat size={20} color="currentColor" />
+  meat: <Beef size={20} color="currentColor" />,
+  pantry: <CirclePile size={20} color="currentColor" />,
+  other: <Package size={20} color="currentColor" />,
 };
  
 export default function ItemCard({item, onDelete, onRestock}) {
