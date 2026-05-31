@@ -13,7 +13,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import GoogleIcon from "@mui/icons-material/Google";
 
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { validate } from "../../utils/validate";
 
@@ -26,12 +26,19 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { login, googleLogin } = UserAuth();
+  const { login, googleLogin, authError, clearAuthError } = UserAuth();
+
+  // Clean up authentication errors
+  useEffect(() => {
+    return () => {
+      if (clearAuthError) clearAuthError();
+    };
+  }, [clearAuthError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const values = {email, password}
+    const values = { email, password };
 
     const errors = validate(values);
     setFormErrors(errors);
@@ -53,7 +60,6 @@ function Login() {
       }
     }
   };
-
 
   return (
     <>
@@ -96,10 +102,16 @@ function Login() {
               {error}
             </Alert>
           )}
+
+          {authError && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              {authError}
+            </Alert>
+          )}
           <Button
             fullWidth
             variant="outlined"
-            onClick={()=>googleLogin()}
+            onClick={() => googleLogin()}
             startIcon={<GoogleIcon />}
             sx={{
               py: 1.5,

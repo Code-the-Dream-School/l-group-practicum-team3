@@ -64,28 +64,30 @@ function Home() {
           setItemList(finalizedItems);
 
           // check if local storage is stored in local storages
-          const cachedRecipes = localStorage.getItem('home_recipes')
-          const cachedTime = localStorage.getItem("recipes_cache_time")
+          const cachedRecipes = localStorage.getItem("home_recipes");
+          const cachedTime = localStorage.getItem("recipes_cache_time");
 
           // refetch after 1 day
           const oneDay = 24 * 60 * 60 * 1000;
-          const dateValid = Date.now()- Number(cachedTime) < oneDay
-          console.log(dateValid)
+          const dateValid = Date.now() - Number(cachedTime) < oneDay;
+          console.log(dateValid);
 
-          const iscCasheValid = cachedTime && dateValid
+          const iscCasheValid = cachedTime && dateValid;
 
           // if receipes is cashed < 1 day
-          if(cachedRecipes && iscCasheValid){
+          if (cachedRecipes && iscCasheValid) {
             console.log("⚡ Loading recipes safely from LocalStorage Cache!");
-            setRecipes((JSON.parse(cachedRecipes)))
-            return
+            setRecipes(JSON.parse(cachedRecipes));
+            return;
           }
 
           // receipe fetching based on expiring items
           const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
 
           if (searchQuery) {
-            console.log("🌐 Cache expired or missing. Fetching fresh recipes from API...");
+            console.log(
+              "🌐 Cache expired or missing. Fetching fresh recipes from API...",
+            );
             const recipesResult = await api.get(
               `/api/recipes/search?ingredients=${searchQuery}&number=10`,
               {
@@ -96,8 +98,8 @@ function Home() {
             const receipesList = recipesResult.data?.recipes || [];
             setRecipes(receipesList);
 
-            localStorage.setItem('home_recipes', JSON.stringify(receipesList))
-            localStorage.setItem('recipes_cache_time', Date.now().toString())
+            localStorage.setItem("home_recipes", JSON.stringify(receipesList));
+            localStorage.setItem("recipes_cache_time", Date.now().toString());
           }
         }
       } catch (error) {
@@ -192,13 +194,17 @@ function Home() {
       </Box>
 
       {/* Recipes section */}
-      <Box sx={{ mt: 2, mb: 2, pb: "100px"}}>
+      <Box sx={{ mt: 2, mb: 2, pb: "100px" }}>
         <SectionHeading
           title="Recommended Recipes"
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
-        <Stack spacing={2} direction="row" sx={{ overflowY: "auto" }}>
+        <Stack
+          spacing={2}
+          direction="row"
+          sx={{ overflowY: "auto", padding: 1 }}
+        >
           {recipes.map((recipe) => (
             <RecipeCard
               key={recipe.id}
