@@ -26,7 +26,7 @@ export function AuthContextProvider({ children }) {
         localStorage.setItem("user", JSON.stringify(googleUser));
 
         // Clean the URL so the long token in url disappears
-        window.history.replaceState({}, document.title, "/");
+        window.history.replaceState({}, document.title, "/home");
       } else {
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
