@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Box, Typography, Grid, Fab, Tooltip, Card } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
+import { calculateExpiryDays } from "../../utils/dateHelper.js";
 
 import AppLogo from "../../components/AppLogo";
 import SearchBar from "../../components/fridge/SearchBar";
@@ -149,18 +150,6 @@ export default function Fridge() {
     return matchesSearch && matchesCategory;
   });
 
-  //Expiry calculation
-  const getRemainingDays = (expiryDate) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0, 0, 0, 0);
-
-    const diff = expiry - today;
-
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  };
-
   return (
     <Box
       sx={{
@@ -195,7 +184,7 @@ export default function Fridge() {
             <ItemCard
               item={{
                 ...item,
-                remainingDays: getRemainingDays(item.expiry_date),
+                remainingDays: calculateExpiryDays(item.expiry_date),
               }}
               onDelete={handleDelete}
               onRestock={handleRestock}
