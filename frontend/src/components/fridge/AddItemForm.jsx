@@ -15,6 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import theme from "../../utils/theme";
 import Typography from "@mui/material/Typography";
+import { ThemeContext } from "@emotion/react";
 
 const NumberField = ({ value, onChange }) => {
   const handleIncrement = () => {
@@ -31,12 +32,14 @@ const NumberField = ({ value, onChange }) => {
     <Box
       sx={{
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
         gap: 1,
         bgcolor: "white",
         border: `1px solid ${theme.palette.neutral.main}`,
-        borderRadius: "1rem",
+        borderRadius: "5rem",
+        "&:hover": {
+          border: `1px solid ${theme.palette.neutral.main}`,
+        },
       }}
     >
       <IconButton onClick={handleDecrement}>
@@ -48,7 +51,7 @@ const NumberField = ({ value, onChange }) => {
         value={value}
         onChange={onChange}
         sx={{
-          width: "80px",
+          width: "60px",
           textAlign: "center",
           "& input[type=number]": {
             MozAppearance: "textfield",
@@ -71,8 +74,6 @@ const NumberField = ({ value, onChange }) => {
   );
 };
 export default function AddIngredientForm({ formData, onChange }) {
-  console.log(formData);
-
   const handleChange = (e) => {
     onChange({ ...formData, [e.target.name]: e.target.value });
   };
@@ -85,36 +86,58 @@ export default function AddIngredientForm({ formData, onChange }) {
   };
 
   return (
-    // container for form
-    <Box sx={{ bgcolor: "red" }}>
+    // container form
+    <Box
+      sx={{
+        display: "grid",
+        bgcolor: theme.palette.neutral.light,
+        p: { sm: 1, xm: 2 },
+        borderRadius: "1rem",
+      }}
+    >
+      <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>ITEM NAME</Typography>
       <TextField
-        label="Item name"
+        placeholder="e.g Tomatoes"
         name="name"
         value={formData.name}
         onChange={handleChange}
+        sx={{
+          "& .MuiInputBase-root": {
+            background: "white",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            border: `1px solid ${theme.palette.neutral.dark}`,
+          },
+          marginBlockEnd: "1rem",
+          border: `1px solid ${theme.palette.neutral.main}`,
+          borderRadius: "5rem",
+        }}
       />
       {/* quantity and unit container */}
       <Box
         sx={{
           display: "flex",
-          bgcolor: "red",
+          gap: "1rem",
+          marginBlockEnd: "1rem",
           "& > *": {
             flex: "1",
           },
         }}
       >
         <Box>
-          <Typography>Quantity</Typography>
+          <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>
+            QUANTITY
+          </Typography>
           <NumberField value={formData.quantity} onChange={handleChange} />
         </Box>
         <Box>
-          <Typography>Unit</Typography>
+          <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>UNIT</Typography>
           <FormControl
             fullWidth
             sx={{
               bgcolor: "white",
               border: `1px solid ${theme.palette.neutral.main}`,
-              borderRadius: "1rem",
+              borderRadius: "5rem",
             }}
           >
             <Select
@@ -123,7 +146,29 @@ export default function AddIngredientForm({ formData, onChange }) {
               name="unit"
               value={formData.unit}
               onChange={handleChange}
+              displayEmpty
+              MenuProps={{
+                sx: {
+                  "& .MuiMenu-paper": {
+                    maxHeight: "200px",
+                    overflow: "auto",
+                  },
+                  "& .MuiMenu-list": {
+                    maxHeight: "200px",
+                    overflow: "auto",
+                  },
+                },
+              }}
+              sx={{
+                color: formData.unit === "" ? "gray" : "inherit",
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  border: `1px solid ${theme.palette.neutral.dark}`,
+                },
+              }}
             >
+              <MenuItem value="" disabled>
+                SELECT UNIT
+              </MenuItem>
               <MenuItem value={"kg"}>kg</MenuItem>
               <MenuItem value={"g"}>g</MenuItem>
               <MenuItem value={"lb"}>lb</MenuItem>
@@ -139,25 +184,65 @@ export default function AddIngredientForm({ formData, onChange }) {
         </Box>
       </Box>
 
+      <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>EXPIRY DATE</Typography>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          label="Date Field"
           format="YYYY - MM - DD"
           value={formData.expiry_date}
           onChange={handleDateChange}
+          sx={{
+            bgcolor: "white",
+            borderRadius: "5rem",
+            marginBlockEnd: "1rem",
+            "& .MuiPickersOutlinedInput-root": {
+              borderRadius: "5rem",
+            },
+            "& .MuiPickersOutlinedInput-notchedOutline": {
+              borderRadius: "5rem",
+            },
+          }}
         />
       </LocalizationProvider>
 
-      <FormControl fullWidth>
-        <InputLabel id="ingredient-category">Category</InputLabel>
+      <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>CATEGORY</Typography>
+      <FormControl
+        fullWidth
+        sx={{
+          bgcolor: "white",
+          marginBlockEnd: "1rem",
+          borderRadius: "5rem",
+          border: `1px solid ${theme.palette.neutral.main}`,
+        }}
+      >
         <Select
           labelId="ingredient-category"
           id="category-select"
           name="category"
           value={formData.category}
-          label="category"
           onChange={handleChange}
+          displayEmpty
+          MenuProps={{
+            sx: {
+              "& .MuiMenu-paper": {
+                maxHeight: "200px",
+                overflow: "auto",
+              },
+              "& .MuiMenu-list": {
+                maxHeight: "200px",
+                overflow: "auto",
+              },
+            },
+          }}
+          sx={{
+            color: formData.category === "" ? "gray" : "inherit",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              border: `1px solid ${theme.palette.neutral.dark}`,
+            },
+          }}
         >
+          <MenuItem value="" disabled>
+            SELECT A CATEGORY
+          </MenuItem>
           <MenuItem value={"dairy"}>dairy</MenuItem>
           <MenuItem value={"meat"}>meat</MenuItem>
           <MenuItem value={"fruit"}>fruit</MenuItem>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Grid, Fab, Tooltip, Card } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 
 import AppLogo from "../../components/AppLogo";
 import SearchBar from "../../components/fridge/SearchBar";

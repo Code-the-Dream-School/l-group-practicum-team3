@@ -68,86 +68,130 @@ export default function FridgeAddIngredient() {
         <IconButton>
           <ArrowBackIcon />
         </IconButton>
-        <Typography sx={{ fontWeight: "bold", fontSize: 20 }}>
+        <Typography sx={{ fontWeight: "bold", fontSize: { sx: 16, sm: 20 } }}>
           Add Item
         </Typography>
       </Box>
       {/* scan receipt form */}
-      <Box
-        sx={{
-          backgroundImage: "url(../src/assets/bg_receipt_scan.jpg)",
-          backgroundPosition: "center",
-          width: "30rem",
-          height: "15rem",
-          display: "flex",
-          alignItems: "end",
-        }}
-      >
+
+      <Box sx={{ px: { xs: 1, sm: 2 }, minHeight: "100vh" }}>
         <Box
-          // update to redirect to scan-receipt page
-          onClick={() => navigate("/scan-receipt")}
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 1,
-            p: "0.758rem",
-            borderRadius: "50px",
-            bgcolor: theme.palette.secondary.main,
-            cursor: "pointer",
-            "&:hover": { opacity: "0.9" },
+            backgroundImage: "url(../src/assets/bg_receipt_scan.jpg)",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
             width: "100%",
+            height: { xs: "10rem", sm: "15rem" },
+            display: "flex",
+            alignItems: "end",
+            borderRadius: "3rem",
           }}
         >
-          <DocumentScannerIcon sx={{ fontSize: 40, color: "primary.dark" }} />
-          <Typography
-            sx={{ fontWeight: "bold", fontSize: 18, color: "primary.dark" }}
+          <Box
+            // update to redirect to scan-receipt page
+            onClick={() => navigate("/scan-receipt")}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+              p: "0.758rem",
+              borderRadius: "50px",
+              bgcolor: theme.palette.secondary.main,
+              cursor: "pointer",
+              "&:hover": { opacity: "0.9" },
+              width: "100%",
+              marginInline: "1rem",
+              marginBlockEnd: "1rem",
+            }}
           >
-            SCAN RECEIPT
-          </Typography>
-        </Box>
-      </Box>
-      <Typography>Quickly add items from your grocery receipt</Typography>
-
-      {/* form body container */}
-      <Box
-        sx={{
-          bgcolor: theme.palette.neutral.light,
-          maxWidth: "30rem",
-        }}
-      >
-        <Typography>Manual Entry</Typography>
-        <Box>
-          {forms.map((formData, index) => (
-            <AddIngredientForm
-              key={index}
-              formData={formData}
-              onChange={(updatedForm) => handleChange(index, updatedForm)}
+            <DocumentScannerIcon
+              sx={{ fontSize: { xs: 28, sm: 40 }, color: "primary.dark" }}
             />
-          ))}
-          {/* Add one more item container */}
-          <Button
-            onClick={handleAddMore}
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: { sx: 14, sm: 18 },
+                color: "primary.dark",
+              }}
+            >
+              SCAN RECEIPT
+            </Typography>
+          </Box>
+        </Box>
+        <Typography
+          sx={{ textAlign: "center", mt: 1, fontSize: { xs: 13, sm: 15 } }}
+        >
+          Quickly add items from your grocery receipt
+        </Typography>
+
+        {/* form body container */}
+        <Box
+          // change for form body
+          sx={{
+            p: { xs: 1, sm: 2 },
+            pb: { xs: "80px", sm: 3 },
+          }}
+        >
+          <Typography
             sx={{
-              outline: `3px dashed ${theme.palette.neutral.main}`,
-              width: "100%",
+              fontWeight: 700,
+              marginBlockEnd: "1rem",
+              fontSize: { xs: 14, sm: 25 },
             }}
           >
-            <AddCircleOutlineRoundedIcon sx={{ mr: "0.3rem" }} />
-            Add one more item
-          </Button>
-          {/* add to inventory container */}
-          <Button
-            onClick={handleSubmit}
-            sx={{
-              bgcolor: theme.palette.primary.main,
-              width: "100%",
-              color: theme.palette.neutral.light,
-            }}
-          >
-            <SaveIcon sx={{ mr: "0.2rem" }} />
-            Add to Inventory
-          </Button>
+            Manual Entry
+          </Typography>
+          <Box>
+            {forms.map((formData, index) => (
+              <AddIngredientForm
+                key={index}
+                formData={formData}
+                onChange={(updatedForm) => handleChange(index, updatedForm)}
+              />
+            ))}
+
+            <Box
+              sx={{
+                marginBlockStart: "2rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Button
+                onClick={handleAddMore}
+                sx={{
+                  outline: `3px dashed ${theme.palette.neutral.main}`,
+                  width: { xs: "100%", sm: "90%" },
+                  alignSelf: "center",
+                  fontSize: { xs: 11, sm: 15 },
+                  p: 1,
+                  "&:hover": { outlineColor: theme.palette.primary.dark },
+                }}
+              >
+                <AddCircleOutlineRoundedIcon
+                  sx={{ mr: "0.3rem", fontSize: { xs: 16, sm: 20 } }}
+                />
+                Add one more item
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                sx={{
+                  bgcolor: theme.palette.primary.main,
+                  width: "100%",
+                  color: theme.palette.neutral.light,
+                  fontSize: { xs: 12, sm: 15 },
+                  p: 3,
+                  mt: 3,
+                  "&:hover": { bgcolor: theme.palette.primary.dark },
+                }}
+              >
+                <SaveIcon sx={{ mr: "0.2rem", fontSize: { xs: 16, sm: 19 } }} />
+                Add to Inventory
+              </Button>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </>
