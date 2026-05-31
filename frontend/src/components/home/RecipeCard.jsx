@@ -5,8 +5,14 @@ import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import { useState } from "react";
 
 export default function RecipeCard({ name, imgLink, ingredient }) {
+  // add a backup image to handle image not exist
+  const imageBackUp = 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200&auto=format&fit=crop'
+
+  const [currentImage, setCurrentImage] = useState(imgLink || imageBackUp)  
+
   return (
     <Card
       sx={{
@@ -19,7 +25,12 @@ export default function RecipeCard({ name, imgLink, ingredient }) {
       <CardActionArea>
         <CardMedia
           component="img"
-          image={imgLink}
+          image={currentImage}
+          onError={()=> {
+            if(currentImage !==imageBackUp){
+              setCurrentImage(imageBackUp)
+            }
+          }}
           alt={name}
           sx={{
             height: "130px",

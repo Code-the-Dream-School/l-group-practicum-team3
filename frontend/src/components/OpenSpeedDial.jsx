@@ -7,10 +7,9 @@ import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOu
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const actions = [
-  { icon: <DocumentScannerIcon />, name: "Scan" },
-  { icon: <AddCircleOutlineOutlinedIcon />, name: "Add" },
+  { icon: <DocumentScannerIcon />, name: "Scan", title:'Scan Receipt' },
+  { icon: <AddCircleOutlineOutlinedIcon />, name: "Add", title:'Add Items'},
 ];
 
 export default function OpenSpeedDial() {
@@ -21,10 +20,10 @@ export default function OpenSpeedDial() {
   const navigate = useNavigate();
 
   const handleClick = (action) => {
-    if (action === "scan") {
+    if (action === "Scan") {
       navigate("/scan");
     } else {
-      navigate("add-items");
+      navigate("/add-items");
     }
   };
 
@@ -42,7 +41,8 @@ export default function OpenSpeedDial() {
             bgcolor: "secondary.main",
             color: "secondary.contrastText",
             "&:hover": {
-              bgcolor: "none",
+              bgcolor: "secondary.main",
+              color: "secondary.contrastText",
             },
           },
         }}
@@ -57,7 +57,7 @@ export default function OpenSpeedDial() {
             icon={action.icon}
             slotProps={{
               tooltip: {
-                title: action.name,
+                title: action.title,
               },
             }}
             onClick={() => handleClick(action.name)}

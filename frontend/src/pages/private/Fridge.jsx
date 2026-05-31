@@ -7,6 +7,7 @@ import SearchBar from "../../components/fridge/SearchBar";
 import CategoryFilter from "../../components/fridge/CategoryFilter";
 import ItemCard from "../../components/fridge/ItemCard";
 import api from "../../utils/axios";
+import OpenSpeedDial from "../../components/OpenSpeedDial";
 
 function Header() {
   return (
@@ -241,19 +242,7 @@ export default function Fridge() {
         }
       </Grid>
 
-      <Tooltip title="Add Item" arrow>
-      <Fab
-        sx={{
-          position: "fixed",
-          bottom: 80,
-          right: 16,
-          bgcolor: "secondary.main",
-        }}
-        color="secondary"
-      >
-        <AddIcon />
-      </Fab>
-      </Tooltip>
+   <OpenSpeedDial />
     </Box>
   )
 }

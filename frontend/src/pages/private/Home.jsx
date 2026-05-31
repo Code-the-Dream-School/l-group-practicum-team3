@@ -1,6 +1,9 @@
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
+import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import Alert from "@mui/material/Alert";
 
 import RecipeCard from "../../components/home/RecipeCard";
 import SectionHeading from "../../components/home/SectionHeading";
@@ -8,20 +11,18 @@ import ActionButton from "../../components/home/ActionButton";
 import Greeting from "../../components/home/Greeting";
 import ExpiringItemCard from "../../components/home/ExpiringItemCard";
 import AppLogo from "../../components/AppLogo";
+import OpenSpeedDial from "../../components/OpenSpeedDial";
+import Loading from "../../components/Loading";
 
-import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import api from "../../utils/axios";
-import Alert from "@mui/material/Alert";
+
 import {
   calculateExpiryDays,
   getExpiringItemsForReceipes,
 } from "../../utils/inventoryUtil";
-import OpenSpeedDial from "../../components/home/OpenSpeedDial";
-import Loading from "../../components/Loading";
 
 function Home() {
   const { user } = UserAuth();
@@ -62,10 +63,29 @@ function Home() {
 
           setItemList(finalizedItems);
 
+          // check if local storage is stored in local storages
+          const cachedRecipes = localStorage.getItem('home_recipes')
+          const cachedTime = localStorage.getItem("recipes_cache_time")
+
+          // refetch after 1 day
+          const oneDay = 24 * 60 * 60 * 1000;
+          const dateValid = Date.now()- Number(cachedTime) < oneDay
+          console.log(dateValid)
+
+          const iscCasheValid = cachedTime && dateValid
+
+          // if receipes is cashed < 1 day
+          if(cachedRecipes && iscCasheValid){
+            console.log("⚡ Loading recipes safely from LocalStorage Cache!");
+            setRecipes((JSON.parse(cachedRecipes)))
+            return
+          }
+
           // receipe fetching based on expiring items
           const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
 
           if (searchQuery) {
+            console.log("🌐 Cache expired or missing. Fetching fresh recipes from API...");
             const recipesResult = await api.get(
               `/api/recipes/search?ingredients=${searchQuery}&number=10`,
               {
@@ -73,11 +93,11 @@ function Home() {
               },
             );
 
-            console.log("recipesResult", recipesResult);
-
-            const receipesList = recipesResult.data?.recipes;
-            console.log("recipesList", receipesList);
+            const receipesList = recipesResult.data?.recipes || [];
             setRecipes(receipesList);
+
+            localStorage.setItem('home_recipes', JSON.stringify(receipesList))
+            localStorage.setItem('recipes_cache_time', Date.now().toString())
           }
         }
       } catch (error) {
@@ -172,13 +192,13 @@ function Home() {
       </Box>
 
       {/* Recipes section */}
-      <Box sx={{ mt: 2, mb: 2, pb: "100px", overflowY: "auto" }}>
+      <Box sx={{ mt: 2, mb: 2, pb: "100px"}}>
         <SectionHeading
           title="Recommended Recipes"
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
-        <Stack spacing={2} direction="row">
+        <Stack spacing={2} direction="row" sx={{ overflowY: "auto" }}>
           {recipes.map((recipe) => (
             <RecipeCard
               key={recipe.id}

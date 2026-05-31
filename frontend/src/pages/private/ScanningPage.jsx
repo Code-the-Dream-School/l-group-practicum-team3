@@ -8,13 +8,13 @@ import ReceiptItem from "../../components/scanning-page/ReceiptItem";
 import Camera from "../../components/scanning-page/Camera";
 import SectionHeader from "../../components/scanning-page/SectionHeader";
 import Nav from "../../components/scanning-page/Nav";
-import { calculateExpiryDays } from "../../utils/dateHelper";
 import api from "../../utils/axios";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateExpiryDays } from "../../utils/inventoryUtil";
 
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
