@@ -9,11 +9,14 @@ import Typography from "@mui/material/Typography";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SaveIcon from "@mui/icons-material/Save";
+import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import theme from "../../utils/theme";
 
 export default function FridgeAddIngredient() {
   const navigate = useNavigate();
   const [forms, setForms] = useState([
-    { name: "", category: "", quantity: 0, unit: "", expiry_date: null },
+    { name: "", category: "", quantity: 1, unit: "", expiry_date: null },
   ]);
 
   const handleChange = (index, updatedForm) => {
@@ -26,7 +29,7 @@ export default function FridgeAddIngredient() {
   const handleAddMore = () =>
     setForms([
       ...forms,
-      { name: "", category: "", quantity: 0, unit: "", expiry_date: null },
+      { name: "", category: "", quantity: 1, unit: "", expiry_date: null },
     ]);
 
   const handleSubmit = async () => {
@@ -40,12 +43,12 @@ export default function FridgeAddIngredient() {
     console.log("this is the data submitted", data);
 
     try {
-      const response = await api.post("/api/grocery", data);
+      await api.post("/api/grocery", data);
       setForms([
-        { name: "", category: "", quantity: 0, unit: "", expiry_date: null },
+        { name: "", category: "", quantity: 1, unit: "", expiry_date: null },
       ]);
+      // add confirmation screen before redirect
       navigate("/");
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +72,7 @@ export default function FridgeAddIngredient() {
           Add Item
         </Typography>
       </Box>
-      {/* scan receipt box*/}
+      {/* scan receipt form */}
       <Box
         sx={{
           backgroundImage: "url(../src/assets/bg_receipt_scan.jpg)",
@@ -88,11 +91,11 @@ export default function FridgeAddIngredient() {
             alignItems: "center",
             justifyContent: "center",
             gap: 1,
-            p: 1,
+            p: "0.758rem",
             borderRadius: "50px",
-            bgcolor: "yellow",
+            bgcolor: theme.palette.secondary.main,
             cursor: "pointer",
-            "&:hover": { opacity: 0.8 },
+            "&:hover": { opacity: "0.9" },
             width: "100%",
           }}
         >
@@ -105,20 +108,48 @@ export default function FridgeAddIngredient() {
         </Box>
       </Box>
       <Typography>Quickly add items from your grocery receipt</Typography>
-      <Box>
-        {forms.map((formData, index) => (
-          <AddIngredientForm
-            key={index}
-            formData={formData}
-            onChange={(updatedForm) => handleChange(index, updatedForm)}
-          />
-        ))}
-        <Button onClick={handleAddMore}>Add one more item</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          Add to Inventory
-        </Button>
+
+      {/* form body container */}
+      <Box
+        sx={{
+          bgcolor: theme.palette.neutral.light,
+          maxWidth: "30rem",
+        }}
+      >
+        <Typography>Manual Entry</Typography>
+        <Box>
+          {forms.map((formData, index) => (
+            <AddIngredientForm
+              key={index}
+              formData={formData}
+              onChange={(updatedForm) => handleChange(index, updatedForm)}
+            />
+          ))}
+          {/* Add one more item container */}
+          <Button
+            onClick={handleAddMore}
+            sx={{
+              outline: `3px dashed ${theme.palette.neutral.main}`,
+              width: "100%",
+            }}
+          >
+            <AddCircleOutlineRoundedIcon sx={{ mr: "0.3rem" }} />
+            Add one more item
+          </Button>
+          {/* add to inventory container */}
+          <Button
+            onClick={handleSubmit}
+            sx={{
+              bgcolor: theme.palette.primary.main,
+              width: "100%",
+              color: theme.palette.neutral.light,
+            }}
+          >
+            <SaveIcon sx={{ mr: "0.2rem" }} />
+            Add to Inventory
+          </Button>
+        </Box>
       </Box>
-      );
     </>
   );
 }

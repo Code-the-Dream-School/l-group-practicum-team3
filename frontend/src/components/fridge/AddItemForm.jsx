@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import theme from "../../utils/theme";
+import Typography from "@mui/material/Typography";
 
 const NumberField = ({ value, onChange }) => {
   const handleIncrement = () => {
@@ -26,14 +28,23 @@ const NumberField = ({ value, onChange }) => {
   };
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1,
+        bgcolor: "white",
+        border: `1px solid ${theme.palette.neutral.main}`,
+        borderRadius: "1rem",
+      }}
+    >
       <IconButton onClick={handleDecrement}>
         <RemoveIcon />
       </IconButton>
       <TextField
         type="number"
         name="quantity"
-        label="Quantity"
         value={value}
         onChange={onChange}
         sx={{
@@ -73,39 +84,60 @@ export default function AddIngredientForm({ formData, onChange }) {
     });
   };
 
-  console.log(formData.unit);
-
   return (
-    <Box sx={{ minWidth: 120 }}>
+    // container for form
+    <Box sx={{ bgcolor: "red" }}>
       <TextField
         label="Item name"
         name="name"
         value={formData.name}
         onChange={handleChange}
       />
-      <NumberField value={formData.quantity} onChange={handleChange} />
-      <FormControl fullWidth>
-        <InputLabel id="ingredient-unit">Unit</InputLabel>
-        <Select
-          labelId="ingredient-unit"
-          id="unit-select"
-          name="unit"
-          value={formData.unit}
-          label="unit"
-          onChange={handleChange}
-        >
-          <MenuItem value={"kg"}>kg</MenuItem>
-          <MenuItem value={"g"}>g</MenuItem>
-          <MenuItem value={"lb"}>lb</MenuItem>
-          <MenuItem value={"oz"}>oz</MenuItem>
-          <MenuItem value={"l"}>l</MenuItem>
-          <MenuItem value={"ml"}>ml</MenuItem>
-          <MenuItem value={"cup"}>cup</MenuItem>
-          <MenuItem value={"tbsp"}>tbsp</MenuItem>
-          <MenuItem value={"tsp"}>tsp</MenuItem>
-          <MenuItem value={"piece"}>piece</MenuItem>
-        </Select>
-      </FormControl>
+      {/* quantity and unit container */}
+      <Box
+        sx={{
+          display: "flex",
+          bgcolor: "red",
+          "& > *": {
+            flex: "1",
+          },
+        }}
+      >
+        <Box>
+          <Typography>Quantity</Typography>
+          <NumberField value={formData.quantity} onChange={handleChange} />
+        </Box>
+        <Box>
+          <Typography>Unit</Typography>
+          <FormControl
+            fullWidth
+            sx={{
+              bgcolor: "white",
+              border: `1px solid ${theme.palette.neutral.main}`,
+              borderRadius: "1rem",
+            }}
+          >
+            <Select
+              labelId="ingredient-unit"
+              id="unit-select"
+              name="unit"
+              value={formData.unit}
+              onChange={handleChange}
+            >
+              <MenuItem value={"kg"}>kg</MenuItem>
+              <MenuItem value={"g"}>g</MenuItem>
+              <MenuItem value={"lb"}>lb</MenuItem>
+              <MenuItem value={"oz"}>oz</MenuItem>
+              <MenuItem value={"l"}>l</MenuItem>
+              <MenuItem value={"ml"}>ml</MenuItem>
+              <MenuItem value={"cup"}>cup</MenuItem>
+              <MenuItem value={"tbsp"}>tbsp</MenuItem>
+              <MenuItem value={"tsp"}>tsp</MenuItem>
+              <MenuItem value={"piece"}>piece</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
