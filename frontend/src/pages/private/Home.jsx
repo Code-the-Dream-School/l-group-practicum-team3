@@ -70,13 +70,11 @@ function Home() {
           // refetch after 1 day
           const oneDay = 24 * 60 * 60 * 1000;
           const dateValid = Date.now() - Number(cachedTime) < oneDay;
-          console.log(dateValid);
 
           const iscCasheValid = cachedTime && dateValid;
 
           // if receipes is cashed < 1 day
           if (cachedRecipes && iscCasheValid) {
-            console.log("⚡ Loading recipes safely from LocalStorage Cache!");
             setRecipes(JSON.parse(cachedRecipes));
             return;
           }
@@ -85,9 +83,6 @@ function Home() {
           const searchQuery = getExpiringItemsForReceipes(finalizedItems, 3);
 
           if (searchQuery) {
-            console.log(
-              "🌐 Cache expired or missing. Fetching fresh recipes from API...",
-            );
             const recipesResult = await api.get(
               `/api/recipes/search?ingredients=${searchQuery}&number=10`,
               {
@@ -103,7 +98,6 @@ function Home() {
           }
         }
       } catch (error) {
-        console.log(error);
         setError(
           error.response?.data?.message ||
             "Failed To Load Data. Please Try again",
@@ -210,7 +204,7 @@ function Home() {
               key={recipe.id}
               name={recipe.title}
               imgLink={recipe.image}
-              ingredient={recipe.usedIngredients[0]}
+              ingredients={recipe.usedIngredients || []}
             />
           ))}
         </Stack>

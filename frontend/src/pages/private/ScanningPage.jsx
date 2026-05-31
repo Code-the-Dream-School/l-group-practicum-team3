@@ -115,7 +115,7 @@ export default function ScanningPage() {
           ...item,
           expiryDays: calculateExpiryDays(item.expirationDate),
         }));
-        console.log(finalizedItems)
+        
         setScannedItems(finalizedItems);
       }
     } catch (error) {
