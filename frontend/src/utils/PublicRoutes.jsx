@@ -13,7 +13,7 @@ function PublicRoutes() {
       </Box>
     );
   }
-  return user ? <Navigate to="/" /> : <Outlet />;
+  return user ? <Navigate to="/home" /> : <Outlet />;
 }
 
 export default PublicRoutes;

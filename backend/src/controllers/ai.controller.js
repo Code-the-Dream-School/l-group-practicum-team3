@@ -238,6 +238,7 @@ const scan = async (req, res) => {
       .status(200)
       .json({ id: receiptId, storage_path: storagePath, ...parsed });
   } catch (err) {
+    
     // do clean-up if failed?
     if (storagePath)
       await supabaseAdmin.storage.from(BUCKET).remove([storagePath]);
