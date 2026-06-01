@@ -8,9 +8,13 @@ export const calculateExpiryDays = (expirationDate) => {
   const today = dayjs().startOf("day");
   const expiry = dayjs(expirationDate).startOf("day");
 
-  console.log("current date", expiry);
-  console.log("expiry date", expirationDate);
-
   const diffDays = expiry.diff(today, "day");
+
   return diffDays > 0 ? diffDays : 0;
+};
+
+export const getExpiryMessage = (days) => {
+  if (days === null) return "No expiry";
+  if (days === 0) return "Expired";
+  return `${days} days`;
 };
