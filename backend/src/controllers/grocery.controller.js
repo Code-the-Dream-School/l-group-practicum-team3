@@ -204,6 +204,12 @@ const updateGroceryItem = async (req, res) => {
         .json({ message: supabaseError.message });
     }
 
+    if (!data || data.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Item not found" });
+    }
+
     return res
       .status(StatusCodes.OK)
       .json({ message: "Item updated successfully", data });
@@ -227,16 +233,23 @@ const deleteGroceryItem = async (req, res) => {
   }
 
   try {
-    const { error: supabaseError } = await client
+    const { data, error: supabaseError } = await client
       .from("groceries")
       .delete()
       .eq("grocery_id", groceryId)
-      .eq("user_id", user_id);
+      .eq("user_id", user_id)
+      .select();
 
     if (supabaseError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: supabaseError.message });
+    }
+
+    if (!data || data.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Item not found" });
     }
 
     return res
