@@ -88,6 +88,7 @@ export default function Fridge() {
           name: item.name,
           quantity: item.quantity,
           unit: item.unit,
+          category: item.category || "other",
         },
         {
           headers: {

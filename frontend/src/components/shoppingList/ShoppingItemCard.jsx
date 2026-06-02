@@ -51,6 +51,7 @@ export default function ShoppingItemCard( {item, onToggle, onDelete}) {
             </Box>
 
             {/*Category*/}
+            {item.category && (
             <Chip 
                 label={item.category.toUpperCase()}
                 sx={{
@@ -61,6 +62,7 @@ export default function ShoppingItemCard( {item, onToggle, onDelete}) {
                     mr: "auto",
                 }}
             />
+            )}
 
             <IconButton onClick={() => onDelete(item.id)}>
                 <DeleteOutlineIcon 
