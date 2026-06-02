@@ -43,8 +43,6 @@ function ShoppingList() {
     };
     fetchWishList();
   }, []);
-
-  console.log("item:", items)
   
   const addItem = async (newItem) => {
     try {
@@ -63,7 +61,9 @@ function ShoppingList() {
           },
         }
       );
-      const savedItem = response.data.data;
+      
+      const savedItem = response.data.data[0];
+      
       setItems(prev => [
         ...prev,
         {
@@ -71,6 +71,7 @@ function ShoppingList() {
           name: savedItem.name,
           quantity: savedItem.quantity,
           unit: savedItem.unit,
+          category: savedItem.category,
           completed: false,
         },
       ]);

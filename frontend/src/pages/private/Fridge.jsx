@@ -92,7 +92,7 @@ export default function Fridge() {
         "/api/wishlist",
         {
           name: item.name,
-          quantity: item.quantity,
+          quantity: Number(item.quantity),
           unit: item.unit,
           category: item.category || "other",
         },
