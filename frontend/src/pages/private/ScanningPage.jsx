@@ -8,13 +8,13 @@ import ReceiptItem from "../../components/scanning-page/ReceiptItem";
 import Camera from "../../components/scanning-page/Camera";
 import SectionHeader from "../../components/scanning-page/SectionHeader";
 import Nav from "../../components/scanning-page/Nav";
-import { calculateExpiryDays } from "../../utils/dateHelper";
 import api from "../../utils/axios";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { calculateExpiryDays } from "../../utils/dateHelper";
 
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
@@ -27,7 +27,6 @@ export default function ScanningPage() {
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -104,7 +103,6 @@ export default function ScanningPage() {
       const res = await api.post("/api/ai/scan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -115,7 +113,7 @@ export default function ScanningPage() {
           ...item,
           expiryDays: calculateExpiryDays(item.expirationDate),
         }));
-        console.log(finalizedItems)
+        
         setScannedItems(finalizedItems);
       }
     } catch (error) {
@@ -150,11 +148,7 @@ export default function ScanningPage() {
       }));
 
 
-      await api.post("/api/grocery/", body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.post("/api/grocery/", body);
       setSuccess("Items successfully added");
 
       setScannedItems([]);

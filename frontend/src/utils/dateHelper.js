@@ -15,6 +15,7 @@ export const calculateExpiryDays = (expirationDate) => {
 
 export const getExpiryMessage = (days) => {
   if (days === null) return "No expiry";
-  if (days === 0) return "Expired";
+  if (days === 0) return "Soon";
+  if (days === 1) return "1 day";
   return `${days} days`;
 };

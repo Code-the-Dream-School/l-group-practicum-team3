@@ -33,4 +33,19 @@ export const getExpiryStyle = (days) => {
   };
 };
 
-// bgcolor: "#FDEEEE", color: "#AF1D1D"
+// get Expiring Items for Receipes recommendations
+// daysLeft = Number used to find items has less than chosed days life
+export const getExpiringItemsForReceipes = (items, daysLeft = 3) => {
+  if (!items || items.length === 0) return "";
+
+  const expiringSoonItems = items.filter((item) => item.expiryDays <= daysLeft);
+
+  const targetedItems =
+    expiringSoonItems.length > 0 ? expiringSoonItems : items.slice(0, 3);
+
+  const searchedItems = targetedItems
+    .map((item) => item.name.toLowerCase().trim())
+    .join(",");
+
+  return searchedItems;
+};

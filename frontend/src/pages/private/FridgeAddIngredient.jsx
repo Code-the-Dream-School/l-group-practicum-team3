@@ -63,7 +63,7 @@ export default function FridgeAddIngredient() {
           cursor: "pointer",
           width: "auto",
         }}
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
       >
         <IconButton>
           <ArrowBackIcon />
@@ -89,7 +89,7 @@ export default function FridgeAddIngredient() {
         >
           <Box
             // update to redirect to scan-receipt page
-            onClick={() => navigate("/scan-receipt")}
+            onClick={() => navigate("/scan")}
             sx={{
               display: "flex",
               alignItems: "center",
