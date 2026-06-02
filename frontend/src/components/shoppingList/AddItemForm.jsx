@@ -9,15 +9,15 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 export default function AddItemForm({ onClose, onSave }) {
     const [itemName, setItemName] = useState("");
     const [quantity, setQuantity] = useState(1);
-    const [unit, setUnit] = useState("pcs");
-    const [category, setCategory] = useState("Produce");
+    const [unit, setUnit] = useState("piece");
+    const [category, setCategory] = useState("other");
 
     const handleSave = () => {
         if (!itemName.trim()) return;
 
         onSave({
             name: itemName.trim(),
-            quantity: quantity,
+            quantity: quantity.toString(),
             unit: unit,
             category: category,
             completed: false,
@@ -26,14 +26,21 @@ export default function AddItemForm({ onClose, onSave }) {
         // reset form
         setItemName("");
         setQuantity(1);
-        setUnit("pcs");
-        setCategory("Produce");
+        setUnit("piece");
+        setCategory("other");
     };
 
     const STEP = {
         g: 50,
         kg: 1,
-        pcs: 1,
+        lb: 1,
+        oz: 1,
+        l: 1,
+        ml: 50,
+        cup: 1,
+        tbsp: 1,
+        tsp: 1,
+        piece: 1
     };
 
     const step = STEP[unit] || 1;
@@ -199,9 +206,16 @@ export default function AddItemForm({ onClose, onSave }) {
                                 }
                             }}
                         >
-                            <MenuItem value="pcs">pcs</MenuItem>
+                            <MenuItem value="piece">piece</MenuItem>
                             <MenuItem value="kg">kg</MenuItem>
                             <MenuItem value="g">g</MenuItem>
+                            <MenuItem value="lb">lb</MenuItem>
+                            <MenuItem value="oz">oz</MenuItem>
+                            <MenuItem value="l">l</MenuItem>
+                            <MenuItem value="ml">ml</MenuItem>
+                            <MenuItem value="cup">cup</MenuItem>
+                            <MenuItem value="tbsp">tbsp</MenuItem>
+                            <MenuItem value="tsp">tsp</MenuItem>
                         </Select>
                     </Box>                       
                 </Stack>
@@ -235,11 +249,14 @@ export default function AddItemForm({ onClose, onSave }) {
                                 }
                             }}
                         >
-                            <MenuItem value="Produce">Produce</MenuItem>
-                            <MenuItem value="Dairy">Dairy</MenuItem>
-                            <MenuItem value="Bakery">Bakery</MenuItem>
-                            <MenuItem value="Grains">Grains</MenuItem>
-                            <MenuItem value="Proteins">Proteins</MenuItem>                                                   
+                            <MenuItem value="fruit">Fruit</MenuItem>
+                            <MenuItem value="vegetable">Vegetable</MenuItem>
+                            <MenuItem value="dairy">Dairy</MenuItem>
+                            <MenuItem value="meat">Meat</MenuItem>
+                            <MenuItem value="spice">Spice</MenuItem>
+                            <MenuItem value="condiment">Condiment</MenuItem>
+                            <MenuItem value="canned">Canned</MenuItem>
+                            <MenuItem value="other">Other</MenuItem>                                                   
 
                         </Select>
                     </Box> 
