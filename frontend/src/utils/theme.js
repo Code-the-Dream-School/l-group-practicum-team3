@@ -24,8 +24,9 @@ const theme = createTheme({
       restock: "#CFEBDD", // Custom color for the Restock button
       restockHover: "#BEE3CF", // Custom hover state
     },
-    background: { 
-        default: "#FBF9F2", paper: "#FFFFFF" 
+    background: {
+      default: "#FBF9F2",
+      paper: "#FFFFFF",
     },
   },
   typography: {
@@ -33,19 +34,19 @@ const theme = createTheme({
   },
   components: {
     MuiButton: {
-    styleOverrides: {
-      root: {
-        borderRadius: 50,
-        textTransform: 'none',
+      styleOverrides: {
+        root: {
+          borderRadius: 50,
+          textTransform: "none",
+        },
       },
     },
-  },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: '50px',
-         "& fieldset": { 
-            border: "none" 
+          borderRadius: "50px",
+          "& fieldset": {
+            border: "none",
           },
         },
         input: {

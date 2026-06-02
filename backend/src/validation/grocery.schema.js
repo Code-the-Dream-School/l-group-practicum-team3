@@ -40,7 +40,7 @@ const grocerySchema = Joi.object({
   is_expired: Joi.boolean().default(false),
   expiry_date: Joi.date().when("category", {
     is: Joi.valid(...perishable),
-    then: Joi.date().optional(),
+    then: Joi.date().optional().allow(null),
     otherwise: Joi.date().optional().allow(null),
   }),
 });

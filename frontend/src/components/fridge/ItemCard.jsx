@@ -1,8 +1,18 @@
-import { Box, Typography, Stack, Grid, Card, CardContent, IconButton, Button, } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  Grid,
+  Card,
+  CardContent,
+  IconButton,
+  Button,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
-import { Leaf, Milk, Beef, CirclePile, Package, } from "lucide-react";
-import { getExpiryStyle } from "../../utils/inventoryUtil.js"
+import { Leaf, Milk, Beef, CirclePile, Package } from "lucide-react";
+import { getExpiryStyle } from "../../utils/inventoryUtil.js";
+import { getExpiryMessage } from "../../utils/dateHelper.js";
 
 const categoryIcons = {
   produce: <Leaf size={20} color="currentColor" />,
@@ -11,11 +21,13 @@ const categoryIcons = {
   pantry: <CirclePile size={20} color="currentColor" />,
   other: <Package size={20} color="currentColor" />,
 };
- 
-export default function ItemCard({item, onDelete, onRestock}) {
-  const style = getExpiryStyle(item.remainingDays);
+
+export default function ItemCard({ item, onDelete, onRestock }) {
+  console.log(item);
+  const dayStatusStyle = getExpiryStyle(item.remainingDays);
+  console.log(item.remainingDays);
   return (
-    <Card 
+    <Card
       sx={{
         position: "relative",
         borderRadius: "24px",
@@ -28,7 +40,7 @@ export default function ItemCard({item, onDelete, onRestock}) {
         flexDirection: "column",
       }}
     >
-      <CardContent 
+      <CardContent
         sx={{
           p: 0,
           flexGrow: 1,
@@ -36,94 +48,100 @@ export default function ItemCard({item, onDelete, onRestock}) {
           flexDirection: "column",
           "&:last-child": {
             pb: 0,
-          }
-        }}>
+          },
+        }}
+      >
         <Box sx={{ flexGrow: 1 }}>
-        <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
-        
-        {/*Icon circle*/}
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-            bgcolor: "secondary.main",
-            color: "primary.main",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {categoryIcons[item.category?.toLowerCase()] || <CirclePile size={20} color="currentColor" />} 
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            {/*Icon circle*/}
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                bgcolor: "secondary.main",
+                color: "primary.main",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {categoryIcons[item.category?.toLowerCase()] || (
+                <CirclePile size={20} color="currentColor" />
+              )}
+            </Box>
+
+            {/* Days*/}
+            <Box
+              sx={{
+                position: "absolute",
+                right: 16,
+                bgcolor: dayStatusStyle.bg,
+                color: dayStatusStyle.text,
+                px: 1.2,
+                py: 0.6,
+                borderRadius: "999px",
+                fontSize: 10,
+                lineHeight: 1.4,
+                fontWeight: 600,
+              }}
+            >
+              {/* working here */}
+              {getExpiryMessage(item.remainingDays)}
+            </Box>
+          </Stack>
+
+          {/*Category */}
+          <Typography
+            sx={{
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: 1,
+              color: "neutral.dark",
+              textTransform: "uppercase",
+              mt: 3,
+            }}
+          >
+            {item.category}
+          </Typography>
+
+          {/* Name */}
+
+          <Typography
+            sx={{
+              fontSize: {
+                xs: 16,
+                sm: 18,
+                md: 20,
+              },
+              fontWeight: 700,
+              color: "primary.main",
+              mt: 0.5,
+            }}
+          >
+            {item.name}
+          </Typography>
+
+          {/* Quantity */}
+          <Typography
+            sx={{
+              fontSize: 12,
+              color: "text.secondary",
+              mt: 0.5,
+            }}
+          >
+            {item.quantity} {item.unit}
+          </Typography>
         </Box>
 
-        {/* Days*/}
-        <Box
-          sx={{
-            position: "absolute",
-            right: 16,
-            bgcolor: style.bg,
-            color: style.text,
-            px: 1.2,
-            py: 0.6,
-            borderRadius: "999px",
-            fontSize: 10,
-            lineHeight: 1.4,
-            fontWeight: 600,
-          }}
-        >
-          {item.remainingDays} DAYS
-        </Box>
-        </Stack>
-
-        {/*Category */}
-        <Typography
-          sx={{
-            fontSize: 10,
-            fontWeight: 500,
-            letterSpacing: 1,
-            color: "neutral.dark",
-            textTransform: "uppercase",
-            mt: 3,
-          }}
-        >
-          {item.category}  
-        </Typography>
-
-        {/* Name */}
-
-        <Typography 
-          sx={{
-            fontSize: {
-              xs: 16,
-              sm: 18,
-              md: 20,
-            },
-            fontWeight: 700,
-            color: "primary.main",
-            mt: 0.5,
-          }}
-        >
-          {item.name}
-        </Typography>
-
-        {/* Quantity */}  
-        <Typography
-          sx={{
-            fontSize: 12,
-            color: "text.secondary",
-            mt: 0.5,
-          }}
-        >
-          {item.quantity} {item.unit}
-        </Typography>
-        </Box>
-
-        {/* Action Buttons */}  
+        {/* Action Buttons */}
         <Stack
-          direction="row"  
-          sx={{ alignItems: "center", width: "100%", mt: "auto", }}  
-          spacing={{ xs: 0.5, sm: 0.8 }}                  
+          direction="row"
+          sx={{ alignItems: "center", width: "100%", mt: "auto" }}
+          spacing={{ xs: 0.5, sm: 0.8 }}
         >
           <IconButton
             sx={{
@@ -138,7 +156,7 @@ export default function ItemCard({item, onDelete, onRestock}) {
             <EditIcon sx={{ fontSize: 16 }} />
           </IconButton>
 
-          <Button 
+          <Button
             onClick={() => onRestock(item)}
             sx={{
               bgcolor: "action.restock",
@@ -149,9 +167,9 @@ export default function ItemCard({item, onDelete, onRestock}) {
               minWidth: 0,
               fontSize: { xs: 8, sm: 10, md: 11 },
               letterSpacing: { xs: 0, sm: 0.5, md: 1 },
-              py: { xs: 0.4, sm: 0.7, md: 1, },
-              px: { xs: 0.6, sm: 1.2, md: 1.5, },
-              mx: { xs: 0, sm: 0.8, md: 1.8, },
+              py: { xs: 0.4, sm: 0.7, md: 1 },
+              px: { xs: 0.6, sm: 1.2, md: 1.5 },
+              mx: { xs: 0, sm: 0.8, md: 1.8 },
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -160,7 +178,7 @@ export default function ItemCard({item, onDelete, onRestock}) {
                 width: "100%",
                 display: "block",
               },
-              
+
               "&:hover": {
                 bgcolor: "action.restockHover",
               },
@@ -180,11 +198,10 @@ export default function ItemCard({item, onDelete, onRestock}) {
               height: { xs: 26, sm: 32, md: 36 },
             }}
           >
-            <CheckIcon  fontSize="small" />
+            <CheckIcon fontSize="small" />
           </IconButton>
-
-        </Stack>  
+        </Stack>
       </CardContent>
     </Card>
-  )
+  );
 }
