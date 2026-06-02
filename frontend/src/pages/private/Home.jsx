@@ -116,9 +116,7 @@ function Home() {
       maxWidth={{ xs: "xs", md: "lg" }}
       sx={{ px: { xs: 3, md: 5 }, py: { xs: 2, md: 4 } }}
     >
-      
       <Greeting name={name} />
-      
 
       {/* Expiring Soon section */}
       <Box sx={{ mt: 2 }}>
@@ -140,7 +138,7 @@ function Home() {
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-{/* --------------- need to UPDATE backend data here ---------------------*/}
+          {/* --------------- need to UPDATE backend data here ---------------------*/}
           {/* data will be sort based on the expiration date */}
           {data.items.map((item, index) => (
             <ExpiringItemCard
@@ -157,11 +155,11 @@ function Home() {
       <Box
         sx={{
           display: { xs: "flex", md: "none" },
-          
+
           mt: 3,
-         width: "100%",
+          width: "100%",
           gap: { xs: 2, md: 4 },
-          justifyContent: { xs: "center", md: "flex-start" }
+          justifyContent: { xs: "center", md: "flex-start" },
         }}
       >
         <ActionButton
@@ -189,7 +187,7 @@ function Home() {
           actionText="Explore"
           onClick={() => navigate("/recipes")}
         />
- {/* --------------- need to UPDATE backend data here ---------------------*/}
+        {/* --------------- need to UPDATE backend data here ---------------------*/}
         <Stack spacing={2} direction="row">
           {recipeData.map((recipe, index) => (
             <RecipeCard

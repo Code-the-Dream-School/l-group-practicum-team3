@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Grid, Fab, Tooltip, Card } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import { calculateExpiryDays } from "../../utils/dateHelper.js";
 
 import AppLogo from "../../components/AppLogo";
 import SearchBar from "../../components/fridge/SearchBar";
@@ -11,13 +13,18 @@ import api from "../../utils/axios";
 function Header() {
   return (
     <Box>
-      <Typography sx={{color: "primary.dark"}} variant="h4" fontWeight={800}>Inventory</Typography>
-      <Typography color="text.secondary" mt={1}>Keep track of your fresh ingredients and pantry staples.</Typography>
+      <Typography sx={{ color: "primary.dark" }} variant="h4" fontWeight={800}>
+        Inventory
+      </Typography>
+      <Typography color="text.secondary" mt={1}>
+        Keep track of your fresh ingredients and pantry staples.
+      </Typography>
     </Box>
-  )
+  );
 }
 
 export default function Fridge() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Items");
   const [search, setSearch] = useState("");
 
@@ -27,7 +34,7 @@ export default function Fridge() {
 
   const normalizeCategory = (category) => {
     switch (category.toLowerCase()) {
-      case "fruit":        
+      case "fruit":
       case "vegetable":
         return "Produce";
 
@@ -40,9 +47,9 @@ export default function Fridge() {
       case "condiment":
       case "canned":
         return "Pantry";
-      
+
       case "other":
-        return "Other";        
+        return "Other";
       default:
         return category;
     }
@@ -62,10 +69,10 @@ export default function Fridge() {
           },
         });
         setItems(
-          (result.data.data || []).map(item => ({
+          (result.data.data || []).map((item) => ({
             ...item,
             category: normalizeCategory(item.category),
-          }))
+          })),
         );
       } catch (err) {
         console.error(err);
@@ -74,7 +81,6 @@ export default function Fridge() {
         setLoading(false);
       }
     };
-    
 
     fetchGroceries();
   }, []);
@@ -94,7 +100,7 @@ export default function Fridge() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       console.log("Added to wishlist");
     } catch (err) {
@@ -108,14 +114,12 @@ export default function Fridge() {
       const token = localStorage.getItem("token");
       await api.delete(`/api/grocery/${id}`, {
         headers: {
-          Authorization:`Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       //update UI
-      setItems(prev =>
-        prev.filter(item => item.grocery_id !== id)
-      )
+      setItems((prev) => prev.filter((item) => item.grocery_id !== id));
     } catch (err) {
       console.error("Delete failed:", err);
       setError("Failed to delete item");
@@ -134,63 +138,60 @@ export default function Fridge() {
       <Box p={2}>
         <Typography color="error">{error}</Typography>
       </Box>
-    )
-  } 
+    );
+  }
 
   //Filter based on search text and selected category
-    const filteredItems = items.filter(item => {
-    const matchesSearch = !searchTerm || item.name.toLowerCase().includes(searchTerm);
-    const matchesCategory = selectedCategory === "All Items" || item.category.toLowerCase() === selectedCategory.toLowerCase();
+  const filteredItems = items.filter((item) => {
+    const matchesSearch =
+      !searchTerm || item.name.toLowerCase().includes(searchTerm);
+    const matchesCategory =
+      selectedCategory === "All Items" ||
+      item.category.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
-  //Expiry calculation
-  const getRemainingDays = (expiryDate) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const expiry = new Date(expiryDate);
-    expiry.setHours(0,0,0,0);
-
-    const diff = expiry - today;
-
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  }
-
   return (
-    <Box sx={{p: 2, pb: 10, width: "100%", bgcolor: "background.default", minHeight: "100vh",}}>
+    <Box
+      sx={{
+        p: 2,
+        pb: 10,
+        width: "100%",
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
       <AppLogo />
       <Header />
 
       <SearchBar search={search} setSearch={setSearch} />
 
-      <CategoryFilter 
+      <CategoryFilter
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
 
       <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
-        {
-          filteredItems.map((item) => (
-            <Grid 
-              size={{
-                xs: 6,
-                sm: 4,
-                md: 3,
-                lg: 2,
-              }} 
-              key={item.grocery_id}
-            >
-              <ItemCard 
-                item={{
-                  ...item,
-                  remainingDays: getRemainingDays(item.expiry_date),
-                }} 
+        {filteredItems.map((item) => (
+          <Grid
+            size={{
+              xs: 6,
+              sm: 4,
+              md: 3,
+              lg: 2,
+            }}
+            key={item.grocery_id}
+          >
+            <ItemCard
+              item={{
+                ...item,
+                remainingDays: calculateExpiryDays(item.expiry_date),
+              }}
               onDelete={handleDelete}
-              onRestock={handleRestock} 
+              onRestock={handleRestock}
             />
-            </Grid>
-          ))
-        }
+          </Grid>
+        ))}
 
         {/* Add Item Card */}
 
@@ -217,45 +218,47 @@ export default function Fridge() {
               transition: "transform 0.2s ease",
               "&:hover": {
                 transform: "scale(1.02)",
-                
-              }
+              },
             }}
+            // foward to add-ingredient page
+            onClick={() => navigate("/frigde-add")}
           >
-            <Box sx={{textAlign: "center"}}>
-              <AddIcon sx={{fontSize: 40, color: "primary.dark",}} />
-              <Typography sx={{mt: 1, color: "primary.dark", fontSize: 20, fontWeight: "bold"}}>
+            <Box sx={{ textAlign: "center" }}>
+              <AddIcon sx={{ fontSize: 40, color: "primary.dark" }} />
+              <Typography
+                sx={{
+                  mt: 1,
+                  color: "primary.dark",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                }}
+              >
                 Add Item
               </Typography>
             </Box>
-
           </Card>
         </Grid>
 
-        {
-          filteredItems.length === 0 && (
-            <Box mt={4} width="100%" sx={{textAlign: "center"}}>
-              <Typography color="text.secondary">
-                No items found
-              </Typography>
-            </Box>
-          )
-        }
+        {filteredItems.length === 0 && (
+          <Box mt={4} width="100%" sx={{ textAlign: "center" }}>
+            <Typography color="text.secondary">No items found</Typography>
+          </Box>
+        )}
       </Grid>
 
-      <Tooltip title="Add Item" arrow>
-      <Fab
-        sx={{
-          position: "fixed",
-          bottom: 80,
-          right: 16,
-          bgcolor: "secondary.main",
-        }}
-        color="secondary"
-      >
-        <AddIcon />
-      </Fab>
+      <Tooltip title="Add Item" arrow onClick={() => navigate("/frigde-add")}>
+        <Fab
+          sx={{
+            position: "fixed",
+            bottom: 80,
+            right: 16,
+            bgcolor: "secondary.main",
+          }}
+          color="secondary"
+        >
+          <AddIcon />
+        </Fab>
       </Tooltip>
     </Box>
-  )
+  );
 }
-
