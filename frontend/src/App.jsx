@@ -34,10 +34,9 @@ function App() {
         <Route element={<ProtectedRoutes />}>
           <Route path="/home" element={<Home />} />
           <Route path="/fridge" element={<Fridge />} />
-          <Route path="/frigde-add" element={<FridgeAddIngredient />} />
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/shopping-list" element={<ShoppingList />} />
-          {/* <Route path="/add-items" element={<ScanningPage />}/> */}
+          <Route path="/add-items" element={<FridgeAddIngredient />}/>
           <Route path="/scan" element={<ScanningPage />} />
         </Route>
 

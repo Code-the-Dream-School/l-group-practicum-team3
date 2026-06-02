@@ -33,18 +33,6 @@ export const getExpiryStyle = (days) => {
   };
 };
 
-export const calculateExpiryDays = (expirationDate) => {
-  if (!expirationDate) return 0;
-
-  const today = new Date();
-  const expiry = new Date(expirationDate);
-  today.setHours(0, 0, 0, 0);
-  expiry.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-  return diffDays > 0 ? diffDays : 0;
-};
-
 // get Expiring Items for Receipes recommendations
 // daysLeft = Number used to find items has less than chosed days life
 export const getExpiringItemsForReceipes = (items, daysLeft = 3) => {

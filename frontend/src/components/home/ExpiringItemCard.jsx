@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { categoryIcons, getExpiryStyle } from "../../utils/inventoryUtil";
+import { getExpiryMessage } from "../../utils/dateHelper";
 
 export default function ExpiringItemCard({ name, category, daysLeft }) {
   const style = getExpiryStyle(daysLeft);
@@ -47,7 +48,8 @@ export default function ExpiringItemCard({ name, category, daysLeft }) {
       </Stack>
 
       <Chip
-        label={`${daysLeft} ${daysLeft === 1 ? "DAY" : "DAYS"} LEFT`}
+        label= {getExpiryMessage(daysLeft)}
+        // label={`${daysLeft} ${daysLeft === 1 ? "DAY" : "DAYS"} LEFT`}
         sx={{
           backgroundColor: style.bg,
           color: style.text,

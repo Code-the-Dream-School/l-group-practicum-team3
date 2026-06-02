@@ -14,7 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { calculateExpiryDays } from "../../utils/inventoryUtil";
+import { calculateExpiryDays } from "../../utils/dateHelper";
 
 export default function ScanningPage() {
   const [scannedItems, setScannedItems] = useState([]);
@@ -27,7 +27,6 @@ export default function ScanningPage() {
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -104,7 +103,6 @@ export default function ScanningPage() {
       const res = await api.post("/api/ai/scan", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -150,11 +148,7 @@ export default function ScanningPage() {
       }));
 
 
-      await api.post("/api/grocery/", body, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.post("/api/grocery/", body);
       setSuccess("Items successfully added");
 
       setScannedItems([]);

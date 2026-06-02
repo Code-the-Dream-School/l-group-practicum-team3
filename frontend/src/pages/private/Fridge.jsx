@@ -10,6 +10,7 @@ import CategoryFilter from "../../components/fridge/CategoryFilter";
 import ItemCard from "../../components/fridge/ItemCard";
 import api from "../../utils/axios";
 import OpenSpeedDial from "../../components/OpenSpeedDial";
+import Loading from "../../components/Loading.jsx";
 
 function Header() {
   return (
@@ -128,9 +129,7 @@ export default function Fridge() {
 
   if (loading) {
     return (
-      <Box p={2}>
-        <Typography>Loading...</Typography>
-      </Box>
+     <Loading />
     );
   }
   if (error) {
@@ -221,7 +220,7 @@ export default function Fridge() {
               },
             }}
             // foward to add-ingredient page
-            onClick={() => navigate("/frigde-add")}
+            onClick={() => navigate("/add-items")}
           >
             <Box sx={{ textAlign: "center" }}>
               <AddIcon sx={{ fontSize: 40, color: "primary.dark" }} />

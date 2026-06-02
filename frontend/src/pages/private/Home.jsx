@@ -20,9 +20,9 @@ import { useEffect, useState } from "react";
 import api from "../../utils/axios";
 
 import {
-  calculateExpiryDays,
   getExpiringItemsForReceipes,
 } from "../../utils/inventoryUtil";
+import { calculateExpiryDays } from "../../utils/dateHelper";
 
 function Home() {
   const { user } = UserAuth();
@@ -44,12 +44,8 @@ function Home() {
       setLoading(true);
 
       try {
-        const token = localStorage.getItem("token");
-        const headers = { Authorization: `Bearer ${token}` };
 
-        const expiringItemsResult = await api.get("/api/grocery?limit=9", {
-          headers,
-        });
+        const expiringItemsResult = await api.get("/api/grocery?limit=9");
 
         // expiring items
         const items = expiringItemsResult.data.data;
@@ -84,10 +80,7 @@ function Home() {
 
           if (searchQuery) {
             const recipesResult = await api.get(
-              `/api/recipes/search?ingredients=${searchQuery}&number=10`,
-              {
-                headers,
-              },
+              `/api/recipes/search?ingredients=${searchQuery}&number=10`
             );
 
             const receipesList = recipesResult.data?.recipes || [];
