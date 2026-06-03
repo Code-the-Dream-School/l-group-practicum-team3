@@ -83,7 +83,6 @@ const getRecipeById = async (req, res) => {
     }
 
     // cache it
-    console.log("caching all this:\n" + data);
     await client.from("recipe").insert({
       spoonacular_id: data.id,
       data: data,

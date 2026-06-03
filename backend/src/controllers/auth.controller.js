@@ -87,7 +87,7 @@ const loginGoogle = async (req, res) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `http://localhost:${process.env.PORT}/api/users/auth/callback`, // callback route
+        redirectTo: `${process.env.BACKEND_URL}/api/users/auth/callback`, // callback route
       },
     });
 
@@ -127,8 +127,14 @@ const authCallback = async (req, res) => {
     return res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 
+  if (!data.session) {
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/login?error=session_expired`
+    );
+  }
+
   return res.redirect(
-    `${process.env.FRONTEND_URL}?access_token=${data.session.access_token}`
+    `${process.env.FRONTEND_URL}/#access_token=${data.session.access_token}`
   );
 };
 
