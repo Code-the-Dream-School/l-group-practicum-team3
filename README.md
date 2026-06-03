@@ -37,7 +37,9 @@ A full-stack web application that helps users manage their kitchen inventory. It
 - Express.js
 - Supabase (User Auth & Database)
 - Google Gemini AI (receipt parsing & recipe generation)
+- Zod (Gemini AI schema validation)
 - Joi (request validation)
+- [Scalar](https://scalar.com/) (API Documentation)
 - Helmet, CORS, express-rate-limit (security)
 
 ### Database
@@ -100,6 +102,7 @@ Create a `.env` file inside the `backend` folder:
 ```env
 PORT=5000
 FRONTEND_URL=
+BACKEND_URL=
 
 # For Supabase
 SUPABASE_URL=
