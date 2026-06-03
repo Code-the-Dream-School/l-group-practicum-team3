@@ -13,8 +13,7 @@ import Link from "@mui/material/Link";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import GoogleIcon from "@mui/icons-material/Google";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { validate } from "../../utils/validate";
 
@@ -22,13 +21,20 @@ function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const { register, googleLogin } = UserAuth();
+  const { register, googleLogin, authError, clearAuthError } = UserAuth();
 
-  const navigate = useNavigate();
+  // Clean up authentication errors
+  useEffect(() => {
+    return () => {
+      if (clearAuthError) clearAuthError();
+    };
+  }, [clearAuthError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,8 +48,14 @@ function Signup() {
       try {
         const result = await register(name, email, password);
         if (result.success) {
-          alert(result.message);
-          navigate("/login");
+          setMessage(
+            result.message ||
+              "Account created successfully! Please check your email.",
+          );
+
+          setName("");
+          setEmail("");
+          setPassword("");
         } else {
           setError(result.message || "Registration failed");
         }
@@ -104,6 +116,17 @@ function Signup() {
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
+            </Alert>
+          )}
+          {message && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {message}
+            </Alert>
+          )}
+
+          {authError && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              {authError}
             </Alert>
           )}
           <Button

@@ -4,45 +4,80 @@ import AddIcon from "@mui/icons-material/Add";
 import AppLogo from "../../components/AppLogo"
 import AddItemForm from "../../components/shoppingList/AddItemForm";
 import ShoppingItemCard from "../../components/shoppingList/ShoppingItemCard";
+import api from "../../utils/axios";
 
 function ShoppingList() {
   const [showForm, setShowForm] = useState(false);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [items, setItems] = useState(() => {
-    const savedItems = localStorage.getItem("shoppingItems");
-    return savedItems ? JSON.parse(savedItems) : [
-      {
-        id: 1,
-        name: "Hass Avocados",
-        quantity: "3 pieces",
-        category: "Produce",
-        completed: false,
-      },
-      {
-        id: 2,
-        name: "Whole Greek Yogurt",
-        quantity: "500g",
-        category: "Dairy",
-        completed: false,
-      },
-      {
-        id: 3,
-        name: "Sourdough Loaf",
-        quantity: "1 unit",
-        category: "Bakery",
-        completed: true,
-      },
-      ];
-  });
+  //fetch wishList items
+  useEffect(() => {
+    const fetchWishList = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await api.get(
+          "/api/wishlist?page=1&limit=10",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-  const addItem = (newItem) => {
-    setItems((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        ...newItem,
-      },
-    ]);
+        const mappedItems = response.data.data.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+          category: item.category,
+          completed: false,
+        }));
+
+        setItems(mappedItems);
+      } catch (error) {
+        console.log("Failed to fetch wishlist:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWishList();
+  }, []);
+  
+  const addItem = async (newItem) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/api/wishlist",
+        {
+          name: newItem.name,
+          quantity: newItem.quantity,
+          unit: newItem.unit,
+          category: newItem.category,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const savedItem = response.data.data[0];
+      
+      setItems(prev => [
+        ...prev,
+        {
+          id: savedItem.id,
+          name: savedItem.name,
+          quantity: savedItem.quantity,
+          unit: savedItem.unit,
+          category: savedItem.category,
+          completed: false,
+        },
+      ]);
+    } catch (error) {
+      console.error("Failed to add item:", error);
+    }
   };
 
   const toggleCompleted = (id) => {
@@ -53,19 +88,27 @@ function ShoppingList() {
     )
   };
 
-  const deleteItem = (id) => {
-    setItems((prevItems) =>
-      prevItems.filter(item => item.id !== id)
-    );
+  const deleteItem = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await api.delete(`/api/wishlist/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setItems(prevItems =>
+        prevItems.filter(item => item.id !== id)
+      );
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+    }
   };
 
-  useEffect(() => {
-    localStorage.setItem(
-      "shoppingItems",
-      JSON.stringify(items)
-    );
-  }, [items]);
-
+  if (loading) {
+    return <Typography>Loading ...</Typography>
+  }
   return (
     <Box sx={{p: 2, pb: 10, width: "100%", bgcolor: "background.default", minHeight: "100vh",}}>
         <AppLogo />
@@ -137,7 +180,12 @@ function ShoppingList() {
             <Stack spacing={3}>
               {
                 items.map((item) => (
-                  <ShoppingItemCard  key={item.id} item={item} onToggle={toggleCompleted} onDelete={deleteItem} />
+                  <ShoppingItemCard  
+                    key={item.id} 
+                    item={item} 
+                    onToggle={toggleCompleted} 
+                    onDelete={deleteItem} 
+                  />
                 ))
               }
             </Stack>

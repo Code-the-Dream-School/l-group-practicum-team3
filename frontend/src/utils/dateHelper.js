@@ -1,13 +1,21 @@
 // Helper function to calculate days left from an expiration date string from DB
 
+import dayjs from "dayjs";
+
 export const calculateExpiryDays = (expirationDate) => {
-  if (!expirationDate) return 0;
+  if (!expirationDate) return null;
 
-  const today = new Date();
-  const expiry = new Date(expirationDate);
-  today.setHours(0, 0, 0, 0);
-  expiry.setHours(0, 0, 0, 0);
+  const today = dayjs().startOf("day");
+  const expiry = dayjs(expirationDate).startOf("day");
 
-  const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+  const diffDays = expiry.diff(today, "day");
+
   return diffDays > 0 ? diffDays : 0;
+};
+
+export const getExpiryMessage = (days) => {
+  if (days === null) return "No expiry";
+  if (days === 0) return "Soon";
+  if (days === 1) return "1 day";
+  return `${days} days`;
 };
