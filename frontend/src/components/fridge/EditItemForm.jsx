@@ -15,7 +15,12 @@ import { useState } from "react";
 import api from "../../utils/axios";
 import theme from "../../utils/theme";
 
-export default function ItemEditForm({ item = {}, onSuccess, onCancel }) {
+export default function ItemEditForm({
+  item = {},
+  onSuccess,
+  onCancel,
+  onDelete,
+}) {
   const [values, setValues] = useState({
     quantity: item.quantity ?? "",
     expiry_date: item.expiry_date ?? "",
@@ -153,6 +158,23 @@ export default function ItemEditForm({ item = {}, onSuccess, onCancel }) {
           }
         >
           {loading ? "Saving…" : "Save Changes"}
+        </Button>
+
+        <Button
+          variant="contained"
+          sx={{
+            bgcolor: "red",
+            "&:hover": {
+              bgcolor: "darkred",
+            },
+          }}
+          onClick={onDelete}
+          disabled={loading}
+          startIcon={
+            loading ? <CircularProgress size={16} color="inherit" /> : null
+          }
+        >
+          {loading ? "Saving…" : "Delete"}
         </Button>
       </Stack>
     </Box>

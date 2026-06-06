@@ -1,7 +1,13 @@
 import { Dialog, DialogContent, useMediaQuery, useTheme } from "@mui/material";
 import EditItemForm from "./EditItemForm";
 
-export default function EditItemModal({ open, onClose, item, onSuccess }) {
+export default function EditItemModal({
+  open,
+  onClose,
+  item,
+  onSuccess,
+  onDelete,
+}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -26,6 +32,7 @@ export default function EditItemModal({ open, onClose, item, onSuccess }) {
           item={item}
           onSuccess={handleSuccess}
           onCancel={onClose}
+          onDelete={() => onDelete(item.grocery_id)}
         />
       </DialogContent>
     </Dialog>

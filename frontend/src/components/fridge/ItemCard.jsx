@@ -164,6 +164,10 @@ export default function ItemCard({ item, onDelete, onRestock, onItemSaved }) {
               setEditOpen(false);
               if (onItemSaved) onItemSaved(updated);
             }}
+            onDelete={(id) => {
+              setEditOpen(false);
+              if (onDelete) onDelete(id);
+            }}
           />
 
           <Button
