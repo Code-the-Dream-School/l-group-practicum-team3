@@ -1,3 +1,5 @@
+import { useState } from "react";
+import EditItemModal from "./EditItemModal.jsx";
 import {
   Box,
   Typography,
@@ -22,10 +24,9 @@ const categoryIcons = {
   other: <Package size={20} color="currentColor" />,
 };
 
-export default function ItemCard({ item, onDelete, onRestock }) {
-  console.log(item);
+export default function ItemCard({ item, onDelete, onRestock, onItemSaved }) {
+  const [editOpen, setEditOpen] = useState(false);
   const dayStatusStyle = getExpiryStyle(item.remainingDays);
-  console.log(item.remainingDays);
   return (
     <Card
       sx={{
@@ -89,7 +90,6 @@ export default function ItemCard({ item, onDelete, onRestock }) {
                 fontWeight: 600,
               }}
             >
-              {/* working here */}
               {getExpiryMessage(item.remainingDays)}
             </Box>
           </Stack>
@@ -144,6 +144,7 @@ export default function ItemCard({ item, onDelete, onRestock }) {
           spacing={{ xs: 0.5, sm: 0.8 }}
         >
           <IconButton
+            onClick={() => setEditOpen(true)}
             sx={{
               bgcolor: "neutral.light",
               color: "primary.main",
@@ -155,6 +156,15 @@ export default function ItemCard({ item, onDelete, onRestock }) {
           >
             <EditIcon sx={{ fontSize: 16 }} />
           </IconButton>
+          <EditItemModal
+            open={editOpen}
+            onClose={() => setEditOpen(false)}
+            item={item}
+            onSuccess={(updated) => {
+              setEditOpen(false);
+              if (onItemSaved) onItemSaved(updated);
+            }}
+          />
 
           <Button
             onClick={() => onRestock(item)}

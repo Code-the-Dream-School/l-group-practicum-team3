@@ -40,8 +40,6 @@ export default function FridgeAddIngredient() {
         : null,
     }));
 
-    console.log("this is the data submitted", data);
-
     try {
       await api.post("/api/grocery", data);
       setForms([
