@@ -2,7 +2,6 @@ import {
   Box,
   Typography,
   CircularProgress,
-  Alert,
   Divider,
   Stack,
   Paper,
@@ -14,6 +13,8 @@ import SearchBar from "../../components/SearchBar";
 import QuickPickChips from "../../components/QuickPickChips";
 import DiscoveryCard from "../../components/DiscoveryCard";
 import FavoriteRow from "../../components/FavoriteRow";
+import NoMatchFound from "../../components/NoMatchFound";
+import AppLogo from "../../components/AppLogo";
 import { useRecipes } from "../../hooks/UserRecipes";
 
 export default function Recipes() {
@@ -26,10 +27,11 @@ export default function Recipes() {
     favorites,
     favoritedIds,
     loadingSearch,
-    searchError,
+    noMatchFound, // ← was searchError (didn't exist in hook)
     setQuery,
     handleChipClick,
     handleKeyDown,
+    handleClearSearch, // ← added (needed for SearchBar clear button)
     handleToggleFavorite,
     handleRemoveFavorite,
   } = useRecipes();
@@ -51,20 +53,8 @@ export default function Recipes() {
         }}
       >
         {/* ── Mobile logo ── */}
-        <Box
-          sx={{
-            display: { xs: "flex", md: "none" },
-            alignItems: "center",
-            gap: 1,
-            mb: 2.5,
-          }}
-        >
-          <Typography sx={{ fontSize: 18 }}>🌿</Typography>
-          <Typography
-            sx={{ fontWeight: 800, fontSize: 17, color: "primary.main" }}
-          >
-            Smart Kitchen App
-          </Typography>
+        <Box sx={{ display: { xs: "block", md: "none" }, mb: 2.5 }}>
+          <AppLogo size="small" />
         </Box>
 
         {/* ── Title ── */}
@@ -85,6 +75,7 @@ export default function Recipes() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
+          onClear={handleClearSearch} // ← wired up
         />
 
         {/* ── Quick picks ── */}
@@ -113,28 +104,57 @@ export default function Recipes() {
             {loadingSearch && <CircularProgress size={20} color="primary" />}
           </Box>
 
-          {searchError && (
-            <Alert severity="warning" sx={{ mb: 2, borderRadius: "12px" }}>
-              {searchError}
-            </Alert>
+          {/* No search yet */}
+          {!loadingSearch && discovery.length === 0 && !noMatchFound && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: 4,
+                borderRadius: "16px",
+                backgroundColor: "textField.bgColor",
+                textAlign: "center",
+              }}
+            >
+              <Typography sx={{ fontSize: 36, mb: 1 }}>🔍</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Search an ingredient above to discover recipes.
+              </Typography>
+            </Paper>
           )}
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
-              gap: { xs: 1.5, md: 2 },
-            }}
-          >
-            {discovery.map((recipe) => (
-              <DiscoveryCard
-                key={recipe.id}
-                recipe={recipe}
-                isFavorited={favoritedIds.has(recipe.id)}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
-          </Box>
+          {/* No match found — replaces the old searchError Alert */}
+          {!loadingSearch && noMatchFound && (
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: "16px",
+                backgroundColor: "textField.bgColor",
+                overflow: "hidden",
+              }}
+            >
+              <NoMatchFound searchedTerm={query} />
+            </Paper>
+          )}
+
+          {/* Results grid */}
+          {!loadingSearch && discovery.length > 0 && (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
+                gap: { xs: 1.5, md: 2 },
+              }}
+            >
+              {discovery.map((recipe) => (
+                <DiscoveryCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  isFavorited={favoritedIds.has(recipe.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
+            </Box>
+          )}
         </Box>
 
         <Divider

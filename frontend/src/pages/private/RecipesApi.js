@@ -1,34 +1,25 @@
-// Update this to your backend base URL
-const BASE_URL = "/api";
+import api from "../../utils/axios";
 
 export async function searchByIngredient(ingredients) {
-  const res = await fetch(
-    `${BASE_URL}/recipes/search?ingredients=${encodeURIComponent(ingredients)}&number=4`,
-  );
-  if (!res.ok) throw new Error("Failed to fetch recipes");
-  const data = await res.json();
+  const { data } = await api.get("/api/recipes/search", {
+    params: { ingredients, number: 4 },
+  });
   return data.recipes;
 }
 
 export async function fetchFavorites() {
-  const res = await fetch(`${BASE_URL}/recipes/favorites`);
-  if (!res.ok) throw new Error("Failed to fetch favorites");
-  return res.json();
+  const { data } = await api.get("/api/recipes/favorites");
+  return data;
 }
 
 export async function addFavorite(recipe) {
-  const res = await fetch(`${BASE_URL}/recipes/${recipe.id}/favorite`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: recipe.title, image: recipe.image }),
+  const { data } = await api.post(`/api/recipes/${recipe.id}/favorite`, {
+    title: recipe.title,
+    image: recipe.image,
   });
-  if (!res.ok) throw new Error("Failed to favorite");
-  return res.json();
+  return data;
 }
 
 export async function removeFavorite(id) {
-  const res = await fetch(`${BASE_URL}/recipes/${id}/favorite`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Failed to remove favorite");
+  await api.delete(`/api/recipes/${id}/favorite`);
 }
