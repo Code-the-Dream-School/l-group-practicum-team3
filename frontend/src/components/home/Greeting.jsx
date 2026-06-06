@@ -8,7 +8,7 @@ export default function Greeting({ name }) {
       elevation={0}
       sx={{
         background:
-          "linear-gradient(90deg, rgba(0, 73, 14, 0.1) 0%, #FBF9F2 50%, rgba(253, 211, 77, 0.2) 100%)",
+          "linear-gradient(90deg, rgba(0, 73, 14, 0.1) 0%, background.default 50%, rgba(253, 211, 77, 0.2) 100%)",
         padding: 3,
         borderRadius: 4,
         mt: { xs: 0, md: 0},
@@ -24,7 +24,6 @@ export default function Greeting({ name }) {
         sx={{ fontWeight: 800, fontSize: 30, color: "primary.dark" }}
       >
         Welcome back, <br /> {name}
-       
       </Typography>
       <RestaurantIcon
         sx={{

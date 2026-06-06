@@ -27,10 +27,15 @@ const theme = createTheme({
     background: {
       default: "#FBF9F2",
       paper: "#FFFFFF",
+      hover: "#f0c420",
     },
   },
   typography: {
     fontFamily: '"Epilogue", "Roboto", sans-serif',
+    color: "#8C7A39",
+  },
+  textField: {
+    bgColor: "#F5F4ED",
   },
   components: {
     MuiButton: {
