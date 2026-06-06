@@ -40,12 +40,28 @@ export default function ItemEditForm({
   const validate = () => {
     const next = {};
     if (values.quantity === "") {
-      next.quantity = "Quantity is required.";
+      next.general = "Quantity is required.";
+      return next;
     } else if (isNaN(Number(values.quantity)) || Number(values.quantity) < 0) {
-      next.quantity = "Quantity must be a valid number.";
+      next.general = "Quantity must be a valid number.";
+      return next;
     }
     if (values.expiry_date === "") {
-      next.expiry_date = "Expiry date is required.";
+      next.general = "Expiry date is required.";
+      return next;
+    }
+    const originalDate = item.expiry_date ? item.expiry_date : null;
+    const newDate = values.expiry_date
+      ? values.expiry_date.format
+        ? values.expiry_date.format("YYYY-MM-DD")
+        : dayjs(values.expiry_date).format("YYYY-MM-DD")
+      : null;
+    const quantityUnchanged = Number(values.quantity) === Number(item.quantity);
+    console.log(values.quantity);
+    console.log(item.quantity);
+    const dateUnchanged = originalDate === newDate;
+    if (quantityUnchanged && dateUnchanged) {
+      next.general = "No changes were made.";
     }
     return next;
   };
@@ -60,7 +76,7 @@ export default function ItemEditForm({
     const data = {
       quantity: Number(values.quantity),
       expiry_date: values.expiry_date
-        ? values.expiry_date.format("YYYY-MM-DD")
+        ? dayjs(values.expiry_date).format("YYYY-MM-DD")
         : null,
     };
 
@@ -92,14 +108,18 @@ export default function ItemEditForm({
 
       <Divider sx={{ mb: 3 }} />
 
+      {errors.general && (
+        <Typography color="error" fontSize={13} mb={1} textAlign="right">
+          {errors.general}
+        </Typography>
+      )}
+
       <Stack spacing={2.5}>
         <Typography sx={{ fontSize: { xs: 14, sm: 16 } }}>Quantity</Typography>
         <TextField
           name="quantity"
           value={values.quantity}
           onChange={handleChange}
-          error={!!errors.quantity}
-          helperText={errors.quantity}
           fullWidth
           size="small"
           inputProps={{ inputMode: "numeric" }}
