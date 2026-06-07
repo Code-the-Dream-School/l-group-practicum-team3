@@ -125,6 +125,12 @@ const BUCKET = "Receipts"; // supabase Storage bucket name
 const scan = async (req, res) => {
   let receiptId = null;
   let storagePath = null;
+
+  if (!req.user?.id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const userId = req.user.id;
+
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
@@ -132,7 +138,6 @@ const scan = async (req, res) => {
 
     // UPLOAD TO SUPABASE STORAGE BUCKET
     const mimeType = req.file.mimetype;
-    const userId = req.user?.id ?? "anonymous";
     storagePath = `${userId}/${Date.now()}-${req.file.originalname}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
@@ -238,7 +243,6 @@ const scan = async (req, res) => {
       .status(200)
       .json({ id: receiptId, storage_path: storagePath, ...parsed });
   } catch (err) {
-    
     // do clean-up if failed?
     if (storagePath)
       await supabaseAdmin.storage.from(BUCKET).remove([storagePath]);
