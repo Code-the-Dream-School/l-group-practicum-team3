@@ -45,8 +45,7 @@ export default function FridgeAddIngredient() {
       setForms([
         { name: "", category: "", quantity: 1, unit: "", expiry_date: null },
       ]);
-      // add confirmation screen before redirect
-      navigate("/");
+      navigate("/fridge");
     } catch (error) {
       console.error(error);
     }

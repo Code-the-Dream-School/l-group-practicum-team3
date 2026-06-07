@@ -10,12 +10,12 @@ export const calculateExpiryDays = (expirationDate) => {
 
   const diffDays = expiry.diff(today, "day");
 
-  return diffDays > 0 ? diffDays : 0;
+  return diffDays;
 };
 
 export const getExpiryMessage = (days) => {
   if (days === null) return "No expiry";
-  if (days === 0) return "Soon";
-  if (days === 1) return "1 day";
-  return `${days} days`;
+  if (days < 0) return `${Math.abs(days)}d overdue`;
+  if (days === 0) return "Expires Today";
+  return `${days}d left`;
 };
