@@ -40,7 +40,12 @@ export default function ExpiringItemCard({ name, category, daysLeft }) {
         }}
       >
         <Avatar
-          sx={{ width: 56, height: 56, bgcolor: style.bg, color: style.text }}
+          sx={{
+            width: 56,
+            height: 56,
+            bgcolor: "secondary.main",
+            color: "primary.main",
+          }}
         >
           <IconComponent />
         </Avatar>
@@ -48,7 +53,7 @@ export default function ExpiringItemCard({ name, category, daysLeft }) {
       </Stack>
 
       <Chip
-        label= {getExpiryMessage(daysLeft)}
+        label={getExpiryMessage(daysLeft)}
         // label={`${daysLeft} ${daysLeft === 1 ? "DAY" : "DAYS"} LEFT`}
         sx={{
           backgroundColor: style.bg,

@@ -13,7 +13,7 @@ export const categoryIcons = {
 export const getExpiryStyle = (days) => {
   if (days == null) {
     return {
-      bg: "#A3F69C",
+      bg: "#A3F69f",
       text: "#005312",
     };
   } else if (days <= 0) {
