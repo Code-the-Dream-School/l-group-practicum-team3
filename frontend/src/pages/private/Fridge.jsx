@@ -87,6 +87,15 @@ export default function Fridge() {
     fetchGroceries();
   }, []);
 
+  const handleItemSaved = (updated) => {
+    console.log("updated", updated);
+    setItems((prev) =>
+      prev.map((i) =>
+        i.grocery_id === updated.grocery_id ? { ...i, ...updated } : i,
+      ),
+    );
+  };
+
   const handleRestock = async (item) => {
     try {
       const token = localStorage.getItem("token");
@@ -129,9 +138,7 @@ export default function Fridge() {
   };
 
   if (loading) {
-    return (
-     <Loading />
-    );
+    return <Loading />;
   }
   if (error) {
     return (
@@ -189,6 +196,7 @@ export default function Fridge() {
               }}
               onDelete={handleDelete}
               onRestock={handleRestock}
+              onItemSaved={handleItemSaved}
             />
           </Grid>
         ))}
@@ -246,7 +254,7 @@ export default function Fridge() {
         )}
       </Grid>
 
-   <OpenSpeedDial />
+      <OpenSpeedDial />
     </Box>
   );
 }

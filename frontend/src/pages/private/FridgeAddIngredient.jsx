@@ -40,15 +40,12 @@ export default function FridgeAddIngredient() {
         : null,
     }));
 
-    console.log("this is the data submitted", data);
-
     try {
       await api.post("/api/grocery", data);
       setForms([
         { name: "", category: "", quantity: 1, unit: "", expiry_date: null },
       ]);
-      // add confirmation screen before redirect
-      navigate("/");
+      navigate("/fridge");
     } catch (error) {
       console.error(error);
     }

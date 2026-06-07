@@ -11,17 +11,17 @@ export const categoryIcons = {
 };
 
 export const getExpiryStyle = (days) => {
-  if (days === null) {
+  if (days == null) {
     return {
-      bg: "#A3F69C",
+      bg: "#A3F69f",
       text: "#005312",
     };
-  } else if (days <= 2) {
+  } else if (days <= 0) {
     return {
       bg: alpha("#BA1A1A", 0.1),
       text: "#BA1A1A",
     };
-  } else if (days <= 5) {
+  } else if (days <= 3) {
     return {
       bg: alpha("#FDD34D", 0.5),
       text: "secondary.contrastText",
