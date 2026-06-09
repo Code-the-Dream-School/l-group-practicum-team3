@@ -17,8 +17,10 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 
 import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../../context/AuthContext";
 
 function OverlineLabel({ icon, text }) {
+
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mb: 1.5 }}>
       <Box sx={{ color: "typography.color", display: "flex", fontSize: 15 }}>
@@ -266,6 +268,8 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const theme = useTheme();
 
+    const { googleLogin} = UserAuth();
+
   const RECIPES = [
     {
       label: "Salmon Salad",
@@ -393,6 +397,7 @@ export default function LandingPage() {
                 variant="outlined"
                 startIcon={<GoogleIcon />}
                 sx={{ ...googleBtn }}
+                 onClick={() => googleLogin()}
               >
                 Continue with Google
               </Button>

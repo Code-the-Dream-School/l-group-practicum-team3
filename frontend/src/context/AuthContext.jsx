@@ -15,7 +15,8 @@ export function AuthContextProvider({ children }) {
   useEffect(() => {
     try {
       // get the token from url
-      const params = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.replace("#", "?"));
       const tokenFromUrl = params.get("access_token");
 
       if (tokenFromUrl) {
@@ -26,7 +27,7 @@ export function AuthContextProvider({ children }) {
         if (isJWTValid) {
           localStorage.setItem("token", tokenFromUrl);
           setSession({ access_token: tokenFromUrl });
-          // use atob() to decodes the Base64 string and get user info 
+          // use atob() to decodes the Base64 string and get user info
           const payload = JSON.parse(atob(tokenParts[1]));
           const googleUser = {
             loggedIn: true,
@@ -34,14 +35,14 @@ export function AuthContextProvider({ children }) {
             id: payload.sub,
             email: payload.email,
           };
-      
+
           setUser(googleUser);
           localStorage.setItem("user", JSON.stringify(googleUser));
 
           // Clean the URL so the long token in url disappears
           window.history.replaceState({}, document.title, "/home");
         } else {
-          setAuthError("Google token invalid. Please try again.")
+          setAuthError("Google token invalid. Please try again.");
           setUser(null);
         }
       } else {
@@ -57,7 +58,7 @@ export function AuthContextProvider({ children }) {
     }
   }, []);
 
-  // clean auth error 
+  // clean auth error
   const clearAuthError = useCallback(() => setAuthError(""), []);
 
   // login
@@ -140,15 +141,25 @@ export function AuthContextProvider({ children }) {
     () => ({
       user,
       session,
-      isLoading,  
+      isLoading,
       authError,
       login,
       register,
       logout,
       googleLogin,
-      clearAuthError
+      clearAuthError,
     }),
-    [user, session, isLoading,authError, login, register, logout, googleLogin, clearAuthError],
+    [
+      user,
+      session,
+      isLoading,
+      authError,
+      login,
+      register,
+      logout,
+      googleLogin,
+      clearAuthError,
+    ],
   );
 
   return (

@@ -27,7 +27,6 @@ export default function ScanningPage() {
 
   const navigate = useNavigate();
 
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
 
@@ -113,16 +112,16 @@ export default function ScanningPage() {
           ...item,
           expiryDays: calculateExpiryDays(item.expirationDate),
         }));
-        
+
         setScannedItems(finalizedItems);
       }
     } catch (error) {
-     const backendMessage = error.response?.data?.message;
-      
+      const backendMessage = error.response?.data?.message;
+
       setError(
-        backendMessage 
-          ? `${backendMessage}. Please try again.` 
-          : "Something went wrong. Please try again."
+        backendMessage
+          ? `${backendMessage}. Please try again.`
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -132,7 +131,7 @@ export default function ScanningPage() {
   const handleSubmit = async () => {
     if (!scannedItems || scannedItems.length === 0) {
       setError("No Items in the Scanning List. Please add items");
-      return
+      return;
     }
     setLoading(true);
     setError(null);
@@ -144,9 +143,8 @@ export default function ScanningPage() {
         quantity: Number(item.quantity) || 1,
         unit: item.unit && item.unit.trim() !== "" ? item.unit : "piece",
         expiry_date: item.expirationDate,
-        source:'receipt'
+        source: "receipt",
       }));
-
 
       await api.post("/api/grocery/", body);
       setSuccess("Items successfully added");
@@ -155,9 +153,12 @@ export default function ScanningPage() {
 
       navigate("/fridge");
     } catch (error) {
+      const backendMessage = error.response?.data?.message;
+
       setError(
-        error.response?.data?.message + "Please try again" ||
-          "Something Went wrong. Please try again.",
+        backendMessage
+          ? `${backendMessage}. Please try again.`
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
