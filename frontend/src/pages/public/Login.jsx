@@ -13,7 +13,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import GoogleIcon from "@mui/icons-material/Google";
 
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { UserAuth } from "../../context/AuthContext";
+import { validate } from "../../utils/validate";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,21 +26,33 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const { login, googleLogin, authError, clearAuthError } = UserAuth();
+
+  // Clean up authentication errors
+  useEffect(() => {
+    return () => {
+      if (clearAuthError) clearAuthError();
+    };
+  }, [clearAuthError]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
-    
-    const errors = validate();
+    setError("");
+    const values = { email, password };
+
+    const errors = validate(values);
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
 
       try {
-        // console.log("Logging in with:", { email, password });
-        // placeholder for login API call - will update
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        navigate("/");
+        const result = await login(email, password);
+        if (result.success) {
+          navigate("/home");
+        } else {
+          setError(result.message || "Login failed");
+        }
       } catch (err) {
         setError(err.message || "Something went wrong. Please try again");
       } finally {
@@ -47,39 +61,17 @@ function Login() {
     }
   };
 
-  const validate = () => {
-    const errors = {};
-
-    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-    if (!email) {
-      errors.email = "Email is Required";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "Invalid Email Format";
-    }
-
-    if (!password) {
-      errors.password = "Password is Required";
-    } else if (!passwordRegex.test(password)) {
-      errors.password =
-        "Must be 8+ characters with at least 1 number and 1 symbol";
-    }
-
-    return errors;
-  };
-
   return (
     <>
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "2rem", padding: 4, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "1rem", padding: 2, backgroundColor: "background.default" }}
         >
           <Avatar
             sx={{
               mx: "auto",
-              bgcolor: "primary.dark",
+              backgroundColor: "primary.dark",
               textAlign: "center",
               mb: 2,
               width: 56,
@@ -101,7 +93,7 @@ function Login() {
           >
             Smart Kitchen App
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: "center", mb: 4 }}>
+          <Typography variant="body2" sx={{ textAlign: "center", mb: 2 }}>
             Your digital culinary assistant.
           </Typography>
 
@@ -110,9 +102,16 @@ function Login() {
               {error}
             </Alert>
           )}
+
+          {authError && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              {authError}
+            </Alert>
+          )}
           <Button
             fullWidth
             variant="outlined"
+            onClick={() => googleLogin()}
             startIcon={<GoogleIcon />}
             sx={{
               py: 1.5,
@@ -143,7 +142,7 @@ function Login() {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              bgcolor: "#F5F4ED",
+              backgroundColor: "textField.bgColor",
               padding: 3,
               borderRadius: "12px",
             }}
@@ -177,7 +176,6 @@ function Login() {
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
                 },
-                
               }}
             ></TextField>
             <TextField
@@ -185,7 +183,7 @@ function Login() {
               required
               placeholder="Enter Password"
               type="password"
-              label='Password'
+              label="Password"
               error={formErrors.password ? true : false}
               helperText={
                 formErrors.password
@@ -195,7 +193,6 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{
-                mb: 2,
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "white",
                 },
@@ -207,7 +204,7 @@ function Login() {
               loadingPosition="end"
               loading={loading}
               fullWidth
-              sx={{ borderRadius: "50px", py: 1.5, mt: 2, fontWeight: "bold" }}
+              sx={{ borderRadius: "50px", py: 1.5, mt: 1, fontWeight: "bold" }}
               type="submit"
               endIcon={<ArrowForwardIcon />}
             >

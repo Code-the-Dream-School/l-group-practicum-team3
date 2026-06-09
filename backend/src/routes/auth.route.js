@@ -4,11 +4,13 @@ const {
   login,
   register,
   loginGoogle,
-} = require("../controllers/user.controller");
+  authCallback,
+} = require("../controllers/auth.controller.js");
 
 router.post("/register", register);
 router.post("/login", login);
 
-router.get("/loginGoogle", loginGoogle);
+router.get("/auth/google", loginGoogle);
+router.get("/auth/callback", authCallback);
 
 module.exports = router;

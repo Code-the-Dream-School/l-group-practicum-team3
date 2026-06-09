@@ -1,7 +1,260 @@
-function Fridge() {
+import { useState, useEffect } from "react";
+import { Box, Typography, Grid, Fab, Tooltip, Card } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import { calculateExpiryDays } from "../../utils/dateHelper.js";
+
+import AppLogo from "../../components/AppLogo";
+import SearchBar from "../../components/fridge/SearchBar";
+import CategoryFilter from "../../components/fridge/CategoryFilter";
+import ItemCard from "../../components/fridge/ItemCard";
+import api from "../../utils/axios";
+import OpenSpeedDial from "../../components/OpenSpeedDial";
+import Loading from "../../components/Loading.jsx";
+
+function Header() {
   return (
-    <div>Fridge</div>
-  )
+    <Box>
+      <Typography sx={{ color: "primary.dark" }} variant="h4" fontWeight={800}>
+        Inventory
+      </Typography>
+      <Typography color="text.secondary" mt={1}>
+        Keep track of your fresh ingredients and pantry staples.
+      </Typography>
+    </Box>
+  );
 }
 
-export default Fridge
+export default function Fridge() {
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("All Items");
+  const [search, setSearch] = useState("");
+
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const normalizeCategory = (category) => {
+    switch (category.toLowerCase()) {
+      case "fruit":
+      case "vegetable":
+        return "Produce";
+
+      case "dairy":
+        return "Dairy";
+      case "meat":
+        return "Meat";
+
+      case "spice":
+      case "condiment":
+      case "canned":
+        return "Pantry";
+
+      case "other":
+        return "Other";
+      default:
+        return category;
+    }
+  };
+
+  const searchTerm = search.trim().toLowerCase();
+
+  useEffect(() => {
+    const fetchGroceries = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+
+        const result = await api.get("/api/grocery?page=1&limit=20", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setItems(
+          (result.data.data || []).map((item) => ({
+            ...item,
+            category: normalizeCategory(item.category),
+          })),
+        );
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load inventory");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroceries();
+  }, []);
+
+  const handleItemSaved = (updated) => {
+    console.log("updated", updated);
+    setItems((prev) =>
+      prev.map((i) =>
+        i.grocery_id === updated.grocery_id ? { ...i, ...updated } : i,
+      ),
+    );
+  };
+
+  const handleRestock = async (item) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/api/wishlist",
+        {
+          name: item.name,
+          quantity: Number(item.quantity),
+          unit: item.unit,
+          category: item.category || "other",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      console.log("Added to wishlist");
+    } catch (err) {
+      console.error("Restock failed:", err);
+      setError("Failed to add item to shopping list");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.delete(`/api/grocery/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      //update UI
+      setItems((prev) => prev.filter((item) => item.grocery_id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setError("Failed to delete item");
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+  if (error) {
+    return (
+      <Box p={2}>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
+  //Filter based on search text and selected category
+  const filteredItems = items.filter((item) => {
+    const matchesSearch =
+      !searchTerm || item.name.toLowerCase().includes(searchTerm);
+    const matchesCategory =
+      selectedCategory === "All Items" ||
+      item.category.toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <Box
+      sx={{
+        p: 2,
+        pb: 10,
+        width: "100%",
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
+      <AppLogo />
+      <Header />
+
+      <SearchBar search={search} setSearch={setSearch} />
+
+      <CategoryFilter
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
+
+      <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
+        {filteredItems.map((item) => (
+          <Grid
+            size={{
+              xs: 6,
+              sm: 4,
+              md: 3,
+              lg: 2,
+            }}
+            key={item.grocery_id}
+          >
+            <ItemCard
+              item={{
+                ...item,
+                remainingDays: calculateExpiryDays(item.expiry_date),
+              }}
+              onDelete={handleDelete}
+              onRestock={handleRestock}
+              onItemSaved={handleItemSaved}
+            />
+          </Grid>
+        ))}
+
+        {/* Add Item Card */}
+
+        <Grid
+          size={{
+            xs: 6,
+            sm: 4,
+            md: 3,
+            lg: 2,
+          }}
+        >
+          <Card
+            sx={{
+              height: "100%",
+              minHeight: 160,
+              bgcolor: "background.default",
+              borderRadius: "24px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              border: "1px dashed",
+              borderColor: "neutral.main",
+              transition: "transform 0.2s ease",
+              "&:hover": {
+                transform: "scale(1.02)",
+              },
+            }}
+            // foward to add-ingredient page
+            onClick={() => navigate("/add-items")}
+          >
+            <Box sx={{ textAlign: "center" }}>
+              <AddIcon sx={{ fontSize: 40, color: "primary.dark" }} />
+              <Typography
+                sx={{
+                  mt: 1,
+                  color: "primary.dark",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                }}
+              >
+                Add Item
+              </Typography>
+            </Box>
+          </Card>
+        </Grid>
+
+        {filteredItems.length === 0 && (
+          <Box mt={4} width="100%" sx={{ textAlign: "center" }}>
+            <Typography color="text.secondary">No items found</Typography>
+          </Box>
+        )}
+      </Grid>
+
+      <OpenSpeedDial />
+    </Box>
+  );
+}

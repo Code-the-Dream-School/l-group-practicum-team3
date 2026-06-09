@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { alpha, createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
@@ -12,30 +12,46 @@ const theme = createTheme({
     },
     secondary: {
       main: "#FDD34D",
+      light: alpha("#FDD34D", 0.2),
       contrastText: "#725B00",
     },
-    background: { 
-        default: "#FBF9F2", paper: "#FFFFFF" 
+    neutral: {
+      light: "#EFEDE7", // For search bar and light backgrounds
+      main: "#E0DED7", // For badges and icon backgrounds
+      dark: "#40493D", // For secondary text and borders
+    },
+    action: {
+      restock: "#CFEBDD", // Custom color for the Restock button
+      restockHover: "#BEE3CF", // Custom hover state
+    },
+    background: {
+      default: "#FBF9F2",
+      paper: "#FFFFFF",
+      hover: "#f0c420",
     },
   },
   typography: {
     fontFamily: '"Epilogue", "Roboto", sans-serif',
+    color: "#8C7A39",
+  },
+  textField: {
+    bgColor: "#F5F4ED",
   },
   components: {
     MuiButton: {
-    styleOverrides: {
-      root: {
-        borderRadius: 50,
-        textTransform: 'none',
+      styleOverrides: {
+        root: {
+          borderRadius: 50,
+          textTransform: "none",
+        },
       },
     },
-  },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: '50px',
-         "& fieldset": { 
-            border: "none" 
+          borderRadius: "50px",
+          "& fieldset": {
+            border: "none",
           },
         },
         input: {

@@ -13,34 +13,52 @@ import Link from "@mui/material/Link";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import GoogleIcon from "@mui/icons-material/Google";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { UserAuth } from "../../context/AuthContext";
+import { validate } from "../../utils/validate";
 
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const navigate = useNavigate();
+  const { register, googleLogin, authError, clearAuthError } = UserAuth();
+
+  // Clean up authentication errors
+  useEffect(() => {
+    return () => {
+      if (clearAuthError) clearAuthError();
+    };
+  }, [clearAuthError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('')
-
-    const errors = validate();
+    setError("");
+    const values = { name, email, password };
+    const errors = validate(values, true);
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
       setLoading(true);
 
       try {
-        // console.log("Signing in with:", { name, email, password });
-        // throw new Error ('test')
-        // placeholder for sign up API call - will update
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        navigate("/");
+        const result = await register(name, email, password);
+        if (result.success) {
+          setMessage(
+            result.message ||
+              "Account created successfully! Please check your email.",
+          );
+
+          setName("");
+          setEmail("");
+          setPassword("");
+        } else {
+          setError(result.message || "Registration failed");
+        }
       } catch (err) {
         setError(err.message || "Something went wrong. Please try again");
       } finally {
@@ -49,37 +67,12 @@ function Signup() {
     }
   };
 
-  const validate = () => {
-    const errors = {};
-
-    const passwordRegex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
-     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-    if (!name) {
-      errors.name = "Name is Required";
-    }
-    if (!email) {
-      errors.email = "Email is Required";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "Invalid Email Format";
-    }
-
-    if (!password) {
-      errors.password = "Password is Required";
-    } else if (!passwordRegex.test(password)) {
-      errors.password =
-        "Must be 8+ characters with at least 1 number and 1 symbol";
-    }
-
-    return errors;
-  };
-
   return (
     <>
       <Container maxWidth="xs">
         <Paper
           elevation={0}
-          sx={{ mt: "2rem", padding: 4, bgcolor: "#FBF9F2" }}
+          sx={{ mt: "2rem", padding: 2, backgroundColor: "background.default" }}
         >
           <Stack
             direction="row"
@@ -88,7 +81,7 @@ function Signup() {
           >
             <Avatar
               sx={{
-                bgcolor: "primary.dark",
+                backgroundColor: "primary.dark",
                 width: 40,
                 height: 40,
               }}
@@ -117,7 +110,7 @@ function Signup() {
           >
             Sign Up
           </Typography>
-          <Typography variant="body2" sx={{ mb: 4 }}>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             Start your journey to a more organized kitchen.
           </Typography>
           {error && (
@@ -125,10 +118,22 @@ function Signup() {
               {error}
             </Alert>
           )}
+          {message && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {message}
+            </Alert>
+          )}
+
+          {authError && (
+            <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              {authError}
+            </Alert>
+          )}
           <Button
             fullWidth
             variant="outlined"
             startIcon={<GoogleIcon />}
+            onClick={() => googleLogin()}
             sx={{
               py: 1.5,
               fontWeight: "bold",
@@ -158,15 +163,15 @@ function Signup() {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              padding: 0,
+              padding: 1,
               borderRadius: "12px",
-              mb: 8,
+              mb: 6,
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Name
               </Typography>
@@ -176,11 +181,11 @@ function Signup() {
                 placeholder="Jamie Oliver"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                error={formErrors.name? true : false}
+                error={formErrors.name ? true : false}
                 helperText={formErrors.name}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               />
@@ -188,7 +193,7 @@ function Signup() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Email Address
               </Typography>
@@ -204,7 +209,7 @@ function Signup() {
                 onChange={(e) => setEmail(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               ></TextField>
@@ -212,7 +217,7 @@ function Signup() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography
                 variant="overline"
-                sx={{ fontWeight: "800", ml: 1.5, color: "#8C7A39" }}
+                sx={{ fontWeight: "800", ml: 1.5, color: "typography.color" }}
               >
                 Password
               </Typography>
@@ -221,7 +226,7 @@ function Signup() {
                 required
                 placeholder="••••••••"
                 type="password"
-                error={formErrors.password? true : false}
+                error={formErrors.password ? true : false}
                 helperText={
                   formErrors.password
                     ? formErrors.password
@@ -231,7 +236,7 @@ function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#F5F4ED",
+                    backgroundColor: "textField.bgColor",
                   },
                 }}
               ></TextField>
